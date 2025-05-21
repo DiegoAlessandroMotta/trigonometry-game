@@ -1,0 +1,15 @@
+{
+  "name": "juego-trigonometria",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "dev:game": "pnpm -F game dev",
+    "build:game": "pnpm -F game build",
+    "preview:game": "pnpm -F game preview"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "packageManager": "pnpm@10.11.0"
+}
