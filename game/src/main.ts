@@ -1,7 +1,7 @@
 import Phaser from 'phaser'
-import './style.css'
-import { Game } from './scenes/game'
-import { Preloader } from './scenes/preloader'
+import '@/style.css'
+import { Game } from '@/scenes/game'
+import { Preloader } from '@/scenes/preloader'
 
 document.querySelector<HTMLDivElement>('#app')!.innerHTML = /*html*/ `
   <div>
@@ -39,4 +39,4 @@ const config: Phaser.Types.Core.GameConfig = {
   scene: [Preloader, Game]
 }
 
-const game = new Phaser.Game(config)
+new Phaser.Game(config)
