@@ -1,21 +1,42 @@
-import './style.css';
-import typescriptLogo from './typescript.svg';
-import viteLogo from '/vite.svg';
+import Phaser from 'phaser'
+import './style.css'
+import { Game } from './scenes/game'
+import { Preloader } from './scenes/preloader'
 
 document.querySelector<HTMLDivElement>('#app')!.innerHTML = /*html*/ `
   <div>
-    <a href="https://vite.dev" target="_blank">
-      <img src="${viteLogo}" class="logo" alt="Vite logo" />
-    </a>
-    <a href="https://www.typescriptlang.org/" target="_blank">
-      <img src="${typescriptLogo}" class="logo vanilla" alt="TypeScript logo" />
-    </a>
-    <h1>Vite + TypeScript</h1>
-    <div class="card">
-      <button id="counter" type="button"></button>
-    </div>
-    <p class="read-the-docs">
-      Click on the Vite and TypeScript logos to learn more
-    </p>
+    <h1>Juego de trigonometría</h1>
+    <canvas id="game-canvas"></canvas>
   </div>
-`;
+`
+
+const $gameCanvas = document.querySelector<HTMLCanvasElement>('#game-canvas')
+
+if (!($gameCanvas instanceof HTMLCanvasElement)) {
+  throw new Error('Canvas not found D:')
+}
+
+const config: Phaser.Types.Core.GameConfig = {
+  type: Phaser.WEBGL,
+  width: 800,
+  height: 600,
+  canvas: $gameCanvas,
+  backgroundColor: '#028af8',
+  physics: {
+    default: 'arcade',
+    arcade: {
+      gravity: {
+        y: 500,
+        x: 0
+      },
+      debug: true
+    }
+  },
+  scale: {
+    // mode: Phaser.Scale.FIT
+    // autoCenter: Phaser.Scale.CENTER_BOTH
+  },
+  scene: [Preloader, Game]
+}
+
+const game = new Phaser.Game(config)
