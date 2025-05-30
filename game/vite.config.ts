@@ -1,3 +1,4 @@
+import tsconfigPaths from 'vite-tsconfig-paths'
 import { defineConfig, loadEnv } from 'vite'
 
 export default ({ mode }) => {
@@ -7,6 +8,7 @@ export default ({ mode }) => {
   const PORT = parseInt(env.VITE_SERVER_PORT) ?? undefined
 
   return defineConfig({
+    plugins: [tsconfigPaths()],
     server: {
       host: HOST,
       port: PORT
