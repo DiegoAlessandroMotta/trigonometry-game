@@ -4,7 +4,7 @@ export class GameOver extends Phaser.Scene {
   }
 
   create() {
-    this.add.image(400, 300, 'sky')
+    this.add.image(512, 384, 'background')
     this.add.text(400, 400, 'Game Over', {
       fontSize: '32px',
       color: '#000'

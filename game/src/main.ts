@@ -2,10 +2,10 @@ import Phaser from 'phaser'
 import '@/style.css'
 import { Game } from '@/scenes/game'
 import { Preloader } from '@/scenes/preloader'
+import { CustomPointer } from '@/scenes/custom-pointer'
 
 document.querySelector<HTMLDivElement>('#app')!.innerHTML = /*html*/ `
   <div>
-    <h1>Juego de trigonometría</h1>
     <canvas id="game-canvas"></canvas>
   </div>
 `
@@ -36,7 +36,7 @@ const config: Phaser.Types.Core.GameConfig = {
     // mode: Phaser.Scale.FIT
     // autoCenter: Phaser.Scale.CENTER_BOTH
   },
-  scene: [Preloader, Game]
+  scene: [Preloader, CustomPointer]
 }
 
 new Phaser.Game(config)
