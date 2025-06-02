@@ -1,9 +1,10 @@
 export class BranchSortingScene extends Phaser.Scene {
-  private readonly MIN_DISTANCE = 50
+  private readonly MIN_DISTANCE = 20
   private placedBranches: Array<{ x: number; y: number }> = []
   private targetZone!: Phaser.GameObjects.Rectangle
   private branchesInZone: number = 0
   private totalAcuteBranches: number = 5
+  private progressText!: Phaser.GameObjects.Text
 
   constructor() {
     super('BranchScene')
@@ -44,26 +45,18 @@ export class BranchSortingScene extends Phaser.Scene {
     const bg = this.add.image(400, 300, 'branch-bg')
     bg.setDisplaySize(800, 600)
 
-    // Título de la escena
-    this.add
-      .text(400, 50, 'Clasifica las Ramas', {
-        fontSize: '32px',
-        color: '#ffffff',
-        fontStyle: 'bold'
-      })
-      .setOrigin(0.5)
-      .setShadow(2, 2, '#000000', 2)
-
     // Separar las ramas por tipo
     const agudasKeys = [
       'branch1_agudo',
       'branch2_agudo',
       'branch3_agudo',
       'branch4_agudo',
-      'branch4_agudo' // Repetido para tener 5 ramas agudas
+      'branch4_agudo'
     ]
 
     const obtusasKeys = ['branch2_obtuso', 'branch3_obtuso', 'branch4_obtuso']
+
+    this.addTargetZone()
 
     // Crear las ramas agudas
     this.createBranches(agudasKeys, 'AGUDA')
@@ -71,31 +64,32 @@ export class BranchSortingScene extends Phaser.Scene {
     // Crear las ramas obtusas
     this.createBranches(obtusasKeys, 'OBTUSA')
 
-    // Crear zona objetivo
-    this.targetZone = this.add.rectangle(650, 450, 300, 250, 0xffffff, 0.2)
-
-    // Agregar borde a la zona objetivo
-    const border = this.add.rectangle(650, 450, 300, 250)
-    border.setStrokeStyle(2, 0xffffff)
-
-    // Texto indicador de la zona
-    this.add
-      .text(650, 450, 'Coloca aquí\nlas ramas agudas', {
-        fontSize: '20px',
-        color: '#ffffff',
-        align: 'center'
-      })
-      .setOrigin(0.5)
-
     // Instrucciones
     this.add
-      .text(400, 550, 'Arrastra las ramas para ordenarlas', {
+      .text(
+        400,
+        50,
+        'Arrastra las ramas que contienen un ángulo agudo dentro de la caja',
+        {
+          fontSize: '20px',
+          color: '#ffffff',
+          backgroundColor: '#000000',
+          fontFamily: 'medium',
+          padding: { x: 10, y: 5 }
+        }
+      )
+      .setOrigin(0.5)
+
+    // Texto de progreso
+    this.progressText = this.add
+      .text(0, 600, 'Ramas correctas: 0/' + this.totalAcuteBranches, {
         fontSize: '20px',
         color: '#ffffff',
         backgroundColor: '#000000',
-        padding: { x: 10, y: 5 }
+        padding: { x: 10, y: 5 },
+        fontFamily: 'medium'
       })
-      .setOrigin(0.5)
+      .setOrigin(0, 1)
   }
 
   private createBranches(keys: string[], type: string) {
@@ -108,7 +102,7 @@ export class BranchSortingScene extends Phaser.Scene {
 
       const branch = this.add
         .image(position.x, position.y, 'branches', key)
-        .setScale(0.2)
+        .setScale(0.3)
         .setAngle(rotation)
 
       // Hacer la rama interactiva
@@ -118,7 +112,7 @@ export class BranchSortingScene extends Phaser.Scene {
 
       // Eventos de arrastre
       branch.on('dragstart', () => {
-        branch.setScale(0.25) // Hacer la rama un poco más grande al arrastrar
+        branch.setScale(0.35) // Hacer la rama un poco más grande al arrastrar
       })
 
       branch.on('drag', (pointer: Phaser.Input.Pointer) => {
@@ -127,35 +121,21 @@ export class BranchSortingScene extends Phaser.Scene {
       })
 
       branch.on('dragend', () => {
-        branch.setScale(0.2) // Restaurar el tamaño original
+        branch.setScale(0.3) // Restaurar el tamaño original
 
         // Verificar si la rama está en la zona objetivo
         this.checkBranchPosition(branch)
 
         // Actualizar la posición en placedBranches
-        const index = this.placedBranches.findIndex(
-          (p) => p.x === branch.x && p.y === branch.y
-        )
-        if (index !== -1) {
-          this.placedBranches[index] = { x: branch.x, y: branch.y }
-        }
+        // const index = this.placedBranches.findIndex(
+        //   (p) => p.x === branch.x && p.y === branch.y
+        // )
+        // if (index !== -1) {
+        //   this.placedBranches[index] = { x: branch.x, y: branch.y }
+        // }
       })
 
-      // Añadir un pequeño indicador del tipo (opcional)
-      const dot = this.add.circle(
-        position.x,
-        position.y - 30,
-        5,
-        type === 'AGUDA' ? 0x00ff00 : 0xff0000
-      )
-
-      // Hacer que el punto indicador siga a la rama
-      branch.on('drag', (pointer: Phaser.Input.Pointer) => {
-        branch.x = pointer.x
-        branch.y = pointer.y
-        dot.x = pointer.x
-        dot.y = pointer.y - 30
-      })
+      this.placedBranches = []
     })
   }
 
@@ -163,21 +143,37 @@ export class BranchSortingScene extends Phaser.Scene {
     const branchBounds = branch.getBounds()
     const zoneBounds = this.targetZone.getBounds()
 
-    const wasInZone = branch.getData('inZone') || false
     const isInZone = Phaser.Geom.Rectangle.ContainsRect(
       zoneBounds,
       branchBounds
     )
     const isAcute = branch.getData('type') === 'AGUDA'
 
-    // Actualizar contador solo si es una rama aguda y su estado cambió
-    if (isAcute && wasInZone !== isInZone) {
-      this.branchesInZone += isInZone ? 1 : -1
-      branch.setData('inZone', isInZone)
+    if (!isInZone) {
+      branch.clearTint()
+    }
 
-      // Verificar si todas las ramas agudas están en la zona
-      if (this.branchesInZone === this.totalAcuteBranches) {
-        this.showCompletionMessage()
+    if (isInZone) {
+      if (!isAcute) {
+        branch.tint = 0xff0000
+      }
+
+      if (isAcute) {
+        this.branchesInZone += 1
+        branch.removeInteractive()
+
+        // Actualizar el texto de progreso
+        this.progressText.setText(
+          'Ramas correctas: ' +
+            this.branchesInZone +
+            '/' +
+            this.totalAcuteBranches
+        )
+
+        // Verificar si todas las ramas agudas están en la zona
+        if (this.branchesInZone === this.totalAcuteBranches) {
+          this.showCompletionMessage()
+        }
       }
     }
   }
@@ -188,7 +184,7 @@ export class BranchSortingScene extends Phaser.Scene {
       .text(400, 300, '¡Nivel Completado!', {
         fontSize: '32px',
         color: '#ffffff',
-        backgroundColor: '#000000',
+        fontStyle: 'bold',
         padding: { x: 15, y: 10 }
       })
       .setOrigin(0.5)
@@ -202,5 +198,43 @@ export class BranchSortingScene extends Phaser.Scene {
       duration: 500,
       ease: 'Back.easeOut'
     })
+  }
+
+  private addTargetZone() {
+    const targetConfig = {
+      x: 675,
+      y: 500,
+      width: 250,
+      height: 200,
+      color: 0xffffff
+    }
+    // Crear zona objetivo
+    this.targetZone = this.add.rectangle(
+      targetConfig.x,
+      targetConfig.y,
+      targetConfig.width,
+      targetConfig.height,
+      targetConfig.color,
+      0.2
+    )
+
+    // Agregar borde a la zona objetivo
+    const border = this.add.rectangle(
+      targetConfig.x,
+      targetConfig.y,
+      targetConfig.width,
+      targetConfig.height
+    )
+    border.setStrokeStyle(2, 0xffffff)
+
+    // Texto indicador de la zona
+    this.add
+      .text(targetConfig.x, targetConfig.y, 'Coloca aquí\nlas ramas', {
+        fontSize: '20px',
+        color: '#ffffff',
+        align: 'center',
+        fontFamily: 'medium'
+      })
+      .setOrigin(0.5)
   }
 }
