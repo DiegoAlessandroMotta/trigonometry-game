@@ -51,12 +51,12 @@ export class Preloader extends Phaser.Scene {
   }
 
   preload() {
-    this.load.setPath('assets')
+    // this.load.setPath('assets')
 
     // Assets básicos
-    this.load.image('sky', 'sky.png')
+    // this.load.image('sky', 'sky.png')
     // this.load.image('ground', 'platform.png')
-    this.load.image('star', 'star.png')
+    // this.load.image('star', 'star.png')
     // this.load.image('bomb', 'bomb.png')
     // this.load.spritesheet('dude', 'dude.png', {
     //   frameWidth: 32,
@@ -69,6 +69,6 @@ export class Preloader extends Phaser.Scene {
     this.load.atlas('branches', 'branches.png', 'branches.json')
 
     // Volver a la ruta base para otros assets
-    this.load.setPath('assets')
+    // this.load.setPath('assets')
   }
 }
