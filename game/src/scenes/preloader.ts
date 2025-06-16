@@ -45,7 +45,7 @@ export class Preloader extends Phaser.Scene {
     this.load.on('complete', () => {
       loadingText.setText('¡Carga completa!')
       this.time.delayedCall(500, () => {
-        this.scene.start('BranchScene')
+        this.scene.start('MainMenuScene')
       })
     })
   }
@@ -62,6 +62,9 @@ export class Preloader extends Phaser.Scene {
       frameWidth: 32,
       frameHeight: 48
     })
+
+    this.load.setPath('assets/scenes/main-menu')
+    this.load.image('main-menu-bg', 'bg.webp')
 
     // Assets de branch-sorting
     this.load.setPath('assets/scenes/branch-sorting')
