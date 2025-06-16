@@ -2,6 +2,7 @@ import Phaser from 'phaser'
 import '@/style.css'
 import { Preloader } from '@/scenes/preloader'
 import { BranchSortingScene } from '@/scenes/branch-sorting'
+import { Game } from './scenes/game'
 
 document.querySelector<HTMLDivElement>('#app')!.innerHTML = /*html*/ `
   <div>
@@ -35,7 +36,7 @@ const config: Phaser.Types.Core.GameConfig = {
     // mode: Phaser.Scale.FIT
     // autoCenter: Phaser.Scale.CENTER_BOTH
   },
-  scene: [Preloader, BranchSortingScene]
+  scene: [Preloader, BranchSortingScene, Game]
 }
 
 new Phaser.Game(config)

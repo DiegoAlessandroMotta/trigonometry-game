@@ -174,6 +174,10 @@ export class BranchSortingScene extends Phaser.Scene {
       duration: 500,
       ease: 'Back.easeOut'
     })
+
+    this.time.delayedCall(2000, () => {
+      this.scene.start('Game')
+    })
   }
 
   private addTargetZone() {

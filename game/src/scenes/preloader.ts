@@ -51,17 +51,17 @@ export class Preloader extends Phaser.Scene {
   }
 
   preload() {
-    // this.load.setPath('assets')
+    this.load.setPath('assets')
 
     // Assets básicos
-    // this.load.image('sky', 'sky.png')
-    // this.load.image('ground', 'platform.png')
-    // this.load.image('star', 'star.png')
-    // this.load.image('bomb', 'bomb.png')
-    // this.load.spritesheet('dude', 'dude.png', {
-    //   frameWidth: 32,
-    //   frameHeight: 48
-    // })
+    this.load.image('sky', 'sky.png')
+    this.load.image('ground', 'platform.png')
+    this.load.image('star', 'star.png')
+    this.load.image('bomb', 'bomb.png')
+    this.load.spritesheet('dude', 'dude.png', {
+      frameWidth: 32,
+      frameHeight: 48
+    })
 
     // Assets de branch-sorting
     this.load.setPath('assets/scenes/branch-sorting')
