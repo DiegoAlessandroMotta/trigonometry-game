@@ -16,9 +16,9 @@ export class MainMenuScene extends Phaser.Scene {
     const playButton = new Button(
       this,
       this.cameras.main.width / 2,
-      this.cameras.main.height / 2 - 50,
+      this.cameras.main.height / 2 - 20,
       {
-        borderColor: 0xffffff
+        text: 'Play'
       },
       this.onPlayButtonClick,
       this
@@ -29,7 +29,9 @@ export class MainMenuScene extends Phaser.Scene {
       this,
       this.cameras.main.width / 2,
       this.cameras.main.height / 2 + 50,
-      undefined,
+      {
+        text: 'Opciones'
+      },
       this.onOptionsButtonClick,
       this
     )
@@ -37,7 +39,7 @@ export class MainMenuScene extends Phaser.Scene {
 
   onPlayButtonClick() {
     console.log('¡Se hizo clic en Jugar!')
-    // this.scene.start('GameScene');
+    this.scene.start('GameScene')
   }
 
   onOptionsButtonClick() {

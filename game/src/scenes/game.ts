@@ -10,21 +10,39 @@ export class Game extends Phaser.Scene {
   bombs?: Phaser.Physics.Arcade.Group
 
   constructor() {
-    super('Game')
+    super('GameScene')
   }
 
   create() {
-    this.add.image(400, 300, 'sky')
+    const bg = this.add.image(0, 0, 'sky')
+    bg.setOrigin(0)
+    bg.setDisplaySize(1280, 720)
 
     this.platforms = this.physics.add.staticGroup()
 
-    this.platforms.create(400, 568, 'ground').setScale(2).refreshBody()
+    // suelo
+    this.platforms.create(200, 704, 'ground')
+    this.platforms.create(600, 704, 'ground')
+    this.platforms.create(1000, 704, 'ground')
+    this.platforms.create(1400, 704, 'ground')
 
-    this.platforms.create(600, 400, 'ground')
-    this.platforms.create(50, 250, 'ground')
-    this.platforms.create(750, 220, 'ground')
+    // plataformas bajas
+    this.platforms.create(0, 550, 'ground')
+    this.platforms.create(900, 550, 'ground')
 
-    this.player = new Player(this, 100, 450)
+    // plataformas medias
+    this.platforms.create(400, 400, 'ground')
+    this.platforms.create(1400, 400, 'ground')
+
+    // plataformas altas
+    this.platforms.create(-150, 250, 'ground')
+    this.platforms.create(900, 250, 'ground')
+    this.platforms.create(1450, 250, 'ground')
+
+    // Es importante llamar a refreshBody() después de cambiar el tamaño
+    this.platforms.refresh()
+
+    this.player = new Player(this, 640, 600)
 
     this.physics.add.collider(this.player, this.platforms)
 
@@ -32,7 +50,7 @@ export class Game extends Phaser.Scene {
 
     this.stars = this.physics.add.group({
       key: 'star',
-      repeat: 11,
+      repeat: 17,
       setXY: { x: 12, y: 0, stepX: 70 }
     })
 

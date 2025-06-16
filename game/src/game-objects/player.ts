@@ -35,12 +35,12 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
   }
 
   moveLeft() {
-    this.setVelocityX(-200)
+    this.setVelocityX(-350)
     this.anims.play('left', true)
   }
 
   moveRight() {
-    this.setVelocityX(200)
+    this.setVelocityX(350)
     this.anims.play('right', true)
   }
 
@@ -51,7 +51,7 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
 
   jump() {
     if (this.body?.blocked.down) {
-      this.setVelocityY(-500)
+      this.setVelocityY(-610)
     }
   }
 }
