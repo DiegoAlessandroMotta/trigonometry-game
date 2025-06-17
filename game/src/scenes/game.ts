@@ -134,9 +134,9 @@ export class Game extends Phaser.Scene {
       this.player.setTint(0xff0000)
       this.player.anims.play('turn')
 
-      // this.time.delayedCall(1000, () => {
-      //   this.scene.start('BranchScene')
-      // })
+      this.time.delayedCall(1000, () => {
+        this.scene.start('MainMenuScene')
+      })
     }
   }
 

@@ -1,11 +1,10 @@
 import Phaser from 'phaser'
 import '@/style.css'
 import { Preloader } from '@/scenes/preloader'
-import { BranchSortingScene } from '@/scenes/branch-sorting'
-import { Game } from './scenes/game'
 import { MainMenuScene } from './scenes/main-menu'
-import { AngleScene } from './scenes/angle-scene'
-import { PointClickScene } from './scenes/point-click-scene'
+import { Game } from './scenes/game'
+// import { BranchSortingScene } from '@/scenes/branch-sorting'
+// import { PointClickScene } from './scenes/point-click-scene'
 
 const app = document.querySelector<HTMLDivElement>('#app')
 if (!(app instanceof HTMLDivElement)) {
@@ -45,10 +44,9 @@ const config: Phaser.Types.Core.GameConfig = {
   scene: [
     Preloader,
     MainMenuScene,
-    BranchSortingScene,
-    AngleScene,
-    PointClickScene,
     Game
+    // BranchSortingScene,
+    // PointClickScene,
   ]
 }
 
