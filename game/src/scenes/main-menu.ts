@@ -18,7 +18,7 @@ export class MainMenuScene extends Phaser.Scene {
       this.cameras.main.width / 2,
       this.cameras.main.height / 2 - 20,
       {
-        text: 'Play'
+        text: 'Jugar'
       },
       this.onPlayButtonClick,
       this
@@ -38,12 +38,10 @@ export class MainMenuScene extends Phaser.Scene {
   }
 
   onPlayButtonClick() {
-    console.log('¡Se hizo clic en Jugar!')
-    this.scene.start('GameScene')
+    // this.scene.start('GameScene')
   }
 
   onOptionsButtonClick() {
-    console.log('¡Se hizo clic en Opciones!')
     // this.scene.start('OptionsScene');
   }
 }

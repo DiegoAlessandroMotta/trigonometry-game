@@ -5,34 +5,34 @@ export class Preloader extends Phaser.Scene {
 
   init() {
     // Establecer fondo
-    this.cameras.main.setBackgroundColor('#87CEEB')
+    this.cameras.main.setBackgroundColor('#d56800')
 
     // Título del juego
     this.add
-      .text(400, 200, 'Juego de Trigonometría', {
+      .text(640, 300, 'Rumbo al APU', {
         fontSize: '32px',
-        color: '#000000',
+        color: '#fde34d',
         fontStyle: 'bold'
       })
       .setOrigin(0.5)
 
     // Texto de carga
     const loadingText = this.add
-      .text(400, 300, 'Cargando...', {
+      .text(640, 360, 'Cargando...', {
         fontSize: '24px',
-        color: '#000000'
+        color: '#fde34d'
       })
       .setOrigin(0.5)
 
     // Contenedor de la barra de progreso
     this.add
-      .rectangle(400, 350, 300, 30)
-      .setStrokeStyle(2, 0x000000)
+      .rectangle(640, 400, 300, 30)
+      .setStrokeStyle(2, 0xfde34d)
       .setOrigin(0.5)
 
     // Barra de progreso
     const progressBar = this.add
-      .rectangle(250, 350, 0, 20, 0x3498db)
+      .rectangle(490, 400, 0, 30, 0xfde34d)
       .setOrigin(0, 0.5)
 
     // Actualizar la barra de progreso

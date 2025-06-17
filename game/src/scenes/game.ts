@@ -13,7 +13,7 @@ export class Game extends Phaser.Scene {
     super('GameScene')
   }
 
-  create() {
+  create(): void {
     const bg = this.add.image(0, 0, 'sky')
     bg.setOrigin(0)
     bg.setDisplaySize(1280, 720)
@@ -89,7 +89,7 @@ export class Game extends Phaser.Scene {
     )
   }
 
-  update() {
+  update(): void {
     if (this.cursors?.left.isDown) {
       this.player?.moveLeft()
     } else if (this.cursors?.right.isDown) {
@@ -103,48 +103,54 @@ export class Game extends Phaser.Scene {
     }
   }
 
-  collectStar(player, star) {
-    star.disableBody(true, true)
+  collectStar: Phaser.Types.Physics.Arcade.ArcadePhysicsCallback = (
+    _player,
+    star
+  ): void => {
+    const starSprite = star as Phaser.Physics.Arcade.Sprite
+    starSprite.disableBody(true, true)
 
     this.score += 10
     this.scoreText?.setText('Score: ' + this.score)
 
     if (this.stars?.countActive(true) === 0) {
       this.stars.children.iterate((child) => {
-        ;(child as Phaser.Physics.Arcade.Sprite).enableBody(
-          true,
-          child.x,
-          0,
-          true,
-          true
-        )
+        const sprite = child as Phaser.Physics.Arcade.Sprite
+        sprite.enableBody(true, sprite.x, 0, true, true)
+        return true
       })
 
       this.releaseBomb()
     }
   }
 
-  hitBomb(player, bomb) {
+  hitBomb: Phaser.Types.Physics.Arcade.ArcadePhysicsCallback = (
+    _player,
+    _bomb
+  ): void => {
     this.physics.pause()
-    player.setTint(0xff0000)
-    player.anims.play('turn')
 
-    // this.time.delayedCall(2000, () => {
-    //   this.scene.start('GameOver')
-    // })
+    if (this.player) {
+      this.player.setTint(0xff0000)
+      this.player.anims.play('turn')
+    }
   }
 
-  releaseBomb() {
-    if (this.player !== undefined) {
-      let x =
-        this.player?.x < 400
-          ? Phaser.Math.Between(400, 800)
-          : Phaser.Math.Between(0, 400)
+  releaseBomb(): void {
+    if (!this.player || !this.bombs) return
 
-      let bomb = this.bombs?.create(x, 16, 'bomb')
-      bomb.setBounce(1)
-      bomb.setCollideWorldBounds(true)
-      bomb.setVelocity(Phaser.Math.Between(-200, 200), 20)
-    }
+    const x =
+      this.player.x < 400
+        ? Phaser.Math.Between(400, 800)
+        : Phaser.Math.Between(0, 400)
+
+    const bomb = this.bombs.create(
+      x,
+      16,
+      'bomb'
+    ) as Phaser.Physics.Arcade.Sprite
+    bomb.setBounce(1)
+    bomb.setCollideWorldBounds(true)
+    bomb.setVelocity(Phaser.Math.Between(-200, 200), 20)
   }
 }
