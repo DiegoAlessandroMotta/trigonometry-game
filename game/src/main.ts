@@ -13,7 +13,7 @@ if (!(app instanceof HTMLDivElement)) {
 const $gameCanvas = document.createElement('canvas')
 app.appendChild($gameCanvas)
 
-/* Resolutions with aspect radio of 16/9
+/* Resoluciones con radio de aspecto de 16/9
  * 1600/900
  * 1280/720
  * 960/540
@@ -22,8 +22,8 @@ app.appendChild($gameCanvas)
 
 const config: Phaser.Types.Core.GameConfig = {
   type: Phaser.WEBGL,
-  width: 1280,
-  height: 720,
+  width: 960,
+  height: 540,
   canvas: $gameCanvas,
   backgroundColor: '#111',
   physics: {
