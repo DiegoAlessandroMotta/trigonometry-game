@@ -1,6 +1,6 @@
 import { Preloader } from '@/scenes/preloader'
 import { MainMenuScene } from '@/scenes/main-menu'
-import { Game } from '@/scenes/game'
+import { Game } from '@/scenes/minigames/game'
 
 /* Resoluciones con radio de aspecto de 16/9
  * 1600/900
