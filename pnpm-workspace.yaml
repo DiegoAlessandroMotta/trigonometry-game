@@ -1,6 +1,4 @@
 packages:
-  - client
-  - server
   - game
 onlyBuiltDependencies:
   - esbuild
