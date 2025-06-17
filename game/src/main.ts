@@ -24,8 +24,8 @@ app.appendChild($gameCanvas)
 
 const config: Phaser.Types.Core.GameConfig = {
   type: Phaser.WEBGL,
-  width: 960,
-  height: 540,
+  width: 1280,
+  height: 720,
   canvas: $gameCanvas,
   backgroundColor: '#111',
   physics: {
