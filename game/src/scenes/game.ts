@@ -55,9 +55,10 @@ export class Game extends Phaser.Scene {
     })
 
     this.stars.children.iterate((child) => {
-      ;(child as Phaser.Physics.Arcade.Sprite).setBounceY(
-        Phaser.Math.FloatBetween(0.8, 0.9)
-      )
+      ;(child as Phaser.Physics.Arcade.Sprite)
+        .setBounceY(Phaser.Math.Between(0.7, 0.9))
+        .setVelocity(Phaser.Math.Between(-50, 50), 10)
+        .setCollideWorldBounds(true)
       return null
     })
 
