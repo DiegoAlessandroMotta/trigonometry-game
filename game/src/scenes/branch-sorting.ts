@@ -176,7 +176,7 @@ export class BranchSortingScene extends Phaser.Scene {
     })
 
     this.time.delayedCall(2000, () => {
-      this.scene.start('Game')
+      this.scene.start('AngleScene')
     })
   }
 

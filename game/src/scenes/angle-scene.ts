@@ -7,7 +7,7 @@ export class AngleScene extends Phaser.Scene {
 
   constructor() {
     super('AngleScene')
-    this.targetAngles = [45, 90] // Ángulos objetivo
+    this.targetAngles = [45, 90]
     this.currentObject = 0
     this.objects = []
     this.angleTexts = []
@@ -70,7 +70,7 @@ export class AngleScene extends Phaser.Scene {
       })
 
       // Añadir un punto para visualizar el eje de rotación
-      const rotationPoint = this.add.circle(pos.x, pos.y, 4, 0xff0000)
+      this.add.circle(pos.x, pos.y, 4, 0xff0000)
     })
 
     // Escuchar eventos del teclado
@@ -149,7 +149,7 @@ export class AngleScene extends Phaser.Scene {
       repeat: 0,
       onComplete: () => {
         this.time.delayedCall(1000, () => {
-          this.scene.start('StarSorting')
+          this.scene.start('PointClickScene')
         })
       }
     })

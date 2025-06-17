@@ -133,6 +133,10 @@ export class Game extends Phaser.Scene {
     if (this.player) {
       this.player.setTint(0xff0000)
       this.player.anims.play('turn')
+
+      // this.time.delayedCall(1000, () => {
+      //   this.scene.start('BranchScene')
+      // })
     }
   }
 

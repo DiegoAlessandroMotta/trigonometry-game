@@ -48,7 +48,7 @@ export class PointClickScene extends Phaser.Scene {
         scoreText.setText(`Estrellas: ${starsCollected}/3`)
 
         // Efecto de partículas al recolectar
-        const particles = this.add.particles(0, 0, 'star', {
+        this.add.particles(0, 0, 'star', {
           x: x,
           y: y,
           quantity: 1,
@@ -74,12 +74,12 @@ export class PointClickScene extends Phaser.Scene {
               scale: 1.5,
               duration: 500,
               yoyo: true,
-              repeat: 0,
-              onComplete: () => {
-                this.time.delayedCall(1000, () => {
-                  this.scene.start('AngleScene') // Cambiar a la siguiente escena
-                })
-              }
+              repeat: 0
+              // onComplete: () => {
+              //   this.time.delayedCall(1000, () => {
+              //     this.scene.start('AngleScene') // Cambiar a la siguiente escena
+              //   })
+              // }
             })
           })
         }

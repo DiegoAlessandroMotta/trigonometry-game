@@ -12,7 +12,7 @@ export class MainMenuScene extends Phaser.Scene {
     bg.setOrigin(0)
     bg.setDisplaySize(this.scale.width, this.scale.height)
 
-    const playButton = new Button(
+    new Button(
       this,
       this.cameras.main.width / 2,
       this.cameras.main.height / 2,
@@ -23,7 +23,7 @@ export class MainMenuScene extends Phaser.Scene {
       this
     )
 
-    const optionsButton = new Button(
+    new Button(
       this,
       this.cameras.main.width / 2,
       this.cameras.main.height / 2 + 50,
@@ -36,7 +36,7 @@ export class MainMenuScene extends Phaser.Scene {
   }
 
   onPlayButtonClick() {
-    // this.scene.start('GameScene')
+    this.scene.start('GameScene')
   }
 
   onOptionsButtonClick() {
