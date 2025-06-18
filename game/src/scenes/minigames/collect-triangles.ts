@@ -48,19 +48,39 @@ export class CollectTriangles extends Phaser.Scene {
 
     this.cursors = this.input.keyboard?.createCursorKeys()
 
-    this.stars = this.physics.add.group({
-      key: 'star',
-      repeat: 17,
-      setXY: { x: 12, y: 0, stepX: 70 }
-    })
+    // Crear una textura de triángulo una sola vez
+    const triangleGraphics = this.add.graphics()
+    triangleGraphics.lineStyle(2, 0x000000)
+    triangleGraphics.fillStyle(0x000000)
 
-    this.stars.children.iterate((child) => {
-      ;(child as Phaser.Physics.Arcade.Sprite)
+    // Dibujar un triángulo equilátero desde la esquina superior izquierda
+    const size = 32
+    const height = (size * Math.sqrt(3)) / 2
+    triangleGraphics.beginPath()
+    triangleGraphics.moveTo(size / 2, 0) // Punto superior
+    triangleGraphics.lineTo(0, height) // Punto inferior izquierdo
+    triangleGraphics.lineTo(size, height) // Punto inferior derecho
+    triangleGraphics.closePath()
+    triangleGraphics.fill()
+
+    // Generar textura desde el gráfico
+    triangleGraphics.generateTexture('triangle', size, size)
+    triangleGraphics.destroy()
+
+    // Crear grupo de triángulos
+    this.stars = this.physics.add.group()
+
+    // Crear los sprites de triángulo
+    for (let i = 0; i < 18; i++) {
+      const x = 12 + i * 70
+      const y = 0
+      const triangleSprite = this.stars.create(x, y, 'triangle')
+      triangleSprite
+        .setOrigin(0, 0) // Establecer el origen en la esquina superior izquierda
         .setBounceY(Phaser.Math.Between(0.7, 0.9))
         .setVelocity(Phaser.Math.Between(-50, 50), 10)
         .setCollideWorldBounds(true)
-      return null
-    })
+    }
 
     this.physics.add.collider(this.stars, this.platforms)
     this.physics.add.overlap(
