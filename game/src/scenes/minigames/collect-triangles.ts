@@ -1,6 +1,6 @@
 import { Player } from '@/game-objects/player'
 
-export class Game extends Phaser.Scene {
+export class CollectTriangles extends Phaser.Scene {
   platforms?: Phaser.Physics.Arcade.StaticGroup
   player?: Player
   cursors?: Phaser.Types.Input.Keyboard.CursorKeys

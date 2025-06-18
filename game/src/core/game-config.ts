@@ -1,6 +1,6 @@
 import { Preloader } from '@/scenes/preloader'
 import { MainMenuScene } from '@/scenes/main-menu'
-import { Game } from '@/scenes/minigames/game'
+import { CollectTriangles } from '@/scenes/minigames/collect-triangles'
 
 /* Resoluciones con radio de aspecto de 16/9
  * 1600/900
@@ -29,11 +29,5 @@ export const gameConfig: Phaser.Types.Core.GameConfig = {
     mode: Phaser.Scale.FIT,
     autoCenter: Phaser.Scale.CENTER_BOTH
   },
-  scene: [
-    Preloader,
-    MainMenuScene,
-    Game
-    // BranchSortingScene,
-    // PointClickScene,
-  ]
+  scene: [Preloader, MainMenuScene, CollectTriangles]
 }
