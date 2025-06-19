@@ -121,6 +121,14 @@ export class CollectTriangles extends Phaser.Scene {
     if (this.cursors?.up.isDown) {
       this.player?.jump()
     }
+
+    if (this.cursors?.down.isDown) {
+      this.player?.fall()
+    }
+
+    if (this.player?.body?.blocked.down) {
+      this.player?.setGravityY(0)
+    }
   }
 
   collectStar: Phaser.Types.Physics.Arcade.ArcadePhysicsCallback = (

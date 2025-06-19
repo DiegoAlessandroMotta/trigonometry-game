@@ -54,4 +54,8 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
       this.setVelocityY(-610)
     }
   }
+
+  fall() {
+    this.setGravityY(900)
+  }
 }
