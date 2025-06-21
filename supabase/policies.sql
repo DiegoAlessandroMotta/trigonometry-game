@@ -128,7 +128,6 @@ with
         si.id = respuestas_minijuego.sesion_interactiva_id
         and si.estudiante_id = auth.uid ()
     )
-    and new.created_at is null
   );
 
 create policy "Estudiantes ver sus respuestas de evaluaciones en minijuegos pasadas" on public.respuestas_minijuego for
