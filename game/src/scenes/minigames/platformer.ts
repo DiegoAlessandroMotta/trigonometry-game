@@ -34,7 +34,8 @@ class Player extends Phaser.Physics.Arcade.Sprite {
     this.anims.create({
       key: 'jump',
       frames: [{ key: 'player-jump', frame: 0 }],
-      frameRate: 1
+      frameRate: 1,
+      repeat: 0
     })
 
     this.anims.create({
@@ -53,13 +54,15 @@ class Player extends Phaser.Physics.Arcade.Sprite {
         start: 0,
         end: 4
       }),
-      frameRate: 1
+      frameRate: 1,
+      repeat: 0
     })
 
     this.anims.create({
       key: 'fall',
       frames: [{ key: 'player-fall', frame: 0 }],
-      frameRate: 1
+      frameRate: 1,
+      repeat: 0
     })
   }
 
@@ -87,7 +90,11 @@ class Player extends Phaser.Physics.Arcade.Sprite {
     if (this.body != null) {
       if (this.body.blocked.down) {
         if (this.body.velocity.x !== 0) {
-          this.anims.play('run', true)
+          if (this.body.blocked.left || this.body.blocked.right) {
+            this.anims.play('idle', true)
+          } else {
+            this.anims.play('run', true)
+          }
         } else {
           this.anims.play('idle', true)
         }
@@ -122,11 +129,7 @@ export class PlatformerScene extends Phaser.Scene {
   create() {
     this.platforms = this.physics.add.staticGroup()
 
-    // Ejemplo de plataforma para wall jump (una pared alta)
-    this.platforms.create(200, 400, 'ground').setScale(0.2, 10).refreshBody() // Pared izquierda
-    this.platforms.create(400, 400, 'ground').setScale(0.2, 10).refreshBody() // Pared derecha
-
-    this.player = new Player(this, 640, 600)
+    this.player = new Player(this, 640, 200)
 
     this.physics.add.collider(this.player, this.platforms)
 
