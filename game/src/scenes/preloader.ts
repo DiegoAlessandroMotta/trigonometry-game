@@ -71,7 +71,36 @@ export class Preloader extends Phaser.Scene {
     this.load.image('branch-bg', 'bg.jpg')
     this.load.atlas('branches', 'branches.png', 'branches.json')
 
-    // Volver a la ruta base para otros assets
-    // this.load.setPath('assets')
+    // Assets de player
+    this.load.setPath('assets/player')
+    this.load.spritesheet('player-idle', 'idle.png', {
+      frameWidth: 32,
+      frameHeight: 32
+    })
+
+    this.load.spritesheet('player-run', 'run.png', {
+      frameWidth: 32,
+      frameHeight: 32
+    })
+
+    this.load.spritesheet('player-jump', 'jump.png', {
+      frameWidth: 32,
+      frameHeight: 32
+    })
+
+    this.load.spritesheet('player-double-jump', 'double-jump.png', {
+      frameWidth: 32,
+      frameHeight: 32
+    })
+
+    this.load.spritesheet('player-wall-jump', 'wall-jump.png', {
+      frameWidth: 32,
+      frameHeight: 32
+    })
+
+    this.load.spritesheet('player-fall', 'fall.png', {
+      frameWidth: 32,
+      frameHeight: 32
+    })
   }
 }
