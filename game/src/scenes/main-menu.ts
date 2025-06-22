@@ -28,7 +28,7 @@ export class MainMenuScene extends Phaser.Scene {
       this.cameras.main.width / 2,
       this.cameras.main.height / 2 + 50,
       {
-        text: 'Jugar 2'
+        text: '...'
       },
       this.onOptionsButtonClick,
       this
@@ -36,10 +36,8 @@ export class MainMenuScene extends Phaser.Scene {
   }
 
   onPlayButtonClick() {
-    this.scene.start('GameScene')
-  }
-
-  onOptionsButtonClick() {
     this.scene.start('PlatformerScene')
   }
+
+  onOptionsButtonClick() {}
 }
