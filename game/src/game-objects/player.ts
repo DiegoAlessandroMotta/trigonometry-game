@@ -1,6 +1,6 @@
 export class Player extends Phaser.Physics.Arcade.Sprite {
   constructor(scene: Phaser.Scene, x: number, y: number) {
-    super(scene, x, y, 'dude')
+    super(scene, x, y, 'player')
 
     scene.add.existing(this)
     scene.physics.add.existing(this)
@@ -12,50 +12,112 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
 
   initAnimations() {
     this.anims.create({
-      key: 'left',
-      frames: this.anims.generateFrameNumbers('dude', { start: 0, end: 3 }),
-      frameRate: 10,
-      repeat: -1
-    })
-
-    console.log('creating animations...')
-
-    this.anims.create({
-      key: 'turn',
-      frames: [{ key: 'dude', frame: 4 }],
-      frameRate: 1
+      key: 'stopped',
+      frames: [{ key: 'player-idle', frame: 5 }],
+      frameRate: 1,
+      repeat: 0
     })
 
     this.anims.create({
-      key: 'right',
-      frames: this.anims.generateFrameNumbers('dude', { start: 5, end: 8 }),
-      frameRate: 10,
+      key: 'idle',
+      frames: this.anims.generateFrameNumbers('player-idle', {
+        start: 0,
+        end: 10
+      }),
+      frameRate: 16,
       repeat: -1
     })
-  }
 
-  moveLeft() {
-    this.setVelocityX(-350)
-    this.anims.play('left', true)
-  }
+    this.anims.create({
+      key: 'run',
+      frames: this.anims.generateFrameNumbers('player-run', {
+        start: 0,
+        end: 11
+      }),
+      frameRate: 24,
+      repeat: -1
+    })
 
-  moveRight() {
-    this.setVelocityX(350)
-    this.anims.play('right', true)
+    this.anims.create({
+      key: 'jump',
+      frames: [{ key: 'player-jump', frame: 0 }],
+      frameRate: 1,
+      repeat: 0
+    })
+
+    this.anims.create({
+      key: 'double-jump',
+      frames: this.anims.generateFrameNumbers('player-double-jump', {
+        start: 0,
+        end: 5
+      }),
+      frameRate: 16,
+      repeat: 0
+    })
+
+    this.anims.create({
+      key: 'wall-jump',
+      frames: this.anims.generateFrameNumbers('player-wall-jump', {
+        start: 0,
+        end: 4
+      }),
+      frameRate: 1,
+      repeat: 0
+    })
+
+    this.anims.create({
+      key: 'fall',
+      frames: [{ key: 'player-fall', frame: 0 }],
+      frameRate: 1,
+      repeat: 0
+    })
   }
 
   idle() {
     this.setVelocityX(0)
-    this.anims.play('turn')
+  }
+
+  left() {
+    this.setVelocityX(-150)
+    this.setFlipX(true)
+  }
+
+  right() {
+    this.setVelocityX(150)
+    this.setFlipX(false)
   }
 
   jump() {
     if (this.body?.blocked.down) {
-      this.setVelocityY(-610)
+      this.setVelocityY(-400)
     }
   }
 
-  fall() {
-    this.setGravityY(900)
+  update() {
+    if (this.body != null) {
+      if (this.body.blocked.down) {
+        if (this.body.velocity.x !== 0) {
+          this.anims.play('run', true)
+        } else {
+          this.anims.play('idle', true)
+        }
+      } else {
+        if (
+          !this.body.blocked.left &&
+          !this.body.blocked.right &&
+          this.body.velocity.y < 0
+        ) {
+          this.anims.play('jump', true)
+        } else if (
+          !this.body.blocked.left &&
+          !this.body.blocked.right &&
+          this.body.velocity.y > 0
+        ) {
+          this.anims.play('fall', true)
+        } else {
+          this.anims.play('stopped', true)
+        }
+      }
+    }
   }
 }
