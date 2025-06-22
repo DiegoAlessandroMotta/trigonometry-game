@@ -4,15 +4,17 @@ import { PlatformerScene } from '@/scenes/minigames/platformer'
 
 export const gameConfig: Phaser.Types.Core.GameConfig = {
   type: Phaser.WEBGL,
-  width: 540,
-  height: 360,
-  canvas: undefined,
+  width: 768,
+  height: 512,
+  render: {
+    pixelArt: true
+  },
   backgroundColor: '#111',
   physics: {
     default: 'arcade',
     arcade: {
       gravity: {
-        y: 1100,
+        y: 0,
         x: 0
       },
       debug: true
