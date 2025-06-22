@@ -20,16 +20,16 @@ export class Button extends Phaser.GameObjects.Container {
   private callback?: Function
   private scope?: any
   private readonly defaultConfig: Required<ButtonConfig> = {
-    width: 150,
-    height: 40,
+    width: 60,
+    height: 20,
     texture: '',
     backgroundColor: 0xffae0a,
     hoverColor: 0xffce0a,
     borderColor: 0xda5700,
-    borderWidth: 3,
+    borderWidth: 2,
     text: '',
     textColor: 0xffffff,
-    textSize: 20,
+    textSize: 12,
     fontFamily: 'Arial'
   }
 
