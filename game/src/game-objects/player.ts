@@ -78,18 +78,18 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
   }
 
   left() {
-    this.setVelocityX(-150)
+    this.setVelocityX(-100)
     this.setFlipX(true)
   }
 
   right() {
-    this.setVelocityX(150)
+    this.setVelocityX(100)
     this.setFlipX(false)
   }
 
   jump() {
     if (this.body?.blocked.down) {
-      this.setVelocityY(-400)
+      this.setVelocityY(-350)
     }
   }
 
