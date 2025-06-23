@@ -10,12 +10,31 @@ export class PlatformerScene extends Phaser.Scene {
   }
 
   create() {
-    this.platforms = this.physics.add.staticGroup()
+    const map = this.make.tilemap({ key: 'level1' })
 
-    this.player = new Player(this, 640, 200)
+    const bgTileset = map.addTilesetImage('backgrounds', 'backgrounds')
+    if (bgTileset == null) {
+      throw new Error('bgTileset image not found')
+    }
+
+    const tileset = map.addTilesetImage('platforms', 'tiles')
+    if (tileset == null) {
+      throw new Error('tileset image not found')
+    }
+
+    map.createLayer('bg', bgTileset, 0, 0)
+
+    const platformsLayer = map.createLayer('platforms', tileset, 0, 0)
+    if (platformsLayer == null) {
+      throw new Error('Platforms layer does not exists')
+    }
+
+    platformsLayer.setCollisionByProperty({ collides: true })
+
+    this.player = new Player(this, 16, 512 - 48)
     this.player.setGravityY(1000)
 
-    this.physics.add.collider(this.player, this.platforms)
+    this.physics.add.collider(this.player, platformsLayer)
 
     this.cursors = this.input.keyboard?.createCursorKeys()
   }
