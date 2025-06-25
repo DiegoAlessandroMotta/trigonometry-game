@@ -53,8 +53,50 @@ export class PlatformerScene extends Phaser.Scene {
       throw new Error('tileset image not found')
     }
 
+    const gemTileset = this.map.addTilesetImage('gems', 'gems')
+    if (gemTileset == null) {
+      throw new Error('gemTileset image not found')
+    }
+
     this.map.createLayer('bg', bgTileset, 0, -48)
     this.map.createLayer('platforms', tileset, 0, 0)
+    this.map.createLayer('gems', gemTileset, 0, 0)
+
+    this.anims.create({
+      key: 'floating',
+      frames: this.anims.generateFrameNames('gems', {
+        prefix: 'triangle-',
+        suffix: '.png',
+        start: 1,
+        end: 7,
+        zeroPad: 0
+      }),
+      frameRate: 10,
+      repeat: -1
+    })
+
+    const triangles = this.map.createFromObjects('triangles', {
+      key: 'gems',
+      frame: 'triangle-1.png'
+    })
+
+    triangles.forEach((triangle) => {
+      if (
+        triangle instanceof Phaser.GameObjects.Sprite ||
+        triangle instanceof Phaser.Physics.Arcade.Sprite
+      ) {
+        const totalFrames = 7
+        const randomStartFrame = Phaser.Math.Between(0, totalFrames - 1)
+
+        triangle.play({
+          key: 'floating',
+          startFrame: randomStartFrame,
+          repeat: -1
+        })
+
+        // this.physics.world.enable(triangle)
+      }
+    })
   }
 
   addMapCollides() {
