@@ -53,6 +53,7 @@ export class Preloader extends Phaser.Scene {
 
     this.load.atlas('tiles', 'tileset.png', 'tileset.json')
     this.load.atlas('gems', 'gems-tileset.png', 'gems-tileset.json')
+    this.load.atlas('objects', 'objects-tileset.png', 'objects-tileset.json')
 
     this.load.setPath('assets/backgrounds')
     this.load.atlas('backgrounds', 'bg-tileset.png', 'bg-tileset.json')

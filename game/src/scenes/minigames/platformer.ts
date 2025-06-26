@@ -58,12 +58,16 @@ export class PlatformerScene extends Phaser.Scene {
       throw new Error('gemTileset image not found')
     }
 
+    const objectsTileset = this.map.addTilesetImage('objects', 'objects')
+    if (objectsTileset == null) {
+      throw new Error('objectsTileset image not found')
+    }
+
     this.map.createLayer('bg', bgTileset, 0, -48)
     this.map.createLayer('platforms', tileset, 0, 0)
-    this.map.createLayer('gems', gemTileset, 0, 0)
 
     this.anims.create({
-      key: 'floating',
+      key: 'triangle-1-floating',
       frames: this.anims.generateFrameNames('gems', {
         prefix: 'triangle-',
         suffix: '.png',
@@ -71,32 +75,85 @@ export class PlatformerScene extends Phaser.Scene {
         end: 7,
         zeroPad: 0
       }),
-      frameRate: 10,
+      frameRate: 8,
       repeat: -1
     })
 
-    const triangles = this.map.createFromObjects('triangles', {
-      key: 'gems',
-      frame: 'triangle-1.png'
+    this.anims.create({
+      key: 'equilatero-floating',
+      frames: this.anims.generateFrameNames('objects', {
+        prefix: 'equilatero-',
+        suffix: '.png',
+        start: 1,
+        end: 7,
+        zeroPad: 0
+      }),
+      frameRate: 8,
+      repeat: -1
     })
 
-    triangles.forEach((triangle) => {
-      if (
-        triangle instanceof Phaser.GameObjects.Sprite ||
-        triangle instanceof Phaser.Physics.Arcade.Sprite
-      ) {
-        const totalFrames = 7
-        const randomStartFrame = Phaser.Math.Between(0, totalFrames - 1)
-
-        triangle.play({
-          key: 'floating',
-          startFrame: randomStartFrame,
-          repeat: -1
-        })
-
-        // this.physics.world.enable(triangle)
-      }
+    this.anims.create({
+      key: 'isoceles-floating',
+      frames: this.anims.generateFrameNames('objects', {
+        prefix: 'isoceles-',
+        suffix: '.png',
+        start: 1,
+        end: 7,
+        zeroPad: 0
+      }),
+      frameRate: 8,
+      repeat: -1
     })
+
+    this.map
+      .createFromObjects('triangles', {
+        key: 'gems',
+        frame: 'triangle-1.png'
+      })
+      .forEach((triangle) => {
+        if (
+          triangle instanceof Phaser.GameObjects.Sprite ||
+          triangle instanceof Phaser.Physics.Arcade.Sprite
+        ) {
+          const totalFrames = 7
+          const randomStartFrame = Phaser.Math.Between(0, totalFrames - 1)
+
+          triangle.play({
+            key: 'triangle-1-floating',
+            startFrame: randomStartFrame,
+            repeat: -1
+          })
+
+          // this.physics.world.enable(triangle)
+        }
+      })
+
+    this.map
+      .createFromObjects('objects', {
+        key: 'objects'
+        // frame: 'triangle-1.png'
+      })
+      .forEach((obj) => {
+        if (obj instanceof Phaser.GameObjects.Sprite) {
+          const totalFrames = 7
+          const randomStartFrame = Phaser.Math.Between(0, totalFrames - 1)
+
+          let animationKey = ''
+          const triangleType = obj.data.get('triangleType')
+
+          if (triangleType === 'equilatero') {
+            animationKey = 'equilatero-floating'
+          } else if (triangleType === 'isoceles') {
+            animationKey = 'isoceles-floating'
+          }
+
+          obj.play({
+            key: animationKey,
+            startFrame: randomStartFrame,
+            repeat: -1
+          })
+        }
+      })
   }
 
   addMapCollides() {
@@ -108,7 +165,7 @@ export class PlatformerScene extends Phaser.Scene {
 
       if (
         obj.properties?.find(
-          (i: { name: string; value: any; type: string }) => (i.name = 'oneWay')
+          (i: { name: string; value: any }) => (i.name = 'oneWay')
         )?.value
       ) {
         platform = this.oneWayPlatforms?.create(obj.x, obj.y, '__DEFAULT')
