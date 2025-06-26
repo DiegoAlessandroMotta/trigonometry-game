@@ -14,7 +14,7 @@ export class PlatformerScene extends Phaser.Scene {
   create() {
     this.drawMap()
 
-    this.player = new Player(this, 16, 512 - 48)
+    this.player = new Player(this, 16, 256 - 32)
     this.player.setGravityY(1000)
 
     this.cursors = this.input.keyboard?.createCursorKeys()
@@ -53,11 +53,6 @@ export class PlatformerScene extends Phaser.Scene {
       throw new Error('tileset image not found')
     }
 
-    const gemTileset = this.map.addTilesetImage('gems', 'gems')
-    if (gemTileset == null) {
-      throw new Error('gemTileset image not found')
-    }
-
     const objectsTileset = this.map.addTilesetImage('objects', 'objects')
     if (objectsTileset == null) {
       throw new Error('objectsTileset image not found')
@@ -65,19 +60,6 @@ export class PlatformerScene extends Phaser.Scene {
 
     this.map.createLayer('bg', bgTileset, 0, -48)
     this.map.createLayer('platforms', tileset, 0, 0)
-
-    this.anims.create({
-      key: 'triangle-1-floating',
-      frames: this.anims.generateFrameNames('gems', {
-        prefix: 'triangle-',
-        suffix: '.png',
-        start: 1,
-        end: 7,
-        zeroPad: 0
-      }),
-      frameRate: 8,
-      repeat: -1
-    })
 
     this.anims.create({
       key: 'equilatero-floating',
@@ -99,6 +81,19 @@ export class PlatformerScene extends Phaser.Scene {
         suffix: '.png',
         start: 1,
         end: 7,
+        zeroPad: 0
+      }),
+      frameRate: 8,
+      repeat: -1
+    })
+
+    this.anims.create({
+      key: 'escaleno-floating',
+      frames: this.anims.generateFrameNames('objects', {
+        prefix: 'escaleno-',
+        suffix: '.png',
+        start: 1,
+        end: 16,
         zeroPad: 0
       }),
       frameRate: 8,
@@ -145,13 +140,21 @@ export class PlatformerScene extends Phaser.Scene {
             animationKey = 'equilatero-floating'
           } else if (triangleType === 'isoceles') {
             animationKey = 'isoceles-floating'
+          } else if (triangleType === 'escaleno') {
+            animationKey = 'escaleno-floating'
+          } else {
+            throw new Error('Unkown object type (triangle object)')
           }
+
+          // obj.setScale(2)
 
           obj.play({
             key: animationKey,
             startFrame: randomStartFrame,
             repeat: -1
           })
+
+          this.physics.world.enable(obj)
         }
       })
   }
