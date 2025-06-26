@@ -28,7 +28,8 @@ export class MainMenuScene extends Phaser.Scene {
       this.cameras.main.width / 2,
       this.cameras.main.height / 2 + 50,
       {
-        text: '...'
+        text: 'Pantalla\n completa',
+        height: 36
       },
       this.onOptionsButtonClick,
       this
@@ -39,5 +40,11 @@ export class MainMenuScene extends Phaser.Scene {
     this.scene.start('PlatformerScene')
   }
 
-  onOptionsButtonClick() {}
+  onOptionsButtonClick() {
+    if (this.scale.isFullscreen) {
+      this.scale.stopFullscreen()
+    } else {
+      this.scale.startFullscreen()
+    }
+  }
 }
