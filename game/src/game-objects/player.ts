@@ -25,7 +25,7 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
         start: 0,
         end: 10
       }),
-      frameRate: 16,
+      frameRate: 12,
       repeat: -1
     })
 
@@ -35,7 +35,7 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
         start: 0,
         end: 11
       }),
-      frameRate: 24,
+      frameRate: 20,
       repeat: -1
     })
 
@@ -90,7 +90,7 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
 
   jump() {
     if (this.body?.blocked.down) {
-      this.setVelocityY(-350)
+      this.setVelocityY(-280)
     }
   }
 
