@@ -5,13 +5,18 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
     scene.add.existing(this)
     scene.physics.add.existing(this)
 
-    this.setBounce(0)
-    this.setCollideWorldBounds(true)
-    this.initAnimations()
-    this.body?.setSize(22, 32)
+    this.setup()
   }
 
-  initAnimations() {
+  private setup() {
+    this.setBounce(0)
+    // this.setCollideWorldBounds(true)
+    this.body?.setSize(22, 32)
+
+    this.initAnimations()
+  }
+
+  private initAnimations() {
     this.anims.create({
       key: 'stopped',
       frames: [{ key: 'player-idle', frame: 5 }],
@@ -74,7 +79,7 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
     })
   }
 
-  idle() {
+  public idle() {
     this.setVelocityX(0)
   }
 
