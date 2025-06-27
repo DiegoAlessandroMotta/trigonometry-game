@@ -6,20 +6,50 @@ export class PlatformerScene extends Phaser.Scene {
   player?: Player
   cursors?: Phaser.Types.Input.Keyboard.CursorKeys
   map?: Phaser.Tilemaps.Tilemap
+  itemsGroup?: Phaser.Physics.Arcade.Group
 
   constructor() {
     super('PlatformerScene')
   }
 
   create() {
+    this.itemsGroup = this.physics.add.group()
+
     this.drawMap()
 
     this.player = new Player(this, 16, 256 - 32)
     this.player.setGravityY(1000)
 
+    if (this.itemsGroup == null) {
+      throw new Error(
+        'Items group is undefined, did you forget to initialize it?'
+      )
+    }
+
+    this.physics.add.overlap(
+      this.player,
+      this.itemsGroup,
+      this.collectItem,
+      undefined,
+      this
+    )
+
     this.cursors = this.input.keyboard?.createCursorKeys()
 
     this.addMapCollides()
+  }
+
+  collectItem: Phaser.Types.Physics.Arcade.ArcadePhysicsCallback = (
+    _player,
+    item
+  ) => {
+    const itemSprite = item as Phaser.Physics.Arcade.Sprite
+
+    if (itemSprite?.body instanceof Phaser.Physics.Arcade.Body) {
+      itemSprite.setVisible(false) // Deshabilita el cuerpo de física y lo hace invisible
+    }
+
+    // item.destroy() // Si quieres eliminar el objeto completamente de la escena
   }
 
   update() {
@@ -119,7 +149,7 @@ export class PlatformerScene extends Phaser.Scene {
             repeat: -1
           })
 
-          // this.physics.world.enable(triangle)
+          this.physics.world.enable(triangle)
         }
       })
 
@@ -154,7 +184,9 @@ export class PlatformerScene extends Phaser.Scene {
             repeat: -1
           })
 
-          this.physics.world.enable(obj)
+          // this.physics.world.enable(obj)
+
+          this.itemsGroup?.add(obj)
         }
       })
   }
