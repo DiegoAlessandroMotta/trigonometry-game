@@ -5,7 +5,9 @@ import { PlatformerScene } from '@/scenes/minigames/platformer'
 export const gameConfig: Phaser.Types.Core.GameConfig = {
   type: Phaser.WEBGL,
   width: 768,
-  height: 512,
+  height: 432,
+  // width: 576,
+  // height: 384,
   render: {
     pixelArt: true
   },
