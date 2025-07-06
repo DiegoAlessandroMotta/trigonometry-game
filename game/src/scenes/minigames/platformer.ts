@@ -252,6 +252,10 @@ export class PlatformerScene extends Phaser.Scene {
       throw new Error("The platform doesn't have a body")
     }
 
+    if (!(this.player.body instanceof Phaser.Physics.Arcade.Body)) {
+      throw new Error("The player doesn't have a body")
+    }
+
     const playerVelocityY = this.player?.body?.velocity.y
     const playerVelocityX = this.player?.body?.velocity.x
 
@@ -262,10 +266,10 @@ export class PlatformerScene extends Phaser.Scene {
       return false
     }
 
-    const playerTop = this.player.body?.top
-    const platformTop = platform.body.top
+    const playerBottom = this.player.body.bottom - 16
+    const platformBottom = platform.body.bottom
 
-    if (playerTop != null && playerTop > platformTop) {
+    if (playerBottom != null && playerBottom > platformBottom) {
       return false
     }
 
