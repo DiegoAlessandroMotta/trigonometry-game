@@ -49,7 +49,7 @@ export class Preloader extends Phaser.Scene {
 
   loadTileAssets() {
     this.load.setPath('assets/tiles')
-    this.load.tilemapTiledJSON('level1', 'level2.json')
+    this.load.tilemapTiledJSON('level1', 'level1.json')
 
     this.load.atlas('tiles', 'tileset.png', 'tileset.json')
     this.load.atlas('gems', 'gems-tileset.png', 'gems-tileset.json')
