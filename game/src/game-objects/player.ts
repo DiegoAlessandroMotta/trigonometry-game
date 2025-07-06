@@ -30,7 +30,7 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
         start: 0,
         end: 10
       }),
-      frameRate: 12,
+      frameRate: 16,
       repeat: -1
     })
 
@@ -40,7 +40,7 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
         start: 0,
         end: 11
       }),
-      frameRate: 20,
+      frameRate: 24,
       repeat: -1
     })
 

@@ -17,7 +17,7 @@ export class PlatformerScene extends Phaser.Scene {
 
     this.drawMap()
 
-    this.player = new Player(this, 16, 256 - 32)
+    this.player = new Player(this, 16 * 6, 16 * 18)
     this.player.setGravityY(1000)
 
     if (this.itemsGroup == null) {
@@ -164,7 +164,7 @@ export class PlatformerScene extends Phaser.Scene {
           const randomStartFrame = Phaser.Math.Between(0, totalFrames - 1)
 
           let animationKey = ''
-          const triangleType = obj.data.get('triangleType')
+          const triangleType = obj.data?.get('triangleType')
 
           if (triangleType === 'equilatero') {
             animationKey = 'equilatero-floating'
