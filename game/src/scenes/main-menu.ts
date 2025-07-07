@@ -1,23 +1,32 @@
 import { Button } from '@/components/button'
 
 export class MainMenuScene extends Phaser.Scene {
+  titleBitmap?: Phaser.GameObjects.BitmapText
+
   constructor() {
     super('MainMenuScene')
   }
 
-  preload() {}
-
   create() {
-    const bg = this.add.image(0, 0, 'main-menu-bg')
-    bg.setOrigin(0)
-    bg.setDisplaySize(this.scale.width, this.scale.height)
+    this.titleBitmap = this.add
+      .bitmapText(
+        this.cameras.main.width / 2,
+        120,
+        'raster-forge',
+        'Juego de\ntrigonometria'
+      )
+      .setOrigin(0.5)
+      .setScale(4)
+      .setCenterAlign()
 
     new Button(
       this,
       this.cameras.main.width / 2,
       this.cameras.main.height / 2,
       {
-        text: 'Jugar'
+        text: 'Jugar',
+        width: 120,
+        height: 24
       },
       this.onPlayButtonClick,
       this
@@ -28,8 +37,9 @@ export class MainMenuScene extends Phaser.Scene {
       this.cameras.main.width / 2,
       this.cameras.main.height / 2 + 50,
       {
-        text: 'Pantalla\n completa',
-        height: 36
+        text: 'Pantalla\ncompleta',
+        width: 120,
+        height: 42
       },
       this.onOptionsButtonClick,
       this

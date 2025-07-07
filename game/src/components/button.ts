@@ -16,7 +16,7 @@ export class Button extends Phaser.GameObjects.Container {
   private background!: Phaser.GameObjects.Rectangle
   private border!: Phaser.GameObjects.Rectangle
   private buttonImage?: Phaser.GameObjects.Image
-  private buttonText?: Phaser.GameObjects.Text
+  private buttonText?: Phaser.GameObjects.BitmapText
   private callback?: Function
   private scope?: any
   private readonly defaultConfig: Required<ButtonConfig> = {
@@ -84,12 +84,12 @@ export class Button extends Phaser.GameObjects.Container {
 
     // Add text if provided
     if (finalConfig.text) {
-      this.buttonText = scene.add.text(0, 0, finalConfig.text, {
-        fontSize: `${finalConfig.textSize}px`,
-        fontFamily: finalConfig.fontFamily,
-        color: `#${finalConfig.textColor.toString(16).padStart(6, '0')}`
-      })
-      this.buttonText.setOrigin(0.5)
+      this.buttonText = scene.add
+        .bitmapText(0, 0, 'raster-forge', finalConfig.text)
+        .setOrigin(0.5)
+        .setCenterAlign()
+        .setScale(2)
+
       this.add(this.buttonText)
     }
 
@@ -107,10 +107,12 @@ export class Button extends Phaser.GameObjects.Container {
 
   onHover() {
     this.background.setFillStyle(this.defaultConfig.hoverColor)
+    this.setScale(1.1)
   }
 
   onOut() {
     this.background.setFillStyle(this.defaultConfig.backgroundColor)
+    this.setScale(1)
   }
 
   onClick() {
