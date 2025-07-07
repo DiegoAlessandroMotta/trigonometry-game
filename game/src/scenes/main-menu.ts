@@ -47,6 +47,7 @@ export class MainMenuScene extends Phaser.Scene {
   }
 
   onPlayButtonClick() {
+    this.scene.stop('MainMenuScene')
     this.scene.start('PlatformerScene')
   }
 

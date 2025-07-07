@@ -1,6 +1,7 @@
 import { Preloader } from '@/scenes/preloader'
 import { MainMenuScene } from '@/scenes/main-menu'
 import { PlatformerScene } from '@/scenes/minigames/platformer'
+import { PauseMenuScene } from '@/scenes/menus/pause-menu'
 
 export const gameConfig: Phaser.Types.Core.GameConfig = {
   type: Phaser.WEBGL,
@@ -26,5 +27,5 @@ export const gameConfig: Phaser.Types.Core.GameConfig = {
     mode: Phaser.Scale.FIT,
     autoCenter: Phaser.Scale.CENTER_BOTH
   },
-  scene: [Preloader, MainMenuScene, PlatformerScene]
+  scene: [Preloader, MainMenuScene, PlatformerScene, PauseMenuScene]
 }
