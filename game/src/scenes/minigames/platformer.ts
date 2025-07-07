@@ -7,12 +7,14 @@ export class PlatformerScene extends Phaser.Scene {
   cursors?: Phaser.Types.Input.Keyboard.CursorKeys
   map?: Phaser.Tilemaps.Tilemap
   itemsGroup?: Phaser.Physics.Arcade.Group
+  isPaused: boolean = false
 
   constructor() {
     super('PlatformerScene')
   }
 
   create() {
+    this.isPaused = false
     this.itemsGroup = this.physics.add.group()
 
     this.drawMap()
@@ -37,6 +39,23 @@ export class PlatformerScene extends Phaser.Scene {
     this.cursors = this.input.keyboard?.createCursorKeys()
 
     this.addMapCollides()
+
+    this.add
+      .bitmapText(750, 18, 'raster-forge', 'II')
+      .setOrigin(0.5)
+      .setScale(4)
+      .setInteractive()
+      .setScrollFactor(0) // Para que el botón no se mueva con la cámara
+      .on('pointerdown', () => {
+        this.pauseGameAndShowMenu()
+      })
+
+    // Configura los eventos del teclado (ej. tecla ESC para pausar)
+    this.input.keyboard?.on('keydown-ESC', () => {
+      this.pauseGameAndShowMenu()
+    })
+
+    console.log('the create method of this scene ran properly')
   }
 
   collectItem: Phaser.Types.Physics.Arcade.ArcadePhysicsCallback = (
@@ -53,6 +72,10 @@ export class PlatformerScene extends Phaser.Scene {
   }
 
   update() {
+    if (this.isPaused) {
+      return
+    }
+
     if (this.player != null && this.cursors != null) {
       if (this.cursors.left.isDown) {
         this.player.left()
@@ -68,6 +91,21 @@ export class PlatformerScene extends Phaser.Scene {
 
       this.player.update()
     }
+  }
+
+  pauseGameAndShowMenu() {
+    if (!this.isPaused) {
+      this.isPaused = true
+      this.physics.pause() // Pausa el sistema de física si lo usas
+      this.scene.pause('PlatformerScene') // Pausa la escena de juego actual
+      this.scene.launch('PauseMenuScene') // Lanza la escena del menú de pausa
+    }
+  }
+
+  resumeGame() {
+    this.isPaused = false
+    this.physics.resume() // Reanuda el sistema de física
+    this.scene.resume('PlatformerScene') // Reanuda la escena de juego
   }
 
   drawMap() {
@@ -90,68 +128,6 @@ export class PlatformerScene extends Phaser.Scene {
 
     this.map.createLayer('bg', bgTileset, 0, -48)
     this.map.createLayer('platforms', tileset, 0, 0)
-
-    this.anims.create({
-      key: 'equilatero-floating',
-      frames: this.anims.generateFrameNames('objects', {
-        prefix: 'equilatero-',
-        suffix: '.png',
-        start: 1,
-        end: 7,
-        zeroPad: 0
-      }),
-      frameRate: 8,
-      repeat: -1
-    })
-
-    this.anims.create({
-      key: 'isoceles-floating',
-      frames: this.anims.generateFrameNames('objects', {
-        prefix: 'isoceles-',
-        suffix: '.png',
-        start: 1,
-        end: 7,
-        zeroPad: 0
-      }),
-      frameRate: 8,
-      repeat: -1
-    })
-
-    this.anims.create({
-      key: 'escaleno-floating',
-      frames: this.anims.generateFrameNames('objects', {
-        prefix: 'escaleno-',
-        suffix: '.png',
-        start: 1,
-        end: 16,
-        zeroPad: 0
-      }),
-      frameRate: 8,
-      repeat: -1
-    })
-
-    this.map
-      .createFromObjects('triangles', {
-        key: 'gems',
-        frame: 'triangle-1.png'
-      })
-      .forEach((triangle) => {
-        if (
-          triangle instanceof Phaser.GameObjects.Sprite ||
-          triangle instanceof Phaser.Physics.Arcade.Sprite
-        ) {
-          const totalFrames = 7
-          const randomStartFrame = Phaser.Math.Between(0, totalFrames - 1)
-
-          triangle.play({
-            key: 'triangle-1-floating',
-            startFrame: randomStartFrame,
-            repeat: -1
-          })
-
-          this.physics.world.enable(triangle)
-        }
-      })
 
     this.map
       .createFromObjects('objects', {
