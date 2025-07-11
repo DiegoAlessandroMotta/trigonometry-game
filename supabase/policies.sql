@@ -27,12 +27,6 @@ with
     )
   );
 
-alter view public.estudiantes_publicos enable row level security;
-
-create policy "Estudiantes pueden ver datos públicos de otros estudiantes" on public.estudiantes_publicos for
-select
-  to authenticated using (true);
-
 /* 
  * Minijuegos
  */
@@ -58,14 +52,16 @@ alter table public.sesiones_interactivas enable row level security;
 
 create policy "Estudiantes pueden crear sus propias sesiones interactivas" on public.sesiones_interactivas for
 insert
-  to authenticated using (
+  to authenticated
+with
+  check (
     estudiante_id = (
       select
         auth.uid ()
     )
   );
 
-create policy "Estudiantes pueden ver sus propias sesiones interactivas" on public.preguntas for
+create policy "Estudiantes pueden ver sus propias sesiones interactivas" on public.sesiones_interactivas for
 select
   to authenticated using (
     estudiante_id = (

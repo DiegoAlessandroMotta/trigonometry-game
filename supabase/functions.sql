@@ -1,7 +1,7 @@
 create or replace 
 function public.fn_update_updated_at_column () 
 returns trigger 
-language plpgsql security definer set search_path = "" as $$ 
+language plpgsql security definer set search_path = "public" as $$ 
 begin 
   new.updated_at = current_timestamp;
 
@@ -12,7 +12,7 @@ $$;
 create or replace 
 function public.fn_update_puntos_totales () 
 returns trigger 
-language plpgsql security definer set search_path = "" as $$ 
+language plpgsql security definer set search_path = "public" as $$ 
 declare 
   puntos_a_sumar int;
   id_estudiante uuid;
