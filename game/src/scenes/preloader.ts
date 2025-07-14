@@ -5,7 +5,7 @@ export class Preloader extends Phaser.Scene {
 
   init() {
     this.load.on('complete', () => {
-      this.scene.start('MainMenuScene')
+      this.scene.start('StartScreenScene')
     })
   }
 

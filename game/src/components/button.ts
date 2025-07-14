@@ -108,16 +108,35 @@ export class Button extends Phaser.GameObjects.Container {
   onHover() {
     this.background.setFillStyle(this.defaultConfig.hoverColor)
     this.setScale(1.1)
+    
+    // Efecto de brillo al hacer hover
+    this.scene.tweens.add({
+      targets: this,
+      alpha: 0.8,
+      duration: 200,
+      yoyo: true
+    })
   }
 
   onOut() {
     this.background.setFillStyle(this.defaultConfig.backgroundColor)
     this.setScale(1)
+    this.setAlpha(1)
   }
 
   onClick() {
+    // Efecto de pulsación
+    this.scene.tweens.add({
+      targets: this,
+      scaleX: 0.95,
+      scaleY: 0.95,
+      duration: 100,
+      yoyo: true,
+      onComplete: () => {
     if (this.callback) {
       this.callback.call(this.scope || this)
     }
+      }
+    })
   }
 }
