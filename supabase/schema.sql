@@ -39,20 +39,7 @@ create table
     enunciado text not null,
     puntos integer not null,
     nivel_estimado integer not null,
-    alternativas jsonb not null check (
-      jsonb_typeof (alternativas) = 'array'
-      and jsonb_array_length (alternativas) > 0
-      and (
-        select
-          bool_and (
-            (value ->> 'texto' is not null)
-            and (value ->> 'esCorrecta' is not null)
-            and (value ->> 'feedback' is not null)
-          )
-        from
-          jsonb_array_elements (alternativas)
-      )
-    )
+    alternativas jsonb not null
   );
 
 create table
