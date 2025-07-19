@@ -1,3 +1,5 @@
+import { pixelFont } from '@/core/consts'
+
 export class Preloader extends Phaser.Scene {
   constructor() {
     super('Preloader')
@@ -14,7 +16,7 @@ export class Preloader extends Phaser.Scene {
     this.loadTileAssets()
 
     this.load.setPath('assets/fonts')
-    this.load.bitmapFont('raster-forge', 'raster-forge.png', 'raster-forge.fnt')
+    this.load.bitmapFont(pixelFont, 'raster-forge.png', 'raster-forge.fnt')
   }
 
   create() {

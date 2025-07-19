@@ -1,3 +1,4 @@
+import { pixelFont } from '@/core/consts'
 import { Player } from '@/game-objects/player'
 
 export class PlatformerScene extends Phaser.Scene {
@@ -41,7 +42,7 @@ export class PlatformerScene extends Phaser.Scene {
     this.addMapCollides()
 
     this.add
-      .bitmapText(750, 18, 'raster-forge', 'II')
+      .bitmapText(750, 18, pixelFont, 'II')
       .setOrigin(0.5)
       .setScale(4)
       .setInteractive()
