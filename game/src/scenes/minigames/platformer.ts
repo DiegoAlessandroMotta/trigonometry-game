@@ -20,7 +20,7 @@ export class PlatformerScene extends Phaser.Scene {
 
     this.drawMap()
 
-    this.player = new Player(this, 16 * 6, 16 * 18)
+    this.player = new Player(this, 16 * 8, 16 * 18)
     this.player.setGravityY(1000)
 
     if (this.itemsGroup == null) {
@@ -28,6 +28,8 @@ export class PlatformerScene extends Phaser.Scene {
         'Items group is undefined, did you forget to initialize it?'
       )
     }
+
+    this.addMapCollides()
 
     this.physics.add.overlap(
       this.player,
@@ -38,8 +40,6 @@ export class PlatformerScene extends Phaser.Scene {
     )
 
     this.cursors = this.input.keyboard?.createCursorKeys()
-
-    this.addMapCollides()
 
     this.add
       .bitmapText(750, 18, pixelFont, 'II')
