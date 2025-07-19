@@ -1,4 +1,11 @@
+import { animationsNames } from '@/core/consts'
+
 export class Player extends Phaser.Physics.Arcade.Sprite {
+  private needsUpdate = false
+
+  private readonly hitBoxWidth = 22
+  private readonly hitBoxHeight = 32
+
   constructor(scene: Phaser.Scene, x: number, y: number) {
     super(scene, x, y, 'player')
 
@@ -9,9 +16,42 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
   }
 
   private setup() {
+    this.body?.setSize(this.hitBoxWidth, this.hitBoxHeight, true)
+
     this.setBounce(0)
     this.setCollideWorldBounds(true)
-    this.body?.setSize(22, 32)
+
+    this.appear()
+
+    this.on(
+      Phaser.Animations.Events.ANIMATION_COMPLETE,
+      this.handleAnimationComplete,
+      this
+    )
+  }
+
+  private handleAnimationComplete(anim: Phaser.Animations.Animation) {
+    if (anim.key === animationsNames.player.appearing) {
+      this.needsUpdate = true
+      this.anims.play('idle', true)
+      this.body?.setSize(this.hitBoxWidth, this.hitBoxHeight, true)
+    }
+
+    if (anim.key === animationsNames.player.disappearing) {
+      this.visible = false
+    }
+  }
+
+  public appear() {
+    this.needsUpdate = false
+    this.play(animationsNames.player.appearing)
+    this.body?.setSize(this.hitBoxWidth, this.hitBoxHeight, true)
+  }
+
+  public disappear() {
+    this.needsUpdate = false
+    this.play(animationsNames.player.disappearing)
+    this.body?.setSize(this.hitBoxWidth, this.hitBoxHeight, true)
   }
 
   public idle() {
@@ -35,6 +75,10 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
   }
 
   update() {
+    if (!this.needsUpdate) {
+      return
+    }
+
     if (this.body != null) {
       if (this.body.blocked.down) {
         if (this.body.velocity.x !== 0) {
@@ -60,5 +104,10 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
         }
       }
     }
+  }
+
+  destroy(fromScene?: boolean): void {
+    this.removeAllListeners()
+    super.destroy(fromScene)
   }
 }
