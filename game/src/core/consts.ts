@@ -10,7 +10,6 @@ export const animationsNames = {
     wallSlide: 'player-wall-slide',
     fall: 'player-fall',
     appearing: 'player-appearing',
-    disappearing: 'player-disappearing',
-    doubleJump: 'player-double-jump'
+    disappearing: 'player-disappearing'
   }
 }
