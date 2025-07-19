@@ -16,7 +16,7 @@ export class Preloader extends Phaser.Scene {
     this.loadTileAssets()
 
     this.load.setPath('assets/fonts')
-    this.load.bitmapFont(pixelFont, 'raster-forge.png', 'raster-forge.fnt')
+    this.load.bitmapFont(pixelFont, 'pixel-emulator.png', 'pixel-emulator.fnt')
   }
 
   create() {
