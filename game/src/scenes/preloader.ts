@@ -25,45 +25,11 @@ export class Preloader extends Phaser.Scene {
 
   loadPlayerAssets() {
     this.load.setPath('assets/player')
-    this.load.spritesheet('player-idle', 'idle.png', {
-      frameWidth: 32,
-      frameHeight: 32
-    })
-
-    this.load.spritesheet('player-run', 'run.png', {
-      frameWidth: 32,
-      frameHeight: 32
-    })
-
-    this.load.spritesheet('player-jump', 'jump.png', {
-      frameWidth: 32,
-      frameHeight: 32
-    })
-
-    this.load.spritesheet('player-double-jump', 'double-jump.png', {
-      frameWidth: 32,
-      frameHeight: 32
-    })
-
-    this.load.spritesheet('player-wall-jump', 'wall-jump.png', {
-      frameWidth: 32,
-      frameHeight: 32
-    })
-
-    this.load.spritesheet('player-fall', 'fall.png', {
-      frameWidth: 32,
-      frameHeight: 32
-    })
-
-    this.load.spritesheet('player-appearing', 'appearing.png', {
-      frameWidth: 96,
-      frameHeight: 96
-    })
-
-    this.load.spritesheet('player-disappearing', 'disappearing.png', {
-      frameWidth: 96,
-      frameHeight: 96
-    })
+    this.load.atlas(
+      'player-tileset',
+      'player-tileset.png',
+      'player-tileset.json'
+    )
   }
 
   loadTileAssets() {
@@ -120,16 +86,19 @@ export class Preloader extends Phaser.Scene {
 
     this.anims.create({
       key: 'stopped',
-      frames: [{ key: 'player-idle', frame: 5 }],
+      frames: [{ key: 'player-tileset', frame: 'player-idle-1.png' }],
       frameRate: 1,
       repeat: 0
     })
 
     this.anims.create({
       key: 'idle',
-      frames: this.anims.generateFrameNumbers('player-idle', {
-        start: 0,
-        end: 10
+      frames: this.anims.generateFrameNames('player-tileset', {
+        prefix: 'player-idle-',
+        suffix: '.png',
+        start: 1,
+        end: 11,
+        zeroPad: 0
       }),
       frameRate: 16,
       repeat: -1
@@ -137,9 +106,12 @@ export class Preloader extends Phaser.Scene {
 
     this.anims.create({
       key: 'run',
-      frames: this.anims.generateFrameNumbers('player-run', {
-        start: 0,
-        end: 11
+      frames: this.anims.generateFrameNames('player-tileset', {
+        prefix: 'player-run-',
+        suffix: '.png',
+        start: 1,
+        end: 12,
+        zeroPad: 0
       }),
       frameRate: 24,
       repeat: -1
@@ -147,26 +119,32 @@ export class Preloader extends Phaser.Scene {
 
     this.anims.create({
       key: 'jump',
-      frames: [{ key: 'player-jump', frame: 0 }],
+      frames: [{ key: 'player-tileset', frame: 'player-jump.png' }],
       frameRate: 1,
       repeat: 0
     })
 
     this.anims.create({
-      key: 'double-jump',
-      frames: this.anims.generateFrameNumbers('player-double-jump', {
-        start: 0,
-        end: 5
+      key: 'player-double-jump',
+      frames: this.anims.generateFrameNames('player-tileset', {
+        prefix: 'player-double-jump-',
+        suffix: '.png',
+        start: 1,
+        end: 6,
+        zeroPad: 0
       }),
-      frameRate: 16,
+      frameRate: 32,
       repeat: 0
     })
 
     this.anims.create({
       key: 'wall-jump',
-      frames: this.anims.generateFrameNumbers('player-wall-jump', {
-        start: 0,
-        end: 4
+      frames: this.anims.generateFrameNames('player-tileset', {
+        prefix: 'player-wall-slide-',
+        suffix: '.png',
+        start: 1,
+        end: 5,
+        zeroPad: 0
       }),
       frameRate: 1,
       repeat: 0
@@ -174,16 +152,19 @@ export class Preloader extends Phaser.Scene {
 
     this.anims.create({
       key: 'fall',
-      frames: [{ key: 'player-fall', frame: 0 }],
+      frames: [{ key: 'player-tileset', frame: 'player-fall.png' }],
       frameRate: 1,
       repeat: 0
     })
 
     this.anims.create({
       key: animationsNames.player.appearing,
-      frames: this.anims.generateFrameNumbers('player-appearing', {
-        start: 0,
-        end: 6
+      frames: this.anims.generateFrameNames('player-tileset', {
+        prefix: 'player-appearing-',
+        suffix: '.png',
+        start: 1,
+        end: 7,
+        zeroPad: 0
       }),
       frameRate: 16,
       repeat: 0
@@ -191,10 +172,15 @@ export class Preloader extends Phaser.Scene {
 
     this.anims.create({
       key: animationsNames.player.disappearing,
-      frames: this.anims.generateFrameNumbers('player-disappearing', {
-        start: 0,
-        end: 6
-      }),
+      frames: this.anims
+        .generateFrameNames('player-tileset', {
+          prefix: 'player-appearing-',
+          suffix: '.png',
+          start: 1,
+          end: 7,
+          zeroPad: 0
+        })
+        .reverse(),
       frameRate: 16,
       repeat: 0
     })
