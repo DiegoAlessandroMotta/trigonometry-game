@@ -85,14 +85,14 @@ export class Preloader extends Phaser.Scene {
     })
 
     this.anims.create({
-      key: 'stopped',
+      key: animationsNames.player.stopped,
       frames: [{ key: 'player-tileset', frame: 'player-idle-1.png' }],
       frameRate: 1,
       repeat: 0
     })
 
     this.anims.create({
-      key: 'idle',
+      key: animationsNames.player.idle,
       frames: this.anims.generateFrameNames('player-tileset', {
         prefix: 'player-idle-',
         suffix: '.png',
@@ -105,7 +105,7 @@ export class Preloader extends Phaser.Scene {
     })
 
     this.anims.create({
-      key: 'run',
+      key: animationsNames.player.run,
       frames: this.anims.generateFrameNames('player-tileset', {
         prefix: 'player-run-',
         suffix: '.png',
@@ -118,14 +118,14 @@ export class Preloader extends Phaser.Scene {
     })
 
     this.anims.create({
-      key: 'jump',
+      key: animationsNames.player.jump,
       frames: [{ key: 'player-tileset', frame: 'player-jump.png' }],
       frameRate: 1,
       repeat: 0
     })
 
     this.anims.create({
-      key: 'player-double-jump',
+      key: animationsNames.player.airJump,
       frames: this.anims.generateFrameNames('player-tileset', {
         prefix: 'player-double-jump-',
         suffix: '.png',
@@ -138,7 +138,7 @@ export class Preloader extends Phaser.Scene {
     })
 
     this.anims.create({
-      key: 'wall-jump',
+      key: animationsNames.player.wallSlide,
       frames: this.anims.generateFrameNames('player-tileset', {
         prefix: 'player-wall-slide-',
         suffix: '.png',
@@ -151,7 +151,7 @@ export class Preloader extends Phaser.Scene {
     })
 
     this.anims.create({
-      key: 'fall',
+      key: animationsNames.player.fall,
       frames: [{ key: 'player-tileset', frame: 'player-fall.png' }],
       frameRate: 1,
       repeat: 0
