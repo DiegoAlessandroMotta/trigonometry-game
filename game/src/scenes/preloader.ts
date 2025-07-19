@@ -1,4 +1,4 @@
-import { pixelFont } from '@/core/consts'
+import { animationsNames, pixelFont } from '@/core/consts'
 
 export class Preloader extends Phaser.Scene {
   constructor() {
@@ -53,6 +53,16 @@ export class Preloader extends Phaser.Scene {
     this.load.spritesheet('player-fall', 'fall.png', {
       frameWidth: 32,
       frameHeight: 32
+    })
+
+    this.load.spritesheet('player-appearing', 'appearing.png', {
+      frameWidth: 96,
+      frameHeight: 96
+    })
+
+    this.load.spritesheet('player-disappearing', 'disappearing.png', {
+      frameWidth: 96,
+      frameHeight: 96
     })
   }
 
@@ -166,6 +176,26 @@ export class Preloader extends Phaser.Scene {
       key: 'fall',
       frames: [{ key: 'player-fall', frame: 0 }],
       frameRate: 1,
+      repeat: 0
+    })
+
+    this.anims.create({
+      key: animationsNames.player.appearing,
+      frames: this.anims.generateFrameNumbers('player-appearing', {
+        start: 0,
+        end: 6
+      }),
+      frameRate: 16,
+      repeat: 0
+    })
+
+    this.anims.create({
+      key: animationsNames.player.disappearing,
+      frames: this.anims.generateFrameNumbers('player-disappearing', {
+        start: 0,
+        end: 6
+      }),
+      frameRate: 16,
       repeat: 0
     })
   }
