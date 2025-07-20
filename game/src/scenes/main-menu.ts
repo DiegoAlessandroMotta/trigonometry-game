@@ -26,7 +26,7 @@ export class MainMenuScene extends Phaser.Scene {
       this.cameras.main.height / 2,
       {
         text: 'Jugar',
-        width: 120,
+        width: 140,
         height: 24
       },
       this.onPlayButtonClick,
@@ -39,8 +39,8 @@ export class MainMenuScene extends Phaser.Scene {
       this.cameras.main.height / 2 + 50,
       {
         text: 'Pantalla\ncompleta',
-        width: 120,
-        height: 42
+        width: 140,
+        height: 48
       },
       this.onOptionsButtonClick,
       this
