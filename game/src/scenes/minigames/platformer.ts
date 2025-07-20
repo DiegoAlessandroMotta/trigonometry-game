@@ -1,3 +1,4 @@
+import { scenes } from '@/core/consts'
 import { Player } from '@/game-objects/player'
 
 export class PlatformerScene extends Phaser.Scene {
@@ -10,7 +11,7 @@ export class PlatformerScene extends Phaser.Scene {
   isPaused: boolean = false
 
   constructor() {
-    super('PlatformerScene')
+    super(scenes.platformer)
   }
 
   create() {
@@ -119,15 +120,15 @@ export class PlatformerScene extends Phaser.Scene {
     if (!this.isPaused) {
       this.isPaused = true
       this.physics.pause() // Pausa el sistema de física si lo usas
-      this.scene.pause('PlatformerScene') // Pausa la escena de juego actual
-      this.scene.launch('PauseMenuScene') // Lanza la escena del menú de pausa
+      this.scene.pause(scenes.platformer) // Pausa la escena de juego actual
+      this.scene.launch(scenes.pauseMenu) // Lanza la escena del menú de pausa
     }
   }
 
   resumeGame() {
     this.isPaused = false
     this.physics.resume() // Reanuda el sistema de física
-    this.scene.resume('PlatformerScene') // Reanuda la escena de juego
+    this.scene.resume(scenes.platformer) // Reanuda la escena de juego
   }
 
   drawMap() {

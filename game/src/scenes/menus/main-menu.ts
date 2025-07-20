@@ -1,11 +1,11 @@
 import { Button } from '@/components/button'
-import { fonts } from '@/core/consts'
+import { fonts, scenes } from '@/core/consts'
 
 export class MainMenuScene extends Phaser.Scene {
   titleBitmap?: Phaser.GameObjects.BitmapText
 
   constructor() {
-    super('MainMenuScene')
+    super(scenes.mainMenu)
   }
 
   create() {
@@ -48,8 +48,8 @@ export class MainMenuScene extends Phaser.Scene {
   }
 
   onPlayButtonClick() {
-    this.scene.stop('MainMenuScene')
-    this.scene.start('PlatformerScene')
+    this.scene.stop(scenes.mainMenu)
+    this.scene.start(scenes.platformer)
   }
 
   onOptionsButtonClick() {

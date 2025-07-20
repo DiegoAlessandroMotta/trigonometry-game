@@ -1,8 +1,8 @@
-import { fonts } from '@/core/consts'
+import { fonts, scenes } from '@/core/consts'
 
 export class PauseMenuScene extends Phaser.Scene {
   constructor() {
-    super('PauseMenuScene')
+    super(scenes.pauseMenu)
   }
 
   create() {
@@ -36,19 +36,19 @@ export class PauseMenuScene extends Phaser.Scene {
       .setOrigin(0.5)
       .setInteractive()
       .on('pointerdown', () => {
-        this.scene.stop('PlatformerScene')
-        this.scene.stop('PauseMenuScene')
-        this.scene.start('MainMenuScene')
+        this.scene.stop(scenes.platformer)
+        this.scene.stop(scenes.pauseMenu)
+        this.scene.start(scenes.mainMenu)
       })
       .setScale(2)
   }
 
   resumeGame() {
-    const gameScene = this.scene.get('PlatformerScene')
+    const gameScene = this.scene.get(scenes.platformer)
 
     if (gameScene != null) {
       gameScene?.resumeGame()
     }
-    this.scene.stop('PauseMenuScene')
+    this.scene.stop(scenes.pauseMenu)
   }
 }

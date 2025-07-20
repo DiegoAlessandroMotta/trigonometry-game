@@ -15,3 +15,10 @@ export const animationsNames = {
     disappearing: 'player-disappearing'
   }
 }
+
+export const scenes = {
+  boot: 'boot',
+  mainMenu: 'main-menu',
+  pauseMenu: 'pause-menu',
+  platformer: 'platformer'
+}

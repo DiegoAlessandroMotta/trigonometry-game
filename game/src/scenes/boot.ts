@@ -1,13 +1,13 @@
-import { animationsNames, fonts } from '@/core/consts'
+import { animationsNames, fonts, scenes } from '@/core/consts'
 
-export class Preloader extends Phaser.Scene {
+export class Boot extends Phaser.Scene {
   constructor() {
-    super('Preloader')
+    super(scenes.boot)
   }
 
   init() {
     this.load.on('complete', () => {
-      this.scene.start('MainMenuScene')
+      this.scene.start(scenes.mainMenu)
     })
   }
 
