@@ -41,10 +41,6 @@ export class PauseMenuScene extends Phaser.Scene {
         this.scene.start('MainMenuScene')
       })
       .setScale(2)
-
-    this.input.keyboard?.on('keydown-ESC', () => {
-      this.resumeGame()
-    })
   }
 
   resumeGame() {
