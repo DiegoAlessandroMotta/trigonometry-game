@@ -199,7 +199,7 @@ export class PlatformerScene extends Phaser.Scene {
 
       if (
         obj.properties?.find(
-          (i: { name: string; value: any }) => (i.name = 'oneWay')
+          (i: { name: string; value: any }) => i.name === 'oneWay'
         )?.value
       ) {
         platform = this.oneWayPlatforms?.create(obj.x, obj.y, '__DEFAULT')
