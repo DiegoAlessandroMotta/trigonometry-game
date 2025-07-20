@@ -1,4 +1,3 @@
-import { pixelFont } from '@/core/consts'
 import { Player } from '@/game-objects/player'
 
 export class PlatformerScene extends Phaser.Scene {
@@ -41,22 +40,44 @@ export class PlatformerScene extends Phaser.Scene {
 
     this.cursors = this.input.keyboard?.createCursorKeys()
 
-    this.add
-      .bitmapText(750, 18, pixelFont, 'II')
-      .setOrigin(0.5)
-      .setScale(4)
-      .setInteractive()
-      .setScrollFactor(0) // Para que el botón no se mueva con la cámara
-      .on('pointerdown', () => {
-        this.pauseGameAndShowMenu()
-      })
+    const button = this.add.sprite(
+      745,
+      22,
+      'buttons-tileset',
+      'green-square.png'
+    )
 
-    // Configura los eventos del teclado (ej. tecla ESC para pausar)
-    this.input.keyboard?.on('keydown-ESC', () => {
+    const iconYOffset = 4
+
+    const icon = this.add.sprite(
+      button.x,
+      button.y - iconYOffset,
+      'gui-tileset',
+      'icon-15.png'
+    )
+
+    icon.setOrigin(0.5)
+    icon.setScale(2)
+    icon.setScrollFactor(0)
+
+    button.setOrigin(0.5).setScale(2).setInteractive().setScrollFactor(0)
+
+    button.on('pointerdown', () => {
+      button.setTexture('buttons-tileset', 'green-square-pressed.png')
+      icon.setY(button.y)
+    })
+
+    button.on('pointerup', () => {
+      button.setTexture('buttons-tileset', 'green-square.png')
+      icon.setY(button.y - iconYOffset)
+
       this.pauseGameAndShowMenu()
     })
 
-    console.log('the create method of this scene ran properly')
+    button.on('pointerout', () => {
+      button.setTexture('buttons-tileset', 'green-square.png')
+      icon.setY(button.y - iconYOffset)
+    })
   }
 
   collectItem: Phaser.Types.Physics.Arcade.ArcadePhysicsCallback = (
