@@ -1,4 +1,4 @@
-import { pixelFont } from '@/core/consts'
+import { fonts } from '@/core/consts'
 
 export class PauseMenuScene extends Phaser.Scene {
   constructor() {
@@ -9,12 +9,12 @@ export class PauseMenuScene extends Phaser.Scene {
     this.add.rectangle(400, 300, 800, 600, 0x000000, 0.7).setInteractive()
 
     this.add
-      .bitmapText(400, 50, pixelFont, 'Juego Pausado')
+      .bitmapText(400, 50, fonts.pixel, 'Juego Pausado')
       .setOrigin(0.5)
       .setScale(4)
 
     this.add
-      .bitmapText(400, 150, pixelFont, 'Reanudar')
+      .bitmapText(400, 150, fonts.pixel, 'Reanudar')
       .setOrigin(0.5)
       .setInteractive()
       .on('pointerdown', () => {
@@ -23,7 +23,7 @@ export class PauseMenuScene extends Phaser.Scene {
       .setScale(2)
 
     this.add
-      .bitmapText(400, 200, pixelFont, 'Opciones')
+      .bitmapText(400, 200, fonts.pixel, 'Opciones')
       .setOrigin(0.5)
       .setInteractive()
       .on('pointerdown', () => {
@@ -32,7 +32,7 @@ export class PauseMenuScene extends Phaser.Scene {
       .setScale(2)
 
     this.add
-      .bitmapText(400, 250, pixelFont, 'Menú Principal')
+      .bitmapText(400, 250, fonts.pixel, 'Menú Principal')
       .setOrigin(0.5)
       .setInteractive()
       .on('pointerdown', () => {

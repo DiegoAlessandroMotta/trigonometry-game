@@ -1,5 +1,5 @@
 import { Button } from '@/components/button'
-import { pixelFont } from '@/core/consts'
+import { fonts } from '@/core/consts'
 
 export class MainMenuScene extends Phaser.Scene {
   titleBitmap?: Phaser.GameObjects.BitmapText
@@ -13,7 +13,7 @@ export class MainMenuScene extends Phaser.Scene {
       .bitmapText(
         this.cameras.main.width / 2,
         120,
-        pixelFont,
+        fonts.pixel,
         'Juego de\ntrigonometría'
       )
       .setOrigin(0.5)

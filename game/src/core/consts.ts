@@ -1,4 +1,6 @@
-export const pixelFont = 'pixel-emulator'
+export const fonts = {
+  pixel: 'pixel-emulator'
+}
 
 export const animationsNames = {
   player: {

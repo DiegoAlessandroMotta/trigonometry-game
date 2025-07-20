@@ -1,4 +1,4 @@
-import { animationsNames, pixelFont } from '@/core/consts'
+import { animationsNames, fonts } from '@/core/consts'
 
 export class Preloader extends Phaser.Scene {
   constructor() {
@@ -16,7 +16,11 @@ export class Preloader extends Phaser.Scene {
     this.loadTileAssets()
 
     this.load.setPath('assets/fonts')
-    this.load.bitmapFont(pixelFont, 'pixel-emulator.png', 'pixel-emulator.fnt')
+    this.load.bitmapFont(
+      fonts.pixel,
+      'pixel-emulator.png',
+      'pixel-emulator.fnt'
+    )
   }
 
   create() {
