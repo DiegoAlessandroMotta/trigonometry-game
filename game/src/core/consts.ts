@@ -20,5 +20,14 @@ export const scenes = {
   boot: 'boot',
   mainMenu: 'main-menu',
   pauseMenu: 'pause-menu',
-  platformer: 'platformer'
+  platformer: 'platformer',
+  hud: 'hud'
+}
+
+export const customEvents = {
+  pauseGame: 'pause-game',
+  showMainMenu: 'start-main-menu',
+  scenes: {
+    shutdown: 'shutdown'
+  }
 }
