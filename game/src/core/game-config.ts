@@ -2,6 +2,7 @@ import { Boot } from '@/scenes/boot'
 import { MainMenuScene } from '@/scenes/menus/main-menu'
 import { PlatformerScene } from '@/scenes/minigames/platformer'
 import { PauseMenuScene } from '@/scenes/menus/pause-menu'
+import { HudScene } from '@/scenes/hud'
 
 export const gameConfig: Phaser.Types.Core.GameConfig = {
   type: Phaser.WEBGL,
@@ -27,5 +28,5 @@ export const gameConfig: Phaser.Types.Core.GameConfig = {
     mode: Phaser.Scale.FIT,
     autoCenter: Phaser.Scale.CENTER_BOTH
   },
-  scene: [Boot, MainMenuScene, PlatformerScene, PauseMenuScene]
+  scene: [Boot, MainMenuScene, PlatformerScene, PauseMenuScene, HudScene]
 }

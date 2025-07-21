@@ -1,4 +1,4 @@
-import { fonts, scenes } from '@/core/consts'
+import { customEvents, fonts, scenes } from '@/core/consts'
 
 export class PauseMenuScene extends Phaser.Scene {
   constructor() {
@@ -36,19 +36,20 @@ export class PauseMenuScene extends Phaser.Scene {
       .setOrigin(0.5)
       .setInteractive()
       .on('pointerdown', () => {
-        this.scene.stop(scenes.platformer)
-        this.scene.stop(scenes.pauseMenu)
-        this.scene.start(scenes.mainMenu)
+        this.goToMainMenu()
       })
       .setScale(2)
+
+    this.scene.bringToTop()
   }
 
   resumeGame() {
-    const gameScene = this.scene.get(scenes.platformer)
+    this.game.events.emit(customEvents.pauseGame)
+    this.scene.stop(scenes.pauseMenu)
+  }
 
-    if (gameScene != null) {
-      gameScene?.resumeGame()
-    }
+  goToMainMenu() {
+    this.game.events.emit(customEvents.showMainMenu)
     this.scene.stop(scenes.pauseMenu)
   }
 }

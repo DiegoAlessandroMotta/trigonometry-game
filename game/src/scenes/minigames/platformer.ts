@@ -1,14 +1,15 @@
-import { scenes } from '@/core/consts'
+import { customEvents, scenes } from '@/core/consts'
 import { Player } from '@/game-objects/player'
 
 export class PlatformerScene extends Phaser.Scene {
   platforms?: Phaser.Physics.Arcade.StaticGroup
   oneWayPlatforms?: Phaser.Physics.Arcade.StaticGroup
   player?: Player
+  player2?: Player
   cursors?: Phaser.Types.Input.Keyboard.CursorKeys
   map?: Phaser.Tilemaps.Tilemap
   itemsGroup?: Phaser.Physics.Arcade.Group
-  isPaused: boolean = false
+  isPaused = false
 
   constructor() {
     super(scenes.platformer)
@@ -41,44 +42,9 @@ export class PlatformerScene extends Phaser.Scene {
 
     this.cursors = this.input.keyboard?.createCursorKeys()
 
-    const button = this.add.sprite(
-      745,
-      22,
-      'buttons-tileset',
-      'green-square.png'
-    )
+    this.scene.launch(scenes.hud)
 
-    const iconYOffset = 4
-
-    const icon = this.add.sprite(
-      button.x,
-      button.y - iconYOffset,
-      'gui-tileset',
-      'icon-15.png'
-    )
-
-    icon.setOrigin(0.5)
-    icon.setScale(2)
-    icon.setScrollFactor(0)
-
-    button.setOrigin(0.5).setScale(2).setInteractive().setScrollFactor(0)
-
-    button.on('pointerdown', () => {
-      button.setTexture('buttons-tileset', 'green-square-pressed.png')
-      icon.setY(button.y)
-    })
-
-    button.on('pointerup', () => {
-      button.setTexture('buttons-tileset', 'green-square.png')
-      icon.setY(button.y - iconYOffset)
-
-      this.pauseGameAndShowMenu()
-    })
-
-    button.on('pointerout', () => {
-      button.setTexture('buttons-tileset', 'green-square.png')
-      icon.setY(button.y - iconYOffset)
-    })
+    this.registerEvents()
   }
 
   collectItem: Phaser.Types.Physics.Arcade.ArcadePhysicsCallback = (
@@ -88,10 +54,8 @@ export class PlatformerScene extends Phaser.Scene {
     const itemSprite = item as Phaser.Physics.Arcade.Sprite
 
     if (itemSprite?.body instanceof Phaser.Physics.Arcade.Body) {
-      itemSprite.setVisible(false) // Deshabilita el cuerpo de física y lo hace invisible
+      itemSprite.setVisible(false)
     }
-
-    // item.destroy() // Si quieres eliminar el objeto completamente de la escena
   }
 
   update() {
@@ -116,19 +80,17 @@ export class PlatformerScene extends Phaser.Scene {
     }
   }
 
-  pauseGameAndShowMenu() {
-    if (!this.isPaused) {
-      this.isPaused = true
-      this.physics.pause() // Pausa el sistema de física si lo usas
-      this.scene.pause(scenes.platformer) // Pausa la escena de juego actual
-      this.scene.launch(scenes.pauseMenu) // Lanza la escena del menú de pausa
-    }
-  }
+  togglePause() {
+    console.log('running toggle pause method once... or more?')
+    this.isPaused = !this.isPaused
 
-  resumeGame() {
-    this.isPaused = false
-    this.physics.resume() // Reanuda el sistema de física
-    this.scene.resume(scenes.platformer) // Reanuda la escena de juego
+    if (this.isPaused) {
+      this.physics.pause()
+      this.scene.pause(scenes.platformer)
+    } else {
+      this.physics.resume()
+      this.scene.resume(scenes.platformer)
+    }
   }
 
   drawMap() {
@@ -236,11 +198,11 @@ export class PlatformerScene extends Phaser.Scene {
   }
 
   processOneWayPlatform: Phaser.Types.Physics.Arcade.ArcadePhysicsCallback = (
-    _player,
+    playerRef,
     platform
   ) => {
-    if (this.player == null) {
-      throw new Error('Player not created yet')
+    if (!(playerRef instanceof Player)) {
+      throw new Error('player is not an instance of Player')
     }
 
     if (!(platform instanceof Phaser.GameObjects.Sprite)) {
@@ -251,12 +213,12 @@ export class PlatformerScene extends Phaser.Scene {
       throw new Error("The platform doesn't have a body")
     }
 
-    if (!(this.player.body instanceof Phaser.Physics.Arcade.Body)) {
+    if (!(playerRef.body instanceof Phaser.Physics.Arcade.Body)) {
       throw new Error("The player doesn't have a body")
     }
 
-    const playerVelocityY = this.player?.body?.velocity.y
-    const playerVelocityX = this.player?.body?.velocity.x
+    const playerVelocityY = playerRef?.body?.velocity.y
+    const playerVelocityX = playerRef?.body?.velocity.x
 
     if (
       (playerVelocityY != null && playerVelocityY <= 0) ||
@@ -265,7 +227,7 @@ export class PlatformerScene extends Phaser.Scene {
       return false
     }
 
-    const playerBottom = this.player.body.bottom - 16
+    const playerBottom = playerRef.body.bottom - 16
     const platformBottom = platform.body.bottom
 
     if (playerBottom != null && playerBottom > platformBottom) {
@@ -273,5 +235,24 @@ export class PlatformerScene extends Phaser.Scene {
     }
 
     return true
+  }
+
+  goToMainMenu() {
+    this.scene.stop(scenes.hud)
+    this.scene.start(scenes.mainMenu)
+  }
+
+  registerEvents() {
+    this.events.on(customEvents.scenes.shutdown, this.clearEvents, this)
+
+    this.game.events.on(customEvents.pauseGame, this.togglePause, this)
+    this.game.events.on(customEvents.showMainMenu, this.goToMainMenu, this)
+  }
+
+  clearEvents() {
+    this.events.off(customEvents.scenes.shutdown, this.clearEvents, this)
+
+    this.game.events.off(customEvents.pauseGame, this.togglePause, this)
+    this.game.events.off(customEvents.showMainMenu, this.goToMainMenu, this)
   }
 }
