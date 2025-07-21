@@ -45,6 +45,8 @@ export class PlatformerScene extends Phaser.Scene {
     this.scene.launch(scenes.hud)
 
     this.registerEvents()
+
+    this.scene.launch(scenes.dialog)
   }
 
   collectItem: Phaser.Types.Physics.Arcade.ArcadePhysicsCallback = (
@@ -81,7 +83,6 @@ export class PlatformerScene extends Phaser.Scene {
   }
 
   togglePause() {
-    console.log('running toggle pause method once... or more?')
     this.isPaused = !this.isPaused
 
     if (this.isPaused) {
@@ -238,6 +239,7 @@ export class PlatformerScene extends Phaser.Scene {
   }
 
   goToMainMenu() {
+    this.scene.stop(scenes.dialog)
     this.scene.stop(scenes.hud)
     this.scene.start(scenes.mainMenu)
   }
