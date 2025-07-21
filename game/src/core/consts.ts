@@ -21,7 +21,8 @@ export const scenes = {
   mainMenu: 'main-menu',
   pauseMenu: 'pause-menu',
   platformer: 'platformer',
-  hud: 'hud'
+  hud: 'hud',
+  dialog: 'dialog'
 }
 
 export const customEvents = {
