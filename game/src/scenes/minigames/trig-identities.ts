@@ -4,9 +4,20 @@ export class TrigIdentitiesScene extends Phaser.Scene {
   private questionText?: Phaser.GameObjects.Text
   private answerText?: Phaser.GameObjects.Text
   private scoreText?: Phaser.GameObjects.Text
+  private questionCounterText?: Phaser.GameObjects.Text
+  private comboText?: Phaser.GameObjects.Text
   private score: number = 0
+  private combo: number = 0
+  private maxCombo: number = 0
   private questions: Array<{question: string, options: string[], correct: number, explanation: string}> = []
+  private availableQuestions: Array<{question: string, options: string[], correct: number, explanation: string}> = []
   private currentQuestionIndex: number = 0
+  private optionButtons: Button[] = []
+  private particles: Phaser.GameObjects.GameObject[] = []
+  private isTransitioning: boolean = false
+  private feedbackOverlay?: Phaser.GameObjects.Rectangle
+  private feedbackText?: Phaser.GameObjects.Text
+  private gameOverElements: Phaser.GameObjects.GameObject[] = []
 
   constructor() {
     super('TrigIdentitiesScene')
@@ -16,63 +27,108 @@ export class TrigIdentitiesScene extends Phaser.Scene {
     this.createBackground()
     this.createUI()
     this.generateQuestions()
+    this.availableQuestions = [...this.questions] // Inicializar preguntas disponibles
     this.showNextQuestion()
   }
 
   private createBackground() {
-    // Fondo degradado con patrón matemático
+    // Fondo degradado animado y vibrante
     const bg = this.add.graphics()
-    bg.fillGradientStyle(0x0a0a2e, 0x1a1a4e, 0x2a2a6e, 0x3a3a8e, 1)
+    bg.fillGradientStyle(0x181c2b, 0x2c274d, 0x1a2a3a, 0x23243a, 1) // Gradiente oscuro
     bg.fillRect(0, 0, 768, 432)
     
-    // Patrón de símbolos matemáticos flotantes
-    const symbols = ['sin', 'cos', 'tan', 'π', 'θ', 'α', 'β']
-    for (let i = 0; i < 15; i++) {
+    // Partículas de colores vibrantes
+    const particleColors = [0x43cea2, 0x185a9d, 0xd76d77, 0xffaf7b, 0x00c3ff, 0xff61a6, 0x7f53ac, 0x00ffb0]
+    for (let i = 0; i < 50; i++) {
+      const color = Phaser.Utils.Array.GetRandom(particleColors)
+      const size = 2 + Math.random() * 4
+      const particle = this.add.circle(
+        Math.random() * 768,
+        Math.random() * 432,
+        size,
+        color,
+        0.7 + Math.random() * 0.3
+      )
+      // Animación de movimiento y parpadeo
+      this.tweens.add({
+        targets: particle,
+        y: particle.y + Phaser.Math.Between(-50, 50),
+        x: particle.x + Phaser.Math.Between(-50, 50),
+        alpha: 0.2 + Math.random() * 0.8,
+        duration: 4000 + Math.random() * 3000,
+        yoyo: true,
+        repeat: -1,
+        delay: Math.random() * 4000,
+        ease: 'Sine.easeInOut'
+      })
+    }
+    
+    // Símbolos matemáticos flotantes con efectos mejorados
+    const symbols = ['sin', 'cos', 'tan', 'π', 'θ', 'α', 'β', '∞', '∑', '∫']
+    for (let i = 0; i < 20; i++) {
       const symbol = this.add.text(
         Math.random() * 768,
         Math.random() * 432,
         symbols[Math.floor(Math.random() * symbols.length)],
         {
-          fontSize: '20px',
-          color: '#4444ff',
-          fontStyle: 'bold'
+          fontSize: '18px',
+          color: '#00ffff',
+          fontStyle: 'bold',
+          stroke: '#000000',
+          strokeThickness: 1
         }
       )
       
+      // Animación más compleja
       this.tweens.add({
         targets: symbol,
-        y: symbol.y - 100,
+        y: symbol.y - 150,
         alpha: 0,
-        duration: 4000 + Math.random() * 2000,
+        scaleX: 1.5,
+        scaleY: 1.5,
+        duration: 6000 + Math.random() * 3000,
         repeat: -1,
-        delay: Math.random() * 4000
+        delay: Math.random() * 6000,
+        ease: 'Power2'
       })
     }
     
-    // Líneas de conexión entre símbolos
-    for (let i = 0; i < 10; i++) {
+    // Líneas de conexión animadas
+    for (let i = 0; i < 15; i++) {
       const line = this.add.graphics()
-      line.lineStyle(1, 0x4444ff, 0.2)
-      line.moveTo(Math.random() * 768, Math.random() * 432)
-      line.lineTo(Math.random() * 768, Math.random() * 432)
+      line.lineStyle(2, 0x00ffff, 0.3)
+      const x1 = Math.random() * 768
+      const y1 = Math.random() * 432
+      const x2 = Math.random() * 768
+      const y2 = Math.random() * 432
+      line.moveTo(x1, y1)
+      line.lineTo(x2, y2)
+      
+      // Animación de las líneas
+      this.tweens.add({
+        targets: line,
+        alpha: 0.1,
+        duration: 3000 + Math.random() * 2000,
+        yoyo: true,
+        repeat: -1,
+        delay: Math.random() * 3000
+      })
     }
   }
 
   private createUI() {
-    // Título con efectos especiales
-    this.questionText = this.add.text(384, 80, '', {
-      fontSize: '20px',
+    // Título del juego con efectos especiales
+    const titleText = this.add.text(384, 25, 'IDENTIDADES TRIGONOMÉTRICAS', {
+      fontSize: '24px',
       color: '#00ffff',
-      align: 'center',
       fontStyle: 'bold',
       stroke: '#000000',
-      strokeThickness: 3,
-      wordWrap: { width: 700 }
+      strokeThickness: 3
     }).setOrigin(0.5)
-    
+
     // Animación del título
     this.tweens.add({
-      targets: this.questionText,
+      targets: titleText,
       scaleX: 1.05,
       scaleY: 1.05,
       duration: 2000,
@@ -80,8 +136,49 @@ export class TrigIdentitiesScene extends Phaser.Scene {
       repeat: -1
     })
 
-    this.answerText = this.add.text(384, 350, '', {
+    // Puntuación y estadísticas - arriba del ejercicio
+    this.scoreText = this.add.text(60, 50, 'PUNTUACIÓN: 0', {
+      fontSize: '16px',
+      color: '#00ff00',
+      fontStyle: 'bold',
+      stroke: '#000000',
+      strokeThickness: 2
+    })
+
+    this.questionCounterText = this.add.text(650, 50, 'PREGUNTA 1/10', {
+      fontSize: '14px',
+      color: '#ffff00',
+      fontStyle: 'bold',
+      stroke: '#000000',
+      strokeThickness: 2
+    })
+
+    // Pregunta con efectos mejorados - después de la puntuación
+    this.questionText = this.add.text(384, 80, '', {
       fontSize: '18px',
+      color: '#ffffff',
+      align: 'center',
+      fontStyle: 'bold',
+      stroke: '#000000',
+      strokeThickness: 2,
+      wordWrap: { width: 700 }
+    }).setOrigin(0.5)
+
+    this.comboText = this.add.text(384, 110, 'COMBO: 0', {
+      fontSize: '16px',
+      color: '#ff61a6',
+      fontStyle: 'bold',
+      stroke: '#000000',
+      strokeThickness: 2
+    }).setOrigin(0.5)
+
+    // Barra de progreso
+    const progressBarBg = this.add.rectangle(384, 140, 300, 12, 0x222244, 0.7).setOrigin(0.5)
+    const progressBarFill = this.add.rectangle(234, 140, 0, 12, 0x00ffff, 1).setOrigin(0, 0.5)
+
+    // Texto de respuesta
+    this.answerText = this.add.text(384, 380, '', {
+      fontSize: '16px',
       color: '#ffff00',
       align: 'center',
       fontStyle: 'bold',
@@ -90,28 +187,18 @@ export class TrigIdentitiesScene extends Phaser.Scene {
       wordWrap: { width: 700 }
     }).setOrigin(0.5)
 
-    // Puntuación con efectos
-    this.scoreText = this.add.text(50, 50, 'Puntuación: 0', {
-      fontSize: '18px',
-      color: '#00ff00',
-      fontStyle: 'bold',
-      stroke: '#000000',
-      strokeThickness: 2
-    })
-    
-    // Efecto de brillo en la puntuación
-    this.tweens.add({
-      targets: this.scoreText,
-      alpha: 0.7,
-      duration: 1500,
-      yoyo: true,
-      repeat: -1
-    })
-
+    // Botón volver mejorado
     new Button(
       this,
-      384, 420,
-      { text: 'Volver', width: 80, height: 30 },
+      384, 410,
+      { 
+        text: 'VOLVER', 
+        width: 100, 
+        height: 40,
+        backgroundColor: 0x7f53ac,
+        hoverColor: 0x9f73cc,
+        borderColor: 0x5f33ac
+      },
       () => this.scene.start('MainMenuScene'),
       this
     )
@@ -233,72 +320,266 @@ export class TrigIdentitiesScene extends Phaser.Scene {
   }
 
   private showNextQuestion() {
-    if (this.currentQuestionIndex >= this.questions.length) {
+    if (this.currentQuestionIndex >= 10) {
       this.showGameOver()
       return
     }
 
-    const question = this.questions[this.currentQuestionIndex]
-    this.questionText?.setText(question.question)
-    this.answerText?.setText('')
+    // Limpiar botones anteriores
+    this.optionButtons.forEach(button => button.destroy())
+    this.optionButtons = []
 
-    // Crear botones de opciones con efectos
+    // Seleccionar pregunta aleatoria
+    const randomIndex = Math.floor(Math.random() * this.availableQuestions.length)
+    const question = this.availableQuestions[randomIndex]
+    
+    // Remover la pregunta seleccionada para evitar repeticiones
+    this.availableQuestions.splice(randomIndex, 1)
+    
+    // Si se acabaron las preguntas disponibles, repoblar el array
+    if (this.availableQuestions.length === 0) {
+      this.availableQuestions = [...this.questions]
+    }
+    
+    // Animación de transición de pregunta
+    this.tweens.add({
+      targets: this.questionText,
+      alpha: 0,
+      scale: 0.9,
+      duration: 200,
+      onComplete: () => {
+        this.questionText?.setText(question.question)
+        this.answerText?.setText('')
+        this.tweens.add({
+          targets: this.questionText,
+          alpha: 1,
+          scale: 1,
+          duration: 350,
+          ease: 'Back.Out'
+        })
+      }
+    })
+    this.questionText?.setScale(0.9)
+
+    // Actualizar contador de preguntas
+    this.questionCounterText?.setText(`PREGUNTA ${this.currentQuestionIndex + 1}/10`)
+
+    // Crear botones de opciones con efectos mejorados
     const buttonColors = [0xff4444, 0x44ff44, 0x4444ff, 0xffaa44]
     question.options.forEach((option, index) => {
       const button = new Button(
         this,
-        384, 150 + index * 45,
-        { text: option, width: 600, height: 35 },
+        384, 180 + index * 50,
+        { 
+          text: option, 
+          width: 600, 
+          height: 40,
+          backgroundColor: buttonColors[index],
+          hoverColor: buttonColors[index] + 0x222222,
+          borderColor: buttonColors[index] - 0x222222
+        },
         () => this.checkAnswer(index),
         this
       )
       
-      // Efecto de brillo en los botones
+      this.optionButtons.push(button)
+      
+      // Animación de entrada escalonada
+      button.setScale(0.8)
+      button.alpha = 0
+      this.tweens.add({
+        targets: button,
+        scale: 1,
+        alpha: 1,
+        duration: 400,
+        delay: index * 150,
+        ease: 'Back.Out'
+      })
+      
+      // Efecto de pulso en los botones
       this.tweens.add({
         targets: button,
         scaleX: 1.02,
         scaleY: 1.02,
-        duration: 1500,
+        duration: 2000,
         yoyo: true,
         repeat: -1,
-        delay: index * 300
+        delay: index * 200
       })
     })
   }
 
   private checkAnswer(selectedIndex: number) {
-    const question = this.questions[this.currentQuestionIndex]
+    if (this.isTransitioning) return
+    this.isTransitioning = true
     
-    if (selectedIndex === question.correct) {
+    // Obtener la pregunta actual de las preguntas disponibles
+    const question = this.questions.find(q => q.question === this.questionText?.text)
+    
+    if (selectedIndex === question?.correct) {
       this.score += 10
-      this.answerText?.setText('¡Correcto! +10 puntos')
-      this.answerText?.setColor('#00ff00')
+      this.combo++
+      if (this.combo > this.maxCombo) this.maxCombo = this.combo
+      
+      // Feedback visual de éxito
+      this.showFeedback('¡CORRECTO! +10 puntos', '#00ff00', true)
       
       // Efecto de partículas para respuesta correcta
-      this.createParticleEffect(384, 216, 0x00ff00)
+      this.createSuccessParticles()
       
-      // Animación de la puntuación
+      // Animación de la puntuación y combo
       this.tweens.add({
-        targets: this.scoreText,
+        targets: [this.scoreText, this.comboText],
         scaleX: 1.3,
         scaleY: 1.3,
         duration: 300,
         yoyo: true
       })
+      
+      // Destello verde
+      const flash = this.add.rectangle(384, 216, 768, 432, 0x00ff88, 0.25)
+      this.tweens.add({
+        targets: flash,
+        alpha: 0,
+        duration: 350,
+        onComplete: () => flash.destroy()
+      })
     } else {
-      this.answerText?.setText(`Incorrecto. ${question.explanation}`)
-      this.answerText?.setColor('#ff0000')
+      this.combo = 0
+      
+      // Feedback visual de error
+      this.showFeedback(`Incorrecto. ${question?.explanation}`, '#ff0000', false)
       
       // Efecto de partículas para respuesta incorrecta
-      this.createParticleEffect(384, 216, 0xff0000)
+      this.createErrorParticles()
+      
+      // Destello rojo
+      const flash = this.add.rectangle(384, 216, 768, 432, 0xff0033, 0.25)
+      this.tweens.add({
+        targets: flash,
+        alpha: 0,
+        duration: 350,
+        onComplete: () => flash.destroy()
+      })
     }
 
-    this.scoreText?.setText(`Puntuación: ${this.score}`)
+    this.scoreText?.setText(`PUNTUACIÓN: ${this.score}`)
+    this.comboText?.setText(`COMBO: ${this.combo}`)
+
+    // Animación de los botones
+    this.optionButtons.forEach((button, index) => {
+      const isCorrect = index === question?.correct
+      const isSelected = index === selectedIndex
+      
+      if (isCorrect) {
+        // Botón correcto - brillo verde
+        this.tweens.add({
+          targets: button,
+          tint: 0x00ff00,
+          scaleX: 1.1,
+          scaleY: 1.1,
+          duration: 200,
+          yoyo: true,
+          repeat: 1
+        })
+      } else if (isSelected) {
+        // Botón incorrecto seleccionado - brillo rojo
+        this.tweens.add({
+          targets: button,
+          tint: 0xff0000,
+          scaleX: 0.9,
+          scaleY: 0.9,
+          duration: 200,
+          yoyo: true,
+          repeat: 1
+        })
+      }
+    })
 
     this.time.delayedCall(2000, () => {
       this.currentQuestionIndex++
+      this.isTransitioning = false
       this.showNextQuestion()
     })
+  }
+
+  private showFeedback(message: string, color: string, isSuccess: boolean) {
+    // Overlay de feedback
+    this.feedbackOverlay = this.add.rectangle(384, 216, 768, 432, 0x000000, 0.3)
+    this.feedbackText = this.add.text(384, 216, message, {
+      fontSize: '24px',
+      color: color,
+      fontStyle: 'bold',
+      stroke: '#000000',
+      strokeThickness: 3
+    }).setOrigin(0.5)
+    
+    // Animación de entrada
+    this.feedbackText.setScale(0.5)
+    this.tweens.add({
+      targets: this.feedbackText,
+      scale: 1,
+      duration: 300,
+      ease: 'Back.Out'
+    })
+    
+    // Limpiar después de 1.5 segundos
+    this.time.delayedCall(1500, () => {
+      this.feedbackOverlay?.destroy()
+      this.feedbackText?.destroy()
+    })
+  }
+
+  private createSuccessParticles() {
+    const centerX = 384
+    const centerY = 216
+    const colors = [0x00ff00, 0x00ffd0, 0x00c3ff, 0x43cea2, 0xffff00]
+    
+    for (let i = 0; i < 20; i++) {
+      const color = Phaser.Utils.Array.GetRandom(colors)
+      const particle = this.add.circle(
+        centerX + (Math.random() - 0.5) * 100,
+        centerY + (Math.random() - 0.5) * 100,
+        2 + Math.random() * 3,
+        color
+      )
+      
+      this.tweens.add({
+        targets: particle,
+        x: centerX + (Math.random() - 0.5) * 200,
+        y: centerY + (Math.random() - 0.5) * 200,
+        alpha: 0,
+        scale: 0,
+        duration: 1000 + Math.random() * 500,
+        ease: 'Power2'
+      })
+    }
+  }
+
+  private createErrorParticles() {
+    const centerX = 384
+    const centerY = 216
+    const colors = [0xff0000, 0xff61a6, 0xffaf7b, 0xd76d77, 0xff0033]
+    
+    for (let i = 0; i < 15; i++) {
+      const color = Phaser.Utils.Array.GetRandom(colors)
+      const particle = this.add.circle(
+        centerX + (Math.random() - 0.5) * 80,
+        centerY + (Math.random() - 0.5) * 80,
+        2 + Math.random() * 3,
+        color
+      )
+      
+      this.tweens.add({
+        targets: particle,
+        x: centerX + (Math.random() - 0.5) * 160,
+        y: centerY + (Math.random() - 0.5) * 160,
+        alpha: 0,
+        scale: 0,
+        duration: 800 + Math.random() * 400,
+        ease: 'Power2'
+      })
+    }
   }
 
   private createParticleEffect(x: number, y: number, color: number) {
@@ -330,6 +611,7 @@ export class TrigIdentitiesScene extends Phaser.Scene {
     
     // Crear overlay de victoria/derrota
     const overlay = this.add.rectangle(384, 216, 768, 432, 0x000000, 0.8)
+    this.gameOverElements.push(overlay)
     
     // Título principal
     const titleText = this.add.text(384, 150, isVictory ? '¡VICTORIA!' : '¡DERROTA!', {
@@ -339,6 +621,7 @@ export class TrigIdentitiesScene extends Phaser.Scene {
       stroke: '#000000',
       strokeThickness: 4
     }).setOrigin(0.5)
+    this.gameOverElements.push(titleText)
     
     // Animación del título
     this.tweens.add({
@@ -371,6 +654,7 @@ export class TrigIdentitiesScene extends Phaser.Scene {
       stroke: '#000000',
       strokeThickness: 2
     }).setOrigin(0.5)
+    this.gameOverElements.push(messageText)
     
     // Puntuación con efectos
     const scoreText = this.add.text(384, 250, `Puntuación: ${this.score}/${totalPossible}`, {
@@ -380,6 +664,7 @@ export class TrigIdentitiesScene extends Phaser.Scene {
       stroke: '#000000',
       strokeThickness: 3
     }).setOrigin(0.5)
+    this.gameOverElements.push(scoreText)
     
     // Porcentaje
     const percentageText = this.add.text(384, 280, `(${percentage.toFixed(1)}%)`, {
@@ -389,6 +674,7 @@ export class TrigIdentitiesScene extends Phaser.Scene {
       stroke: '#000000',
       strokeThickness: 2
     }).setOrigin(0.5)
+    this.gameOverElements.push(percentageText)
     
     // Efectos de partículas según el resultado
     if (isVictory) {
@@ -401,26 +687,23 @@ export class TrigIdentitiesScene extends Phaser.Scene {
     const buttonY = 350
     const buttonSpacing = 120
     
-    new Button(
+    const playAgainButton = new Button(
       this,
       384 - buttonSpacing, buttonY,
       { text: 'Jugar de nuevo', width: 100, height: 35 },
-      () => {
-        this.score = 0
-        this.currentQuestionIndex = 0
-        this.generateQuestions()
-        this.showNextQuestion()
-      },
+      () => this.restartGame(),
       this
     )
+    this.gameOverElements.push(playAgainButton)
     
-    new Button(
+    const menuButton = new Button(
       this,
       384 + buttonSpacing, buttonY,
       { text: 'Menú principal', width: 100, height: 35 },
       () => this.scene.start('MainMenuScene'),
       this
     )
+    this.gameOverElements.push(menuButton)
     
     // Animación de entrada
     this.tweens.add({
@@ -438,6 +721,50 @@ export class TrigIdentitiesScene extends Phaser.Scene {
         })
       }
     })
+  }
+
+  private restartGame() {
+    // Limpiar elementos del game over
+    this.gameOverElements.forEach(element => {
+      if (element && element.destroy) {
+        element.destroy()
+      }
+    })
+    this.gameOverElements = []
+    
+    // Limpiar botones de opciones
+    this.optionButtons.forEach(button => button.destroy())
+    this.optionButtons = []
+    
+    // Limpiar partículas
+    this.particles.forEach(particle => {
+      if (particle && particle.destroy) {
+        particle.destroy()
+      }
+    })
+    this.particles = []
+    
+    // Limpiar feedback
+    this.feedbackOverlay?.destroy()
+    this.feedbackText?.destroy()
+    
+    // Reiniciar variables del juego
+    this.score = 0
+    this.combo = 0
+    this.maxCombo = 0
+    this.currentQuestionIndex = 0
+    this.isTransitioning = false
+    
+    // Actualizar UI
+    this.scoreText?.setText('PUNTUACIÓN: 0')
+    this.comboText?.setText('COMBO: 0')
+    this.questionCounterText?.setText('PREGUNTA 1/10')
+    this.answerText?.setText('')
+    
+    // Generar nuevas preguntas y mostrar la primera
+    this.generateQuestions()
+    this.availableQuestions = [...this.questions] // Reinicializar preguntas disponibles
+    this.showNextQuestion()
   }
   
   private createVictoryParticles() {

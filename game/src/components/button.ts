@@ -10,6 +10,7 @@ interface ButtonConfig {
   textColor?: number
   textSize?: number
   fontFamily?: string
+  borderRadius?: number // nuevo para esquinas redondeadas
 }
 
 export class Button extends Phaser.GameObjects.Container {
@@ -20,17 +21,18 @@ export class Button extends Phaser.GameObjects.Container {
   private callback?: Function
   private scope?: any
   private readonly defaultConfig: Required<ButtonConfig> = {
-    width: 60,
-    height: 20,
+    width: 110, // más grande
+    height: 48, // más alto
     texture: '',
-    backgroundColor: 0xffae0a,
-    hoverColor: 0xffce0a,
-    borderColor: 0xda5700,
-    borderWidth: 2,
+    backgroundColor: 0xffae0a, // naranja vibrante
+    hoverColor: 0xffd700, // amarillo vibrante
+    borderColor: 0xda5700, // borde naranja oscuro
+    borderWidth: 3,
     text: '',
     textColor: 0xffffff,
-    textSize: 12,
-    fontFamily: 'Arial'
+    textSize: 18,
+    fontFamily: 'Arial',
+    borderRadius: 18 // bordes redondeados por defecto
   }
 
   constructor(
@@ -50,8 +52,14 @@ export class Button extends Phaser.GameObjects.Container {
     this.callback = callback
     this.scope = scope
 
+    // --- Sombra visual detrás del botón ---
+    const shadow = scene.add.graphics()
+    shadow.fillStyle(0x000000, 0.28)
+    shadow.fillRoundedRect(-finalConfig.width/2 + 4, -finalConfig.height/2 + 6, finalConfig.width - 8, finalConfig.height - 8, finalConfig.borderRadius)
+    this.addAt(shadow, 0)
+
     // Create border (if specified)
-    if (finalConfig.borderWidth > 0) {
+    if (finalConfig.borderWidth > 0 && finalConfig.borderRadius === 0) {
       this.border = scene.add.rectangle(
         0,
         0,
@@ -107,13 +115,11 @@ export class Button extends Phaser.GameObjects.Container {
 
   onHover() {
     this.background.setFillStyle(this.defaultConfig.hoverColor)
-    this.setScale(1.1)
-    
-    // Efecto de brillo al hacer hover
+    this.setScale(1.13)
     this.scene.tweens.add({
       targets: this,
-      alpha: 0.8,
-      duration: 200,
+      alpha: 0.92,
+      duration: 120,
       yoyo: true
     })
   }

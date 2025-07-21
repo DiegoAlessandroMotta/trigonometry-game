@@ -15,6 +15,10 @@ export class Preloader extends Phaser.Scene {
 
     this.load.setPath('assets/fonts')
     this.load.bitmapFont('raster-forge', 'raster-forge.png', 'raster-forge.fnt')
+
+    // Sonido de éxito para el minijuego de triángulos
+    this.load.setPath('assets')
+    this.load.audio('success', 'success.mp3')
   }
 
   create() {

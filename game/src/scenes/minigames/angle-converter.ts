@@ -26,33 +26,42 @@ export class AngleConverterScene extends Phaser.Scene {
   }
 
   private createBackground() {
-    // Fondo degradado con patrón circular
+    // Fondo degradado animado y oscuro
     const bg = this.add.graphics()
-    bg.fillGradientStyle(0x0a0a2e, 0x1a1a4e, 0x2a2a6e, 0x3a3a8e, 1)
+    bg.fillGradientStyle(0x181c2b, 0x2c274d, 0x1a2a3a, 0x23243a, 1) // Gradiente oscuro
     bg.fillRect(0, 0, 768, 432)
     
-    // Patrón de círculos concéntricos
-    for (let i = 1; i <= 5; i++) {
-      const circle = this.add.graphics()
-      circle.lineStyle(1, 0x4444ff, 0.1)
-      circle.strokeCircle(384, 216, i * 50)
-    }
-    
-    // Partículas que giran
-    for (let i = 0; i < 20; i++) {
+    // Partículas de colores vibrantes
+    const particleColors = [0x43cea2, 0x185a9d, 0xd76d77, 0xffaf7b, 0x00c3ff, 0xff61a6, 0x7f53ac, 0x00ffb0]
+    for (let i = 0; i < 35; i++) {
+      const color = Phaser.Utils.Array.GetRandom(particleColors)
+      const size = 2 + Math.random() * 3
       const particle = this.add.circle(
-        384 + Math.cos(i * 0.3) * 100,
-        216 + Math.sin(i * 0.3) * 100,
-        2,
-        0x00ffff
+        Math.random() * 768,
+        Math.random() * 432,
+        size,
+        color,
+        0.7 + Math.random() * 0.3
       )
+      // Animación de movimiento y parpadeo
       this.tweens.add({
         targets: particle,
-        angle: 360,
-        duration: 5000 + Math.random() * 2000,
+        y: particle.y + Phaser.Math.Between(-30, 30),
+        x: particle.x + Phaser.Math.Between(-30, 30),
+        alpha: 0.2 + Math.random() * 0.8,
+        duration: 3000 + Math.random() * 2000,
+        yoyo: true,
         repeat: -1,
-        delay: Math.random() * 2000
+        delay: Math.random() * 2500,
+        ease: 'Sine.easeInOut'
       })
+    }
+    
+    // Patrón de círculos concéntricos sutiles
+    for (let i = 1; i <= 3; i++) {
+      const circle = this.add.graphics()
+      circle.lineStyle(1, 0x4444ff, 0.08)
+      circle.strokeCircle(384, 216, i * 80)
     }
   }
 
@@ -63,7 +72,7 @@ export class AngleConverterScene extends Phaser.Scene {
       align: 'center'
     }).setOrigin(0.5)
 
-    this.answerText = this.add.text(384, 350, '', {
+    this.answerText = this.add.text(384, 280, '', { // Subir más para dar espacio al teclado
       fontSize: '16px',
       color: '#ffff00',
       align: 'center'
@@ -74,53 +83,74 @@ export class AngleConverterScene extends Phaser.Scene {
       color: '#ffffff'
     })
 
-    this.inputText = this.add.text(384, 320, 'Respuesta: ', {
+    this.inputText = this.add.text(384, 310, 'Respuesta: ', { // Subir para dar más espacio
       fontSize: '16px',
       color: '#ffffff',
       align: 'center'
     }).setOrigin(0.5)
 
-    // Botones numéricos
-    const numbers = ['7', '8', '9', '4', '5', '6', '1', '2', '3', '0', '.', 'π']
-    let x = 200
-    let y = 380
+    // Botones numéricos en formato 2x6 - más compactos
+    const numbers = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '.', 'C']
+    let x = 140
+    let y = 340 // Subir para evitar superposición con el ejercicio
     let col = 0
 
     numbers.forEach(num => {
       new Button(
         this,
-        x + col * 60, y,
-        { text: num, width: 50, height: 30 },
+        x + col * 65, y,
+        { 
+          text: num, 
+          width: 55, 
+          height: 35,
+          backgroundColor: 0x4488ff, // Azul para ángulos
+          hoverColor: 0x66aaff, // Azul más claro al hover
+          borderColor: 0x2255cc // Borde azul oscuro
+        },
         () => this.handleInput(num),
         this
       )
       col++
-      if (col >= 4) {
+      if (col >= 6) {
         col = 0
-        y += 40
+        y += 45
       }
     })
 
     new Button(
       this,
-      500, 380,
-      { text: 'Enviar', width: 80, height: 30 },
+      580, 340, // Ajustar posición para alinear con el teclado compacto
+      { 
+        text: 'ENVIAR', 
+        width: 90, 
+        height: 35,
+        backgroundColor: 0x7f53ac, // Violeta para acciones
+        hoverColor: 0x9f73cc, // Violeta más claro al hover
+        borderColor: 0x5f33ac // Borde violeta oscuro
+      },
       () => this.checkAnswer(),
       this
     )
 
     new Button(
       this,
-      500, 420,
-      { text: 'Volver', width: 80, height: 30 },
+      580, 385, // Ajustar posición para alinear con el teclado compacto
+      { 
+        text: 'VOLVER', 
+        width: 90, 
+        height: 35,
+        backgroundColor: 0x7f53ac, // Violeta para acciones
+        hoverColor: 0x9f73cc, // Violeta más claro al hover
+        borderColor: 0x5f33ac // Borde violeta oscuro
+      },
       () => this.scene.start('MainMenuScene'),
       this
     )
   }
 
   private handleInput(value: string) {
-    if (value === 'π') {
-      this.inputValue += 'π'
+    if (value === 'C') {
+      this.inputValue = ''
     } else {
       this.inputValue += value
     }
@@ -176,7 +206,7 @@ export class AngleConverterScene extends Phaser.Scene {
   }
 
   private formatRadians(radians: number): string {
-    if (radians === 0) return '0'
+    if (radians === 0) return '0.00'
     if (radians === Math.PI) return 'π'
     if (radians === Math.PI / 2) return 'π/2'
     if (radians === Math.PI / 3) return 'π/3'
@@ -209,10 +239,32 @@ export class AngleConverterScene extends Phaser.Scene {
     this.currentAnswer = question.answer
     this.inputValue = ''
 
+    // Animación de salida del texto de pregunta y respuesta
+    this.tweens.add({
+      targets: [this.questionText, this.answerText],
+      alpha: 0,
+      scale: 0.9,
+      duration: 200,
+      onComplete: () => {
+        // Actualizar texto de pregunta y respuesta
+        this.questionText?.setText(this.currentQuestion)
+        this.answerText?.setText('')
+        this.inputText?.setText('Respuesta: ')
+        // Animación de entrada
+        this.tweens.add({
+          targets: [this.questionText, this.answerText],
+          alpha: 1,
+          scale: 1,
+          duration: 350,
+          ease: 'Back.Out'
+        })
+      }
+    })
+    this.questionText?.setScale(0.9)
+    this.answerText?.setScale(0.9)
+
+    // Dibujar ángulo con entrada animada
     this.drawAngle()
-    this.questionText?.setText(this.currentQuestion)
-    this.answerText?.setText('')
-    this.inputText?.setText('Respuesta: ')
   }
 
   private drawAngle() {
@@ -224,6 +276,16 @@ export class AngleConverterScene extends Phaser.Scene {
     this.angleDisplay?.destroy()
 
     this.angleDisplay = this.add.graphics()
+    // Animación de entrada del ángulo
+    this.angleDisplay.alpha = 0
+    this.angleDisplay.scale = 0.8
+    this.tweens.add({ 
+      targets: this.angleDisplay, 
+      alpha: 1, 
+      scale: 1, 
+      duration: 600, 
+      ease: 'Back.Out' 
+    })
 
     // Dibujar círculo con efectos
     this.angleDisplay.lineStyle(4, 0x00ffff, 0.8)
@@ -260,16 +322,27 @@ export class AngleConverterScene extends Phaser.Scene {
     const pointY = centerY - radius * 0.7 * Math.sin(angleInRadians)
     
     const point = this.add.circle(pointX, pointY, 4, 0xff0000)
+    // Animación de entrada del punto
+    point.setScale(0)
     this.tweens.add({
       targets: point,
-      scaleX: 1.5,
-      scaleY: 1.5,
-      duration: 1000,
-      yoyo: true,
-      repeat: -1
+      scale: 1,
+      duration: 400,
+      delay: 300,
+      ease: 'Back.Out',
+      onComplete: () => {
+        this.tweens.add({
+          targets: point,
+          scaleX: 1.5,
+          scaleY: 1.5,
+          duration: 1000,
+          yoyo: true,
+          repeat: -1
+        })
+      }
     })
 
-    // Etiqueta del ángulo con efectos
+    // Etiqueta del ángulo con efectos mejorados
     const labelAngle = angleInRadians / 2
     const labelRadius = radius * 0.5
     const angleText = this.add.text(
@@ -277,23 +350,38 @@ export class AngleConverterScene extends Phaser.Scene {
       centerY - labelRadius * Math.sin(labelAngle),
       this.currentQuestion.includes('grados') ? `${this.currentAngle}°` : this.formatRadians(this.currentAngle),
       {
-        fontSize: '16px',
-        color: '#ffff00',
+        fontSize: '18px', // Más grande
+        color: '#00ffb0', // Color vibrante azul-verde
         fontStyle: 'bold',
         stroke: '#000000',
-        strokeThickness: 2
+        strokeThickness: 3
       }
     ).setOrigin(0.5)
     
-    // Animación del texto
+    // Animación de entrada del texto mejorada
+    angleText.setScale(0.5)
+    angleText.alpha = 0
     this.tweens.add({
       targets: angleText,
-      scaleX: 1.1,
-      scaleY: 1.1,
-      duration: 1500,
-      yoyo: true,
-      repeat: -1
+      scale: 1.2,
+      alpha: 1,
+      duration: 600,
+      delay: 400,
+      ease: 'Back.Out',
+      onComplete: () => {
+        this.tweens.add({
+          targets: angleText,
+          scaleX: 1.15,
+          scaleY: 1.15,
+          duration: 1200,
+          yoyo: true,
+          repeat: -1,
+          ease: 'Sine.easeInOut'
+        })
+      }
     })
+
+
   }
 
   private checkAnswer() {
@@ -321,15 +409,42 @@ export class AngleConverterScene extends Phaser.Scene {
     }
 
     const tolerance = 0.01
-    if (Math.abs(userAnswer - this.currentAnswer) <= tolerance) {
+    // Mejorar la comparación para aceptar respuestas como 12 y 12.00 como equivalentes
+    const isCorrect = Math.abs(userAnswer - this.currentAnswer) <= tolerance || Math.abs(userAnswer - Math.round(this.currentAnswer)) <= tolerance
+    
+    if (isCorrect) {
       this.score += 10
       this.answerText?.setText('¡Correcto! +10 puntos')
       this.answerText?.setColor('#00ff00')
+      // --- DESTELLO VERDE AL ACERTAR ---
+      const flash = this.add.rectangle(384, 216, 768, 432, 0x00ff88, 0.25)
+      this.tweens.add({
+        targets: flash,
+        alpha: 0,
+        duration: 350,
+        onComplete: () => flash.destroy()
+      })
+      // Partículas de celebración
+      this.createSuccessParticles()
+      // Animación del ángulo al acertar
+      this.animateAngleSuccess()
     } else {
       const correctAnswer = this.currentQuestion.includes('grados') ? 
         this.currentAnswer : this.formatRadians(this.currentAnswer)
-      this.answerText?.setText(`Incorrecto. Respuesta: ${correctAnswer}`)
+      this.answerText?.setText(`Incorrecto. Respuesta: ${typeof this.currentAnswer === 'number' ? this.currentAnswer.toFixed(2) : correctAnswer}`)
       this.answerText?.setColor('#ff0000')
+      // --- DESTELLO ROJO AL FALLAR ---
+      const flash = this.add.rectangle(384, 216, 768, 432, 0xff0033, 0.25)
+      this.tweens.add({
+        targets: flash,
+        alpha: 0,
+        duration: 350,
+        onComplete: () => flash.destroy()
+      })
+      // Partículas de error
+      this.createErrorParticles()
+      // Animación del ángulo al fallar
+      this.animateAngleError()
     }
 
     this.scoreText?.setText(`Puntuación: ${this.score}`)
@@ -337,6 +452,104 @@ export class AngleConverterScene extends Phaser.Scene {
     this.time.delayedCall(2000, () => {
       this.currentQuestionIndex++
       this.showNextQuestion()
+    })
+  }
+
+  private createSuccessParticles() {
+    const centerX = 384
+    const centerY = 200
+    const colors = [0x00ff00, 0x00ffd0, 0x00c3ff, 0x43cea2, 0xffff00]
+    
+    for (let i = 0; i < 15; i++) {
+      const color = Phaser.Utils.Array.GetRandom(colors)
+      const particle = this.add.circle(
+        centerX + (Math.random() - 0.5) * 80,
+        centerY + (Math.random() - 0.5) * 80,
+        2 + Math.random() * 3,
+        color
+      )
+      
+      this.tweens.add({
+        targets: particle,
+        x: centerX + (Math.random() - 0.5) * 180,
+        y: centerY + (Math.random() - 0.5) * 180,
+        alpha: 0,
+        scale: 0,
+        duration: 1000 + Math.random() * 500,
+        ease: 'Power2'
+      })
+    }
+  }
+
+  private createErrorParticles() {
+    const centerX = 384
+    const centerY = 200
+    const colors = [0xff0000, 0xff61a6, 0xffaf7b, 0xd76d77, 0xff0033]
+    
+    for (let i = 0; i < 12; i++) {
+      const color = Phaser.Utils.Array.GetRandom(colors)
+      const particle = this.add.circle(
+        centerX + (Math.random() - 0.5) * 80,
+        centerY + (Math.random() - 0.5) * 80,
+        2 + Math.random() * 3,
+        color
+      )
+      
+      this.tweens.add({
+        targets: particle,
+        x: centerX + (Math.random() - 0.5) * 160,
+        y: centerY + (Math.random() - 0.5) * 160,
+        alpha: 0,
+        scale: 0,
+        duration: 800 + Math.random() * 400,
+        ease: 'Power2'
+      })
+    }
+  }
+
+  private animateAngleSuccess() {
+    if (!this.angleDisplay) return
+    
+    // Efecto de brillo verde
+    this.tweens.add({
+      targets: this.angleDisplay,
+      tint: 0x00ff00,
+      duration: 200,
+      yoyo: true,
+      repeat: 1
+    })
+    
+    // Efecto de rebote
+    this.tweens.add({
+      targets: this.angleDisplay,
+      scaleX: 1.15,
+      scaleY: 1.15,
+      duration: 180,
+      yoyo: true,
+      repeat: 1,
+      ease: 'Back.Out'
+    })
+  }
+
+  private animateAngleError() {
+    if (!this.angleDisplay) return
+    
+    // Efecto de vibración
+    this.tweens.add({
+      targets: this.angleDisplay,
+      x: '+=8',
+      duration: 50,
+      yoyo: true,
+      repeat: 4
+    })
+    
+    // Efecto de color rojo
+    this.tweens.add({
+      targets: this.angleDisplay,
+      tint: 0xff0000,
+      duration: 200,
+      yoyo: true,
+      repeat: 1
     })
   }
 

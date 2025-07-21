@@ -65,7 +65,7 @@ export class MainMenuScene extends Phaser.Scene {
         this.cameras.main.width / 2,
         80,
         'raster-forge',
-        'Juegos de\nTrigonometría'
+        'JUEGOS DE\nTRIGONOMETRIA'
       )
       .setOrigin(0.5)
       .setScale(3)
@@ -93,11 +93,11 @@ export class MainMenuScene extends Phaser.Scene {
 
     // Botones para los diferentes mini juegos con efectos
     const buttonConfigs = [
-      { text: 'Círculo Unitario', scene: 'UnitCircleScene', color: 0xff4444 },
-      { text: 'Triángulos Rectángulos', scene: 'RightTriangleScene', color: 0x44ff44 },
-      { text: 'Conversión de Ángulos', scene: 'AngleConverterScene', color: 0x4444ff },
-      { text: 'Identidades Trigonométricas', scene: 'TrigIdentitiesScene', color: 0xffaa44 },
-      { text: 'Tipos de Triángulos', scene: 'PlatformerScene', color: 0xff44ff }
+      { text: 'CIRCULO UNITARIO', scene: 'UnitCircleScene', color: 0xff4444 },
+      { text: 'TRIANGULOS RECTANGULOS', scene: 'RightTriangleScene', color: 0x44ff44 },
+      { text: 'CONVERSION DE ANGULOS', scene: 'AngleConverterScene', color: 0x4444ff },
+      { text: 'IDENTIDADES TRIGONOMETRICAS', scene: 'TrigIdentitiesScene', color: 0xffaa44 },
+      { text: 'TIPOS DE TRIANGULOS', scene: 'PlatformerScene', color: 0xff44ff }
     ]
     
     buttonConfigs.forEach((config, index) => {
@@ -107,8 +107,8 @@ export class MainMenuScene extends Phaser.Scene {
         180 + index * 50,
       {
           text: config.text,
-          width: 220,
-          height: 35
+          width: 320,
+          height: 44
       },
         () => this.scene.start(config.scene),
       this
@@ -132,7 +132,7 @@ export class MainMenuScene extends Phaser.Scene {
       this.cameras.main.width / 2,
       430,
       {
-        text: 'Pantalla\ncompleta',
+        text: 'PANTALLA\nCOMPLETA',
         width: 120,
         height: 42
       },
@@ -154,7 +154,7 @@ export class MainMenuScene extends Phaser.Scene {
       this,
       50, 50,
       {
-        text: '← Inicio',
+        text: 'INICIO',
         width: 80,
         height: 30
       },
