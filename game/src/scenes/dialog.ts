@@ -24,124 +24,118 @@ export class DialogScene extends Phaser.Scene {
       bottomRight: `ui-${dialogTextureTheme}-9.png`
     }
 
-    const blockSize = 16
+    const tileBaseSize = 16
 
     const boxPosition = {
-      x: blockSize * 4,
-      y: blockSize * -1.5
+      x: tileBaseSize * 4,
+      y: tileBaseSize * -1.5
+    }
+
+    const boxConfig = {
+      x: boxPosition.x + tileBaseSize * 2,
+      y: boxPosition.y + tileBaseSize * 2,
+      width: tileBaseSize * 37,
+      height: tileBaseSize * 2.8
     }
 
     this.add
-      .sprite(boxPosition.x, boxPosition.y, 'gui-tileset', tileFrames.topLeft)
-      .setOrigin(0)
-      .setScale(2)
-
-    this.add
       .tileSprite(
-        boxPosition.x + blockSize * 2,
-        boxPosition.y,
-        this.cameras.main.width / 2 - blockSize * 6,
-        blockSize,
-        'gui-tileset',
-        tileFrames.top
-      )
-      .setOrigin(0)
-      .setScale(2)
-
-    this.add
-      .sprite(
-        boxPosition.x + blockSize * 38,
-        boxPosition.y,
-        'gui-tileset',
-        tileFrames.topRight
-      )
-      .setOrigin(0)
-      .setScale(2)
-
-    this.add
-      .tileSprite(
-        boxPosition.x,
-        boxPosition.y + blockSize * 2,
-        blockSize,
-        blockSize,
-        'gui-tileset',
-        tileFrames.left
-      )
-      .setOrigin(0)
-      .setScale(2)
-
-    this.add
-      .tileSprite(
-        boxPosition.x + blockSize * 2,
-        boxPosition.y + blockSize * 2,
-        this.cameras.main.width / 2 - 16 * 6,
-        16,
+        boxConfig.x,
+        boxConfig.y,
+        boxConfig.width,
+        boxConfig.height,
         'gui-tileset',
         tileFrames.center
       )
       .setOrigin(0)
-      .setScale(2)
+
+    this.add
+      .sprite(boxConfig.x, boxConfig.y, 'gui-tileset', tileFrames.topLeft)
+      .setOrigin(1, 1)
+
+    this.add
+      .sprite(
+        boxConfig.x + boxConfig.width,
+        boxConfig.y,
+        'gui-tileset',
+        tileFrames.topRight
+      )
+      .setOrigin(0, 1)
+
+    this.add
+      .sprite(
+        boxConfig.x,
+        boxConfig.y + boxConfig.height,
+        'gui-tileset',
+        tileFrames.bottomLeft
+      )
+      .setOrigin(1, 0)
+
+    this.add
+      .sprite(
+        boxConfig.x + boxConfig.width,
+        boxConfig.y + boxConfig.height,
+        'gui-tileset',
+        tileFrames.bottomRight
+      )
+      .setOrigin(0, 0)
 
     this.add
       .tileSprite(
-        boxPosition.x + blockSize * 38,
-        boxPosition.y + blockSize * 2,
-        blockSize,
-        blockSize,
+        boxConfig.x,
+        boxConfig.y,
+        boxConfig.width,
+        tileBaseSize,
+        'gui-tileset',
+        tileFrames.top
+      )
+      .setOrigin(0, 1)
+
+    this.add
+      .tileSprite(
+        boxConfig.x,
+        boxConfig.y,
+        tileBaseSize,
+        boxConfig.height,
+        'gui-tileset',
+        tileFrames.left
+      )
+      .setOrigin(1, 0)
+
+    this.add
+      .tileSprite(
+        boxConfig.x + boxConfig.width,
+        boxConfig.y,
+        tileBaseSize,
+        boxConfig.height,
         'gui-tileset',
         tileFrames.right
       )
       .setOrigin(0)
-      .setScale(2)
 
     this.add
       .tileSprite(
-        boxPosition.x,
-        boxPosition.y + blockSize * 4,
-        blockSize,
-        blockSize,
-        'gui-tileset',
-        tileFrames.bottomLeft
-      )
-      .setOrigin(0)
-      .setScale(2)
-
-    this.add
-      .tileSprite(
-        boxPosition.x + blockSize * 2,
-        boxPosition.y + blockSize * 4,
-        this.cameras.main.width / 2 - 16 * 6,
-        16,
+        boxConfig.x,
+        boxConfig.y + boxConfig.height,
+        boxConfig.width,
+        tileBaseSize,
         'gui-tileset',
         tileFrames.bottom
       )
-      .setOrigin(0)
-      .setScale(2)
-
-    this.add
-      .tileSprite(
-        boxPosition.x + blockSize * 38,
-        boxPosition.y + blockSize * 4,
-        blockSize,
-        blockSize,
-        'gui-tileset',
-        tileFrames.bottomRight
-      )
-      .setOrigin(0)
-      .setScale(2)
+      .setOrigin(0, 0)
 
     // Render content
     this.add.bitmapText(
-      boxPosition.x + blockSize * 4,
-      boxPosition.y + blockSize * 2,
+      boxPosition.x + tileBaseSize * 4,
+      boxPosition.y + tileBaseSize * 2,
       fonts.pixel,
       'Los triángulos equiláteros son aquellos que tienen todos sus lados \niguales.\nRecolecta todos los triángulos equiláteros'
     )
 
     this.add
       .sprite(
-        boxPosition.x + blockSize * 2.5,
-        boxPosition.y + blockSize * 3,
+        boxPosition.x + tileBaseSize * 2.5,
+        boxPosition.y + tileBaseSize * 3,
         'objects',
         'equilatero-1.png'
       )
@@ -150,8 +144,8 @@ export class DialogScene extends Phaser.Scene {
 
     // Controls
     const closeButton = this.add.sprite(
-      boxPosition.x + blockSize * 38,
-      boxPosition.y + blockSize * 4,
+      boxPosition.x + tileBaseSize * 38,
+      boxPosition.y + tileBaseSize * 4,
       'buttons-tileset',
       'orange-square.png'
     )
