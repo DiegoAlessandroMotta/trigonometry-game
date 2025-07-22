@@ -10,16 +10,18 @@ export class DialogScene extends Phaser.Scene {
   }
 
   private drawDialog() {
+    const dialogTextureTheme = 'green'
+
     const tileFrames = {
-      topLeft: 'tile-36.png',
-      top: 'tile-37.png',
-      topRight: 'tile-38.png',
-      left: 'tile-49.png',
-      center: 'tile-50.png',
-      right: 'tile-51.png',
-      bottomLeft: 'tile-59.png',
-      bottom: 'tile-60.png',
-      bottomRight: 'tile-61.png'
+      topLeft: `ui-${dialogTextureTheme}-1.png`,
+      top: `ui-${dialogTextureTheme}-2.png`,
+      topRight: `ui-${dialogTextureTheme}-3.png`,
+      left: `ui-${dialogTextureTheme}-4.png`,
+      center: `ui-${dialogTextureTheme}-5.png`,
+      right: `ui-${dialogTextureTheme}-6.png`,
+      bottomLeft: `ui-${dialogTextureTheme}-7.png`,
+      bottom: `ui-${dialogTextureTheme}-8.png`,
+      bottomRight: `ui-${dialogTextureTheme}-9.png`
     }
 
     const blockSize = 16
@@ -161,7 +163,7 @@ export class DialogScene extends Phaser.Scene {
       closeButton.x,
       closeButton.y - iconOffset,
       'gui-tileset',
-      'icon-10.png'
+      'icon-x-mark.png'
     )
 
     closeButtonIcon.setOrigin(0.5).setScale(2).setScrollFactor(0)

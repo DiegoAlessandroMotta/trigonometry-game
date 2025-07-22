@@ -27,7 +27,7 @@ export class HudScene extends Phaser.Scene {
       this.pauseButton.x,
       this.pauseButton.y - this.pauseButtonIconOffset,
       'gui-tileset',
-      'icon-15.png'
+      'icon-pause.png'
     )
 
     this.pauseButtonIcon.setOrigin(0.5).setScale(2).setScrollFactor(0)
