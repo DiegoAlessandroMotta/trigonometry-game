@@ -11,6 +11,10 @@ export class PlatformerScene extends Phaser.Scene {
   itemsGroup?: Phaser.Physics.Arcade.Group
   isPaused = false
 
+  moveRight = false
+  moveLeft = false
+  jump = false
+
   constructor() {
     super(scenes.platformer)
   }
@@ -46,6 +50,11 @@ export class PlatformerScene extends Phaser.Scene {
 
     this.registerEvents()
 
+    const mainCamera = this.cameras.main
+
+    mainCamera.setZoom(2)
+    mainCamera.startFollow(this.player)
+
     this.scene.launch(scenes.dialog)
   }
 
@@ -66,16 +75,16 @@ export class PlatformerScene extends Phaser.Scene {
     }
 
     if (this.player != null && this.cursors != null) {
-      if (this.cursors.left.isDown) {
+      if (this.cursors.left.isDown || this.moveLeft) {
         this.player.left()
-      } else if (this.cursors.right.isDown) {
+      } else if (this.cursors.right.isDown || this.moveRight) {
         this.player.right()
       } else {
         this.player.idle()
       }
 
-      if (this.cursors.up.isDown) {
-        this.player.jump()
+      if (this.cursors.up.isDown || this.jump) {
+        this.player.airJump()
       }
 
       this.player.update()
@@ -244,11 +253,42 @@ export class PlatformerScene extends Phaser.Scene {
     this.scene.start(scenes.mainMenu)
   }
 
+  moveR() {
+    console.log('move r')
+    this.moveRight = true
+  }
+
+  stopR() {
+    this.moveRight = false
+  }
+
+  moveL() {
+    this.moveLeft = true
+  }
+
+  stopL() {
+    this.moveLeft = false
+  }
+
+  jumpNow() {
+    this.jump = true
+  }
+
+  stopJ() {
+    this.jump = false
+  }
+
   registerEvents() {
     this.events.on(customEvents.scenes.shutdown, this.clearEvents, this)
 
     this.game.events.on(customEvents.pauseGame, this.togglePause, this)
     this.game.events.on(customEvents.showMainMenu, this.goToMainMenu, this)
+    this.game.events.on(customEvents.moveLeft, this.moveL, this)
+    this.game.events.on(customEvents.stopLeft, this.stopL, this)
+    this.game.events.on(customEvents.moveRight, this.moveR, this)
+    this.game.events.on(customEvents.stopRight, this.stopR, this)
+    this.game.events.on(customEvents.jump, this.jumpNow, this)
+    this.game.events.on(customEvents.stopJump, this.stopJ, this)
   }
 
   clearEvents() {
@@ -256,5 +296,12 @@ export class PlatformerScene extends Phaser.Scene {
 
     this.game.events.off(customEvents.pauseGame, this.togglePause, this)
     this.game.events.off(customEvents.showMainMenu, this.goToMainMenu, this)
+    this.game.events.off(customEvents.moveLeft, this.moveL, this)
+    this.game.events.off(customEvents.stopLeft, this.stopL, this)
+    this.game.events.off(customEvents.moveRight, this.moveR, this)
+    this.game.events.off(customEvents.stopRight, this.stopR, this)
+
+    this.game.events.off(customEvents.jump, this.jumpNow, this)
+    this.game.events.off(customEvents.stopJump, this.stopJ, this)
   }
 }
