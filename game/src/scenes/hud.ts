@@ -17,55 +17,6 @@ export class HudScene extends Phaser.Scene {
       'green-square.png'
     )
 
-    this.add
-      .sprite(
-        70,
-        this.cameras.main.height - 30,
-        'buttons-tileset',
-        'gray-square.png'
-      )
-      .setScale(4)
-      .setInteractive()
-      .on('pointerdown', () => {
-        console.log('pointer down')
-        this.game.events.emit(customEvents.moveLeft)
-      })
-      .on('pointerup', () => {
-        this.game.events.emit(customEvents.stopLeft)
-      })
-
-    this.add
-      .sprite(
-        70 * 2,
-        this.cameras.main.height - 30,
-        'buttons-tileset',
-        'gray-square.png'
-      )
-      .setScale(4)
-      .setInteractive()
-      .on('pointerdown', () => {
-        this.game.events.emit(customEvents.moveRight)
-      })
-      .on('pointerup', () => {
-        this.game.events.emit(customEvents.stopRight)
-      })
-
-    this.add
-      .sprite(
-        this.cameras.main.width - 60,
-        this.cameras.main.height - 30,
-        'buttons-tileset',
-        'gray-square.png'
-      )
-      .setScale(4)
-      .setInteractive()
-      .on('pointerdown', () => {
-        this.game.events.emit(customEvents.jump)
-      })
-      .on('pointerup', () => {
-        this.game.events.emit(customEvents.stopJump)
-      })
-
     this.pauseButton
       .setOrigin(0.5)
       .setScale(2)
@@ -108,6 +59,57 @@ export class HudScene extends Phaser.Scene {
       )
     })
   }
+
+  // private renderMobileControls() {
+  //   this.add
+  //     .sprite(
+  //       70,
+  //       this.cameras.main.height - 30,
+  //       'buttons-tileset',
+  //       'gray-square.png'
+  //     )
+  //     .setScale(4)
+  //     .setInteractive()
+  //     .on('pointerdown', () => {
+  //       console.log('pointer down')
+  //       this.game.events.emit(customEvents.moveLeft)
+  //     })
+  //     .on('pointerup', () => {
+  //       this.game.events.emit(customEvents.stopLeft)
+  //     })
+
+  //   this.add
+  //     .sprite(
+  //       70 * 2,
+  //       this.cameras.main.height - 30,
+  //       'buttons-tileset',
+  //       'gray-square.png'
+  //     )
+  //     .setScale(4)
+  //     .setInteractive()
+  //     .on('pointerdown', () => {
+  //       this.game.events.emit(customEvents.moveRight)
+  //     })
+  //     .on('pointerup', () => {
+  //       this.game.events.emit(customEvents.stopRight)
+  //     })
+
+  //   this.add
+  //     .sprite(
+  //       this.cameras.main.width - 60,
+  //       this.cameras.main.height - 30,
+  //       'buttons-tileset',
+  //       'gray-square.png'
+  //     )
+  //     .setScale(4)
+  //     .setInteractive()
+  //     .on('pointerdown', () => {
+  //       this.game.events.emit(customEvents.jump)
+  //     })
+  //     .on('pointerup', () => {
+  //       this.game.events.emit(customEvents.stopJump)
+  //     })
+  // }
 
   private handleClickPauseButton() {
     this.game.events.emit(customEvents.pauseGame)
