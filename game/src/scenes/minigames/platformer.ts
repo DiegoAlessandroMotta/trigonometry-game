@@ -1,4 +1,5 @@
 import { customEvents, scenes } from '@/core/consts'
+import { PlayerInputController } from '@/game-objects/controllers/PlayerInputController'
 import { Player } from '@/game-objects/player'
 
 export class PlatformerScene extends Phaser.Scene {
@@ -6,10 +7,10 @@ export class PlatformerScene extends Phaser.Scene {
   oneWayPlatforms?: Phaser.Physics.Arcade.StaticGroup
   player?: Player
   player2?: Player
-  cursors?: Phaser.Types.Input.Keyboard.CursorKeys
   map?: Phaser.Tilemaps.Tilemap
   itemsGroup?: Phaser.Physics.Arcade.Group
   isPaused = false
+  playerInputController?: PlayerInputController
 
   // moveRight = false
   // moveLeft = false
@@ -26,6 +27,8 @@ export class PlatformerScene extends Phaser.Scene {
     this.drawMap()
 
     this.player = new Player(this, 16 * 8, 16 * 18)
+    this.playerInputController = new PlayerInputController(this, this.player)
+
     this.player.setGravityY(1000)
 
     if (this.itemsGroup == null) {
@@ -43,8 +46,6 @@ export class PlatformerScene extends Phaser.Scene {
       undefined,
       this
     )
-
-    this.cursors = this.input.keyboard?.createCursorKeys()
 
     this.scene.launch(scenes.hud)
 
@@ -64,26 +65,12 @@ export class PlatformerScene extends Phaser.Scene {
     }
   }
 
-  update() {
+  update(time: number, delta: number) {
     if (this.isPaused) {
       return
     }
 
-    if (this.player != null && this.cursors != null) {
-      if (this.cursors.left.isDown) {
-        this.player.left()
-      } else if (this.cursors.right.isDown) {
-        this.player.right()
-      } else {
-        this.player.idle()
-      }
-
-      if (this.cursors.up.isDown) {
-        this.player.jump()
-      }
-
-      this.player.update()
-    }
+    this.playerInputController?.update(time, delta)
   }
 
   togglePause() {
