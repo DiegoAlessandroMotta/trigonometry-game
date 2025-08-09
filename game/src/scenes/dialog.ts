@@ -5,7 +5,6 @@ interface DialogPage {
   textContent: string
   illustrations: {
     texture: string
-    animationKey?: string
     frame?: string
     width?: number
     height?: number
@@ -47,8 +46,14 @@ export class DialogScene extends Phaser.Scene {
   private prevButtonIconTexture = 'icon-arrow-left.png'
   private closeButtonIconTexture = 'icon-x-mark.png'
   private backgroundScale = 2
-  private padding = 8
+  private contentPadding = 0
+  private contentGap = 8
+  private illustrationsMarginTop = 32
+  private navigationPadding = 8
+  private navigationGap = 8
   private iconButtonYOffset = 4
+  private dialogYOffset = 0
+  private containerYOffset = -6
 
   constructor() {
     super(scenes.dialog)
@@ -67,7 +72,7 @@ export class DialogScene extends Phaser.Scene {
 
     this.position.x = (this.cameras.main.width - this.width) / 2
     this.position.y =
-      (this.cameras.main.height - this.height) / 2 - this.backgroundScale * 8
+      (this.cameras.main.height - this.height) / 2 + this.dialogYOffset
   }
 
   public create() {
@@ -88,14 +93,14 @@ export class DialogScene extends Phaser.Scene {
     this.drawDialogBackground()
     this.drawNavigationButtons()
 
-    const dialogInnerX = this.position.x
-    const dialogInnerY = this.position.y
-    const dialogInnerWidth = this.width
-    const dialogInnerHeight = this.height
+    const dialogContentAreaX = this.position.x
+    const dialogContentAreaY = this.position.y
+    const dialogContentAreaWidth = this.width
+    const dialogContentAreaHeight = this.height
 
     this.pageContentContainer = this.add.container(
-      dialogInnerX + dialogInnerWidth / 2,
-      dialogInnerY + dialogInnerHeight / 2
+      dialogContentAreaX + dialogContentAreaWidth / 2,
+      dialogContentAreaY + dialogContentAreaHeight / 2 + this.containerYOffset
     )
 
     this.renderPageContent()
@@ -117,19 +122,12 @@ export class DialogScene extends Phaser.Scene {
     }
     const tileBaseSize = 16
 
-    const boxConfig = {
-      x: this.position.x + tileBaseSize,
-      y: this.position.y + tileBaseSize,
-      width: this.width,
-      height: this.height
-    }
-
     this.add
       .tileSprite(
-        boxConfig.x,
-        boxConfig.y,
-        boxConfig.width / this.backgroundScale,
-        boxConfig.height / this.backgroundScale,
+        this.position.x,
+        this.position.y,
+        this.width / this.backgroundScale,
+        this.height / this.backgroundScale,
         'gui-tileset',
         tileFrames.center
       )
@@ -137,14 +135,19 @@ export class DialogScene extends Phaser.Scene {
       .setScale(this.backgroundScale)
 
     this.add
-      .sprite(boxConfig.x, boxConfig.y, 'gui-tileset', tileFrames.topLeft)
+      .sprite(
+        this.position.x,
+        this.position.y,
+        'gui-tileset',
+        tileFrames.topLeft
+      )
       .setOrigin(1, 1)
       .setScale(this.backgroundScale)
 
     this.add
       .sprite(
-        boxConfig.x + boxConfig.width,
-        boxConfig.y,
+        this.position.x + this.width,
+        this.position.y,
         'gui-tileset',
         tileFrames.topRight
       )
@@ -153,8 +156,8 @@ export class DialogScene extends Phaser.Scene {
 
     this.add
       .sprite(
-        boxConfig.x,
-        boxConfig.y + boxConfig.height,
+        this.position.x,
+        this.position.y + this.height,
         'gui-tileset',
         tileFrames.bottomLeft
       )
@@ -163,8 +166,8 @@ export class DialogScene extends Phaser.Scene {
 
     this.add
       .sprite(
-        boxConfig.x + boxConfig.width,
-        boxConfig.y + boxConfig.height,
+        this.position.x + this.width,
+        this.position.y + this.height,
         'gui-tileset',
         tileFrames.bottomRight
       )
@@ -173,9 +176,9 @@ export class DialogScene extends Phaser.Scene {
 
     this.add
       .tileSprite(
-        boxConfig.x,
-        boxConfig.y,
-        boxConfig.width / this.backgroundScale,
+        this.position.x,
+        this.position.y,
+        this.width / this.backgroundScale,
         tileBaseSize,
         'gui-tileset',
         tileFrames.top
@@ -185,10 +188,10 @@ export class DialogScene extends Phaser.Scene {
 
     this.add
       .tileSprite(
-        boxConfig.x,
-        boxConfig.y,
+        this.position.x,
+        this.position.y,
         tileBaseSize,
-        boxConfig.height / this.backgroundScale,
+        this.height / this.backgroundScale,
         'gui-tileset',
         tileFrames.left
       )
@@ -197,21 +200,21 @@ export class DialogScene extends Phaser.Scene {
 
     this.add
       .tileSprite(
-        boxConfig.x + boxConfig.width,
-        boxConfig.y,
+        this.position.x + this.width,
+        this.position.y,
         tileBaseSize,
-        boxConfig.height / this.backgroundScale,
+        this.height / this.backgroundScale,
         'gui-tileset',
         tileFrames.right
       )
-      .setOrigin(0)
+      .setOrigin(0, 0)
       .setScale(this.backgroundScale)
 
     this.add
       .tileSprite(
-        boxConfig.x,
-        boxConfig.y + boxConfig.height,
-        boxConfig.width / this.backgroundScale,
+        this.position.x,
+        this.position.y + this.height,
+        this.width / this.backgroundScale,
         tileBaseSize,
         'gui-tileset',
         tileFrames.bottom
@@ -230,17 +233,16 @@ export class DialogScene extends Phaser.Scene {
 
     const currentPageData = this.pages[this.currentPage]
 
-    const padding = this.padding
-    const contentAreaWidth = this.width - padding * 2
-    const contentAreaHeight = this.height - padding * 2
+    const contentAreaWidth = this.width
+    const contentAreaHeight = this.height
 
-    const contentTopLeftX = -contentAreaWidth / 2
-    const contentTopLeftY = -contentAreaHeight / 2
+    const containerLeftEdge = -contentAreaWidth / 2
+    const containerTopEdge = -contentAreaHeight / 2
 
     const titleText = this.add
       .bitmapText(
-        contentTopLeftX + padding / 2,
-        contentTopLeftY + padding / 2,
+        containerLeftEdge + this.contentPadding,
+        containerTopEdge + this.contentPadding,
         fonts.pixel,
         currentPageData.title
       )
@@ -250,8 +252,8 @@ export class DialogScene extends Phaser.Scene {
 
     const textContent = this.add
       .bitmapText(
-        contentTopLeftX + padding / 2,
-        titleText.y + titleText.height + padding / 2,
+        containerLeftEdge + this.contentPadding,
+        titleText.y + titleText.height + this.contentGap,
         fonts.pixel,
         currentPageData.textContent
       )
@@ -259,47 +261,85 @@ export class DialogScene extends Phaser.Scene {
       .setMaxWidth(contentAreaWidth)
     this.pageContentContainer.add(textContent)
 
-    let currentIllustrationY = textContent.y + textContent.height + padding
+    const illustrationRowY =
+      textContent.y + textContent.height + this.illustrationsMarginTop
+
+    let totalIllustrationsWidth = 0
+    const illustrationSpacing = 8
+
+    const scaledIllustrations: {
+      sprite: Phaser.GameObjects.Image
+      effectiveWidth: number
+    }[] = []
 
     currentPageData.illustrations.forEach((illustration) => {
-      const illustrationSprite = this.add.image(
+      const tempSprite = this.add.image(
         0,
-        currentIllustrationY,
+        0,
         illustration.texture,
         illustration.frame
       )
 
+      let currentScale = 1
+      if (illustration.scale != null) {
+        currentScale = illustration.scale
+      } else if (illustration.width && illustration.height) {
+        currentScale = Math.min(
+          illustration.width / tempSprite.width,
+          illustration.height / tempSprite.height
+        )
+      } else if (illustration.width) {
+        currentScale = illustration.width / tempSprite.width
+      } else if (illustration.height) {
+        currentScale = illustration.height / tempSprite.height
+      }
+
+      tempSprite.setScale(currentScale)
+
+      scaledIllustrations.push({
+        sprite: tempSprite,
+        effectiveWidth: tempSprite.displayWidth
+      })
+      tempSprite.destroy()
+    })
+
+    scaledIllustrations.forEach((item, index) => {
+      totalIllustrationsWidth += item.effectiveWidth
+
+      if (index < scaledIllustrations.length - 1) {
+        totalIllustrationsWidth += illustrationSpacing
+      }
+    })
+
+    let currentIllustrationX =
+      -totalIllustrationsWidth / 2 + this.contentPadding
+
+    scaledIllustrations.forEach((item, index) => {
+      const illustrationSprite = this.add.image(
+        currentIllustrationX + item.effectiveWidth / 2,
+        illustrationRowY,
+        currentPageData.illustrations[index].texture,
+        currentPageData.illustrations[index].frame
+      )
       illustrationSprite.setOrigin(0.5, 0)
+
+      illustrationSprite.setScale(item.sprite.scaleX)
 
       this.pageContentContainer.add(illustrationSprite)
 
-      if (illustration.scale != null) {
-        illustrationSprite.setScale(illustration.scale)
-      } else if (illustration.width && illustration.height) {
-        illustrationSprite.displayWidth = illustration.width
-        illustrationSprite.displayHeight = illustration.height
-      } else if (illustration.width) {
-        illustrationSprite.displayWidth = illustration.width
-        illustrationSprite.scaleY = illustrationSprite.scaleX
-      } else if (illustration.height) {
-        illustrationSprite.displayHeight = illustration.height
-        illustrationSprite.scaleX = illustrationSprite.scaleY
-      }
-
-      currentIllustrationY += illustrationSprite.displayHeight + padding / 2
+      currentIllustrationX += item.effectiveWidth + illustrationSpacing
     })
 
     this.updateNavigationButtons()
   }
 
   private drawNavigationButtons() {
-    const tileBaseSize = 16
-    const dialogRightEdge = this.position.x + tileBaseSize + this.width
-    const dialogBottomEdge = this.position.y + tileBaseSize + this.height
+    const dialogRightEdge = this.position.x + this.width
+    const dialogBottomEdge = this.position.y + this.height
 
     this.nextButton = this.add.sprite(
-      dialogRightEdge - tileBaseSize / 2,
-      dialogBottomEdge - tileBaseSize / 2,
+      dialogRightEdge - this.navigationPadding,
+      dialogBottomEdge - this.navigationPadding,
       'buttons-tileset',
       this.buttonsTextureTheme.normal
     )
@@ -342,9 +382,11 @@ export class DialogScene extends Phaser.Scene {
       this.nextButtonIcon.setY(this.nextButton.y - this.iconButtonYOffset)
     })
 
+    const nextButtonLeftEdge = this.nextButton.x - this.nextButton.width * 2
+
     this.prevButton = this.add.sprite(
-      dialogRightEdge - tileBaseSize * 3,
-      dialogBottomEdge - tileBaseSize / 2,
+      nextButtonLeftEdge - this.navigationGap,
+      dialogBottomEdge - this.navigationPadding,
       'buttons-tileset',
       this.buttonsTextureTheme.normal
     )
