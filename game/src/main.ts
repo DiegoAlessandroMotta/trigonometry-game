@@ -1,4 +1,4 @@
-import Phaser from 'phaser'
+import { Game } from 'phaser'
 import '@/style.css'
 import { gameConfig } from './core/game-config'
 
@@ -10,4 +10,4 @@ if (!(app instanceof HTMLDivElement)) {
 const $gameCanvas = document.createElement('canvas')
 app.appendChild($gameCanvas)
 
-new Phaser.Game({ ...gameConfig, canvas: $gameCanvas })
+new Game({ ...gameConfig, canvas: $gameCanvas })
