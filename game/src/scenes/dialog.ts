@@ -3,7 +3,8 @@ import { customEvents, fonts, scenes } from '@/core/consts'
 interface DialogPage {
   title: string
   textContent: string
-  illustrations: {
+  illustrationMarginTop?: number
+  illustrations?: {
     texture: string
     frame?: string
     width?: number
@@ -48,7 +49,6 @@ export class DialogScene extends Phaser.Scene {
   private backgroundScale = 2
   private contentPadding = 0
   private contentGap = 8
-  private illustrationsMarginTop = 32
   private navigationPadding = 8
   private navigationGap = 8
   private iconButtonYOffset = 4
@@ -262,7 +262,9 @@ export class DialogScene extends Phaser.Scene {
     this.pageContentContainer.add(textContent)
 
     const illustrationRowY =
-      textContent.y + textContent.height + this.illustrationsMarginTop
+      textContent.y +
+      textContent.height +
+      (currentPageData.illustrationMarginTop ?? 0)
 
     let totalIllustrationsWidth = 0
     const illustrationSpacing = 8
@@ -272,7 +274,7 @@ export class DialogScene extends Phaser.Scene {
       effectiveWidth: number
     }[] = []
 
-    currentPageData.illustrations.forEach((illustration) => {
+    currentPageData.illustrations?.forEach((illustration) => {
       const tempSprite = this.add.image(
         0,
         0,
@@ -315,6 +317,10 @@ export class DialogScene extends Phaser.Scene {
       -totalIllustrationsWidth / 2 + this.contentPadding
 
     scaledIllustrations.forEach((item, index) => {
+      if (currentPageData.illustrations == null) {
+        return
+      }
+
       const illustrationSprite = this.add.image(
         currentIllustrationX + item.effectiveWidth / 2,
         illustrationRowY,
