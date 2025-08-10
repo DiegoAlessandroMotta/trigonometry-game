@@ -1,6 +1,7 @@
 import { customEvents, scenes } from '@/core/consts'
 import { PlayerInputController } from '@/game-objects/controllers/PlayerInputController'
 import { Player } from '@/game-objects/player'
+import dialogPages from '@/dialogs-pages/platformer.json'
 
 export class PlatformerScene extends Phaser.Scene {
   platforms?: Phaser.Physics.Arcade.StaticGroup
@@ -51,7 +52,10 @@ export class PlatformerScene extends Phaser.Scene {
 
     this.registerEvents()
 
-    this.scene.launch(scenes.dialog)
+    this.scene.launch(scenes.dialog, {
+      height: 16 * 10,
+      pages: dialogPages
+    })
   }
 
   collectItem: Phaser.Types.Physics.Arcade.ArcadePhysicsCallback = (

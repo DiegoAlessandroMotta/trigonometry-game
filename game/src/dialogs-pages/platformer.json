@@ -1,0 +1,54 @@
+[
+	{
+		"title": "¡Bienvenido, aventurero!",
+		"textContent": "¡Es hora de una nueva aventura matemática! En este nivel, necesitarás tus ojos de detective y un poco de ingenio trigonométrico."
+	},
+	{
+		"title": "Triángulos Equiláteros",
+		"textContent": "Tu misión principal es encontrar todos los triángulos equiláteros que están escondidos por el mapa. ¡Cada uno que encuentres te acercará a la victoria!",
+		"illustrationMarginTop": 16,
+		"illustrations": [
+			{
+				"texture": "objects",
+				"frame": "equilatero-1.png",
+				"scale": 4
+			}
+		]
+	},
+	{
+		"title": "¿Qué es un Triángulo Equilátero?",
+		"textContent": "Un triángulo equilátero es muy especial porque todos sus lados son iguales en longitud y todos sus ángulos interiores miden exactamente 60 grados.",
+		"illustrationMarginTop": 16,
+		"illustrations": [
+			{
+				"texture": "objects",
+				"frame": "equilatero-1.png",
+				"scale": 4
+			}
+		]
+	},
+	{
+		"title": "¡Presta Atención!",
+		"textContent": "A veces, otros triángulos pueden parecerse, pero no todos son equiláteros. Fíjate bien en sus lados y ángulos para no confundirte.",
+		"illustrationMarginTop": 16,
+		"illustrations": [
+			{
+				"texture": "objects",
+				"frame": "escaleno-1.png",
+				"scale": 4
+			}
+		]
+	},
+	{
+		"title": "Objetivo del Nivel",
+		"textContent": "Recolecta todos los triángulos equiláteros para abrir el camino a la siguiente aventura. ¡Usa tus habilidades de salto y tu conocimiento para lograrlo! ¡Mucha suerte!",
+		"illustrationMarginTop": 16,
+		"illustrations": [
+			{
+				"texture": "objects",
+				"frame": "equilatero-1.png",
+				"scale": 4
+			}
+		]
+	}
+]
