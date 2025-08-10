@@ -1,321 +1,375 @@
+import { customEvents, scenes } from '@/core/consts'
+import { PlayerInputController } from '@/game-objects/controllers/PlayerInputController'
 import { Player } from '@/game-objects/player'
+import dialogInitial from '@/dialogs-pages/platformer.json'
+import dialogFinal from '@/dialogs-pages/platformer-complete.json'
 
 export class PlatformerScene extends Phaser.Scene {
   platforms?: Phaser.Physics.Arcade.StaticGroup
+  oneWayPlatforms?: Phaser.Physics.Arcade.StaticGroup
   player?: Player
-  cursors?: Phaser.Types.Input.Keyboard.CursorKeys
+  player2?: Player
   map?: Phaser.Tilemaps.Tilemap
-  triangles: { graphic: Phaser.GameObjects.Graphics, type: string }[] = []
-  triangleActive: Phaser.GameObjects.Graphics | null = null
-  triangleTypeActive: string | null = null
-  questions: { question: string, options: string[], answer: string }[] = []
-  currentQuestionIndex: number = 0
-  correctAnswers: number = 0
-  questionText?: Phaser.GameObjects.Text
-  optionTexts: Phaser.GameObjects.Text[] = []
-  overlay?: Phaser.GameObjects.Rectangle
+  itemsGroup?: Phaser.Physics.Arcade.Group
+  isPaused = false
+  playerInputController?: PlayerInputController
+  endFlagGroup?: Phaser.Physics.Arcade.Group
+  totalItems: number = 0
+  itemsCollected: number = 0
+
+  // moveRight = false
+  // moveLeft = false
+  // jump = false
 
   constructor() {
-    super('PlatformerScene')
+    super(scenes.platformer)
   }
 
   create() {
-    // Fondo visual llamativo
-    const bg = this.add.graphics()
-    bg.fillGradientStyle(0x181c2b, 0x2c274d, 0x1a2a3a, 0x23243a, 1)
-    bg.fillRect(0, 0, 800, 480)
-    // Estrellas o detalles
-    for (let i = 0; i < 40; i++) {
-      const color = Phaser.Display.Color.RandomRGB().color;
-      bg.fillStyle(color, 0.25 + Math.random() * 0.5)
-      bg.fillCircle(Math.random() * 800, Math.random() * 480, 1 + Math.random() * 2)
-    }
+    this.isPaused = false
+    this.itemsGroup = this.physics.add.group()
+    this.endFlagGroup = this.physics.add.group()
+
     this.drawMap()
 
-    this.player = new Player(this, 16, 16 * 8)
+    this.player = new Player(this, 16 * 8, 16 * 18)
+    this.playerInputController = new PlayerInputController(this, this.player)
+
     this.player.setGravityY(1000)
 
-    this.cursors = this.input.keyboard?.createCursorKeys()
+    if (this.itemsGroup == null) {
+      throw new Error(
+        'Items group is undefined, did you forget to initialize it?'
+      )
+    }
 
     this.addMapCollides()
 
-    this.add
-      .bitmapText(750, 18, 'raster-forge', 'II')
-      .setOrigin(0.5)
-      .setScale(4)
-      .setInteractive()
-      .setScrollFactor(0)
-      .on('pointerdown', () => {
-        this.pauseGameAndShowMenu()
+    this.physics.add.overlap(
+      this.player,
+      this.itemsGroup,
+      this.collectItem,
+      undefined,
+      this
+    )
+
+    this.physics.add.overlap(
+      this.player,
+      this.endFlagGroup,
+      this.endLevel,
+      undefined,
+      this
+    )
+
+    this.scene.launch(scenes.hud)
+
+    this.scene.launch(scenes.dialog, {
+      height: 16 * 10,
+      pages: dialogInitial
+    })
+
+    this.registerEvents()
+  }
+
+  collectItem: Phaser.Types.Physics.Arcade.ArcadePhysicsCallback = (
+    _player,
+    item
+  ) => {
+    const itemSprite = item as Phaser.Physics.Arcade.Sprite
+
+    //   if (itemSprite?.body instanceof Phaser.Physics.Arcade.Body) {
+    const alreadyCollected = Boolean(itemSprite.data.get('collected'))
+
+    if (!alreadyCollected) {
+      itemSprite.data.set('collected', true)
+      itemSprite.setVisible(false)
+      this.itemsCollected++
+    }
+    // }
+  }
+
+  endLevel: Phaser.Types.Physics.Arcade.ArcadePhysicsCallback = (
+    _player,
+    item
+  ) => {
+    if (this.itemsCollected < this.totalItems) {
+      return
+    }
+
+    const itemSprite = item as Phaser.Physics.Arcade.Sprite
+
+    if (itemSprite?.body instanceof Phaser.Physics.Arcade.Body) {
+      itemSprite.play('flag-idle', true)
+
+      this.time.delayedCall(50, () => {
+        if (this.player != null) {
+          this.player.controlsEnabled = false
+          this.player.idle()
+        }
       })
 
-    this.input.keyboard?.on('keydown-ESC', () => {
-      this.pauseGameAndShowMenu()
-    })
-
-    // Agregar triángulos en lugares llamativos
-    this.addTriangles()
-    // Suelo sólido en la parte inferior
-    const ground = this.add.rectangle(400, 472, 800, 32, 0x4422aa, 1)
-    this.physics.add.existing(ground, true)
-    this.platforms.add(ground)
+      this.time.delayedCall(250, () => {
+        this.scene.launch(scenes.dialog, {
+          height: 16 * 12,
+          pages: dialogFinal,
+          nextScene: scenes.mainMenu
+        })
+      })
+    }
   }
 
-  addTriangles() {
-    const triangleTypes = [
-      { type: 'Equilátero', color: 0x00c3ff },
-      { type: 'Isósceles', color: 0x43cea2 },
-      { type: 'Escaleno', color: 0xffaf7b },
-      { type: 'Rectángulo', color: 0xd76d77 },
-      { type: 'Acutángulo', color: 0x7f53ac },
-      { type: 'Obtusángulo', color: 0xff61a6 }
-    ]
-    Phaser.Utils.Array.Shuffle(triangleTypes)
-    const positions = [
-      { x: 200, y: 400 },
-      { x: 400, y: 320 },
-      { x: 600, y: 250 },
-      { x: 300, y: 180 },
-      { x: 500, y: 120 },
-      { x: 700, y: 80 }
-    ]
-    triangleTypes.forEach((data, i) => {
-      const pos = positions[i]
-      const tri = this.add.graphics()
-      tri.fillStyle(data.color, 1)
-      tri.lineStyle(3, 0xffffff, 1)
-      tri.beginPath()
-      if (data.type === 'Equilátero') {
-        tri.moveTo(0, 0)
-        tri.lineTo(40, 0)
-        tri.lineTo(20, -34.64)
-        tri.closePath()
-      } else if (data.type === 'Isósceles') {
-        tri.moveTo(0, 0)
-        tri.lineTo(40, 0)
-        tri.lineTo(20, -50)
-        tri.closePath()
-      } else if (data.type === 'Escaleno') {
-        tri.moveTo(0, 0)
-        tri.lineTo(40, 0)
-        tri.lineTo(30, -40)
-        tri.closePath()
-      } else if (data.type === 'Rectángulo') {
-        tri.moveTo(0, 0)
-        tri.lineTo(40, 0)
-        tri.lineTo(0, -30)
-        tri.closePath()
-      } else if (data.type === 'Acutángulo') {
-        tri.moveTo(0, 0)
-        tri.lineTo(40, 0)
-        tri.lineTo(25, -45)
-        tri.closePath()
-      } else if (data.type === 'Obtusángulo') {
-        tri.moveTo(0, 0)
-        tri.lineTo(40, 0)
-        tri.lineTo(35, -15)
-        tri.closePath()
-      }
-      tri.fillPath()
-      tri.strokePath()
-      tri.x = pos.x
-      tri.y = pos.y
-      this.physics.add.existing(tri)
-      this.triangles.push({ graphic: tri, type: data.type })
-      // Nombre del triángulo
-      this.add.text(pos.x + 20, pos.y + 10, data.type, { fontSize: '16px', color: '#fff', fontStyle: 'bold', stroke: '#000', strokeThickness: 3 }).setOrigin(0.5, 0)
-    })
+  update(time: number, delta: number) {
+    if (this.isPaused) {
+      return
+    }
+
+    this.playerInputController?.update(time, delta)
   }
 
-  private drawMap() {
-    this.map = this.make.tilemap({ key: 'level1' });
-    const tileset = this.map.addTilesetImage('platforms', 'tiles');
+  togglePause() {
+    this.isPaused = !this.isPaused
 
+    if (this.isPaused) {
+      this.physics.pause()
+      this.scene.pause(scenes.platformer)
+    } else {
+      this.physics.resume()
+      this.scene.resume(scenes.platformer)
+    }
+  }
+
+  drawMap() {
+    this.add
+      .tileSprite(
+        0,
+        0,
+        this.cameras.main.width,
+        this.cameras.main.height,
+        'bg-tileset',
+        '6.png'
+      )
+      .setOrigin(0)
+
+    this.map = this.make.tilemap({ key: 'level1' })
+
+    const tileset = this.map.addTilesetImage('platforms', 'tiles')
     if (tileset == null) {
-      throw new Error('Tileset is undefined, did you forget to load it?');
+      throw new Error('tileset image not found')
     }
 
-    const groundLayer = this.map.createLayer('Ground', tileset, 0, 0);
+    // const objectsTileset = this.map.addTilesetImage('objects', 'objects')
+    // if (objectsTileset == null) {
+    //   throw new Error('objectsTileset image not found')
+    // }
 
-    if (groundLayer == null) {
-      throw new Error('Ground layer is undefined, did you forget to create it?');
-    }
+    this.map.createLayer('platforms', tileset, 0, 0)
 
-    groundLayer.setCollisionByProperty({ collides: true });
+    this.map
+      .createFromObjects('objects', {
+        key: 'objects'
+        // frame: 'triangle-1.png'
+      })
+      .forEach((obj) => {
+        if (!(obj instanceof Phaser.GameObjects.Sprite)) {
+          return
+        }
 
-    this.platforms = this.physics.add.staticGroup();
-    // Si quieres agregar plataformas manuales debajo de los triángulos, puedes hacerlo aquí (actualmente solo tilemap)
+        let totalFrames = 1
+        let animationKey = ''
+
+        const triangleType = obj.data?.get('triangleType')
+        const objType = obj.data?.get('objType')
+
+        if (triangleType != null) {
+          if (triangleType === 'equilatero') {
+            animationKey = 'equilatero-floating'
+            totalFrames = 7
+          } else if (triangleType === 'isoceles') {
+            animationKey = 'isoceles-floating'
+            totalFrames = 7
+          } else if (triangleType === 'escaleno') {
+            animationKey = 'escaleno-floating'
+            totalFrames = 7
+          } else {
+            throw new Error('Unkown object type (triangle object)')
+          }
+        } else if (objType != null) {
+          switch (objType) {
+            case 'pointer':
+              animationKey = 'pointer-idle'
+              totalFrames = 7
+              break
+            case 'flag':
+              animationKey = 'white-flag-idle'
+              totalFrames = 7
+              break
+            default:
+              throw new Error('Unkown object type (general object)')
+          }
+        }
+
+        const randomStartFrame = Phaser.Math.Between(0, totalFrames - 1)
+        obj.setScale(1)
+
+        if (animationKey != null) {
+          obj.play({
+            key: animationKey,
+            startFrame: randomStartFrame,
+            repeat: -1
+          })
+        }
+
+        // this.physics.world.enable(obj)
+
+        if (triangleType != null) {
+          this.itemsGroup?.add(obj)
+          this.totalItems++
+        } else if (objType === 'flag') {
+          this.endFlagGroup?.add(obj)
+        }
+      })
   }
 
   addMapCollides() {
-    if (this.player == null) {
-      throw new Error('Player is undefined, did you forget to initialize it?')
-    }
+    this.platforms = this.physics.add.staticGroup()
+    this.oneWayPlatforms = this.physics.add.staticGroup()
 
-    if (this.platforms == null) {
-      throw new Error('Platforms is undefined, did you forget to initialize it?')
+    this.map?.getObjectLayer('collides')?.objects.forEach((obj) => {
+      let platform: Phaser.GameObjects.Sprite | undefined
+
+      if (
+        obj.properties?.find(
+          (i: { name: string; value: any }) => i.name === 'oneWay'
+        )?.value
+      ) {
+        platform = this.oneWayPlatforms?.create(obj.x, obj.y, '__DEFAULT')
+      } else {
+        platform = this.platforms?.create(obj.x, obj.y, '__DEFAULT')
+      }
+
+      platform
+        ?.setOrigin(0, 0)
+        .setDisplaySize(obj.width ?? 0, obj.height ?? 0)
+        .setVisible(false)
+
+      if (platform?.body instanceof Phaser.Physics.Arcade.StaticBody) {
+        platform.body.setSize(obj.width, obj.height)
+      }
+    })
+
+    this.platforms?.refresh()
+    this.oneWayPlatforms?.refresh()
+
+    if (this.player == null) {
+      throw new Error('Player not created yet')
     }
 
     this.physics.add.collider(this.player, this.platforms)
 
-    // Colisión con triángulos
-    this.triangles.forEach(t => {
-      this.physics.add.overlap(this.player, t.graphic, (player, triangle) => this.onTriangleOverlap(player, triangle, t.type), undefined, this)
-    })
+    this.physics.add.collider(
+      this.player,
+      this.oneWayPlatforms,
+      undefined,
+      this.processOneWayPlatform,
+      this
+    )
   }
 
-  onTriangleOverlap(player: Phaser.GameObjects.GameObject, triangle: Phaser.GameObjects.GameObject, type: string) {
-    if (this.triangleActive) return // Ya está respondiendo preguntas
-    this.triangleActive = triangle as Phaser.GameObjects.Graphics
-    this.triangleTypeActive = type
-    this.player?.setVelocity(0, 0)
-    this.player!.body.enable = false
-    this.showTriangleQuestions(type)
-  }
-
-  showTriangleQuestions(type: string) {
-    // Preguntas específicas por tipo
-    const questionBank: Record<string, { question: string, options: string[], answer: string }[]> = {
-      'Equilátero': [
-        { question: '¿Cuántos lados tiene un triángulo equilátero iguales?', options: ['2', '3', '1'], answer: '3' },
-        { question: '¿Cuántos ángulos iguales tiene un triángulo equilátero?', options: ['2', '3', '1'], answer: '3' },
-        { question: '¿Qué tipo de triángulo tiene todos sus lados y ángulos iguales?', options: ['Equilátero', 'Isósceles', 'Escaleno'], answer: 'Equilátero' }
-      ],
-      'Isósceles': [
-        { question: '¿Cuántos lados iguales tiene un triángulo isósceles?', options: ['2', '3', '1'], answer: '2' },
-        { question: '¿Cuántos ángulos iguales tiene un triángulo isósceles?', options: ['2', '3', '1'], answer: '2' },
-        { question: '¿Qué tipo de triángulo tiene dos lados iguales?', options: ['Equilátero', 'Isósceles', 'Escaleno'], answer: 'Isósceles' }
-      ],
-      'Escaleno': [
-        { question: '¿Cuántos lados iguales tiene un triángulo escaleno?', options: ['0', '1', '2'], answer: '0' },
-        { question: '¿Cuántos ángulos iguales tiene un triángulo escaleno?', options: ['0', '1', '2'], answer: '0' },
-        { question: '¿Qué tipo de triángulo tiene todos sus lados diferentes?', options: ['Equilátero', 'Isósceles', 'Escaleno'], answer: 'Escaleno' }
-      ],
-      'Rectángulo': [
-        { question: '¿Cuántos ángulos rectos tiene un triángulo rectángulo?', options: ['1', '2', '3'], answer: '1' },
-        { question: '¿Qué tipo de triángulo tiene un ángulo de 90°?', options: ['Rectángulo', 'Acutángulo', 'Obtusángulo'], answer: 'Rectángulo' },
-        { question: '¿Cuántos lados puede tener un triángulo rectángulo iguales?', options: ['2', '3', '1'], answer: '2' }
-      ],
-      'Acutángulo': [
-        { question: '¿Cuántos ángulos agudos tiene un triángulo acutángulo?', options: ['1', '2', '3'], answer: '3' },
-        { question: '¿Qué tipo de triángulo tiene todos sus ángulos menores de 90°?', options: ['Acutángulo', 'Rectángulo', 'Obtusángulo'], answer: 'Acutángulo' },
-        { question: '¿Cuántos lados iguales puede tener un triángulo acutángulo?', options: ['0', '1', '2', '3'], answer: 'Cualquiera' }
-      ],
-      'Obtusángulo': [
-        { question: '¿Cuántos ángulos obtusos tiene un triángulo obtusángulo?', options: ['1', '2', '3'], answer: '1' },
-        { question: '¿Qué tipo de triángulo tiene un ángulo mayor de 90°?', options: ['Obtusángulo', 'Acutángulo', 'Rectángulo'], answer: 'Obtusángulo' },
-        { question: '¿Cuántos lados iguales puede tener un triángulo obtusángulo?', options: ['0', '1', '2', '3'], answer: 'Cualquiera' }
-      ]
+  processOneWayPlatform: Phaser.Types.Physics.Arcade.ArcadePhysicsCallback = (
+    playerRef,
+    platform
+  ) => {
+    if (!(playerRef instanceof Player)) {
+      throw new Error('player is not an instance of Player')
     }
-    const questions = questionBank[type] || []
-    Phaser.Utils.Array.Shuffle(questions)
-    this.questions = questions.slice(0, 3)
-    this.currentQuestionIndex = 0
-    this.correctAnswers = 0
-    this.showQuestion()
-  }
 
-  showQuestion() {
-    if (this.overlay) this.overlay.destroy()
-    if (this.questionText) this.questionText.destroy()
-    this.optionTexts.forEach(t => t.destroy())
-    this.optionTexts = []
-    this.overlay = this.add.rectangle(384, 216, 500, 200, 0x000000, 0.8).setScrollFactor(0)
-    const q = this.questions[this.currentQuestionIndex]
-    this.questionText = this.add.text(384, 170, q.question, { fontSize: '22px', color: '#fff', align: 'center' }).setOrigin(0.5)
-    q.options.forEach((opt, i) => {
-      const optText = this.add.text(384, 220 + i * 40, opt, { fontSize: '20px', color: '#ffff00', backgroundColor: '#222', padding: { left: 10, right: 10, top: 4, bottom: 4 } })
-        .setOrigin(0.5)
-        .setInteractive()
-        .on('pointerdown', () => this.checkAnswer(opt))
-      this.optionTexts.push(optText)
-    })
-  }
-
-  checkAnswer(opt: string) {
-    const q = this.questions[this.currentQuestionIndex]
-    if (opt === q.answer) {
-      this.correctAnswers++
+    if (!(platform instanceof Phaser.GameObjects.Sprite)) {
+      throw new Error('The platform is not an sprite')
     }
-    this.currentQuestionIndex++
-    if (this.currentQuestionIndex < this.questions.length) {
-      this.showQuestion()
-    } else {
-      this.finishQuestions()
+
+    if (!(platform.body instanceof Phaser.Physics.Arcade.StaticBody)) {
+      throw new Error("The platform doesn't have a body")
     }
-  }
 
-  finishQuestions() {
-    if (this.overlay) this.overlay.destroy()
-    if (this.questionText) this.questionText.destroy()
-    this.optionTexts.forEach(t => t.destroy())
-    this.optionTexts = []
-    if (this.correctAnswers === this.questions.length && this.triangleActive) {
-      // Efecto visual de partículas
-      const x = this.triangleActive.x + 20;
-      const y = this.triangleActive.y - 20;
-      for (let i = 0; i < 18; i++) {
-        const color = Phaser.Display.Color.RandomRGB().color;
-        const particle = this.add.circle(
-          x + (Math.random() - 0.5) * 40,
-          y + (Math.random() - 0.5) * 40,
-          3 + Math.random() * 2,
-          color
-        );
-        this.tweens.add({
-          targets: particle,
-          x: x + (Math.random() - 0.5) * 120,
-          y: y + (Math.random() - 0.5) * 120,
-          alpha: 0,
-          scale: 0,
-          duration: 900 + Math.random() * 400,
-          ease: 'Power2',
-          onComplete: () => particle.destroy()
-        });
-      }
-      // Sonido de éxito
-      this.sound.play('success', { volume: 0.5 });
-      this.triangleActive.destroy()
+    if (!(playerRef.body instanceof Phaser.Physics.Arcade.Body)) {
+      throw new Error("The player doesn't have a body")
     }
-    this.triangleActive = null
-    this.triangleTypeActive = null
-    this.player!.body.enable = true
-  }
 
-  processOneWayPlatform = (player: Phaser.GameObjects.GameObject, platform: Phaser.GameObjects.GameObject) => {
-    const playerBody = player.body as Phaser.Physics.Arcade.Body
-    const platformBody = platform.body as Phaser.Physics.Arcade.Body
+    const playerVelocityY = playerRef?.body?.velocity.y
+    const playerVelocityX = playerRef?.body?.velocity.x
 
-    if (playerBody.velocity.y > 0 && playerBody.y < platformBody.y) {
-      playerBody.setVelocityY(0)
-      playerBody.y = platformBody.y - playerBody.height
+    if (
+      (playerVelocityY != null && playerVelocityY <= 0) ||
+      (playerVelocityY === 0 && playerVelocityX !== 0)
+    ) {
+      return false
     }
-  }
 
-  pauseGameAndShowMenu() {
-    this.scene.pause()
-    this.scene.launch('PauseMenuScene')
-  }
+    const playerBottom = playerRef.body.bottom - 16
+    const platformBottom = platform.body.bottom
 
-  resumeGame() {
-    this.scene.resume()
-  }
-
-  update() {
-    if (this.player && this.cursors) {
-      // Movimiento izquierda/derecha
-      if (this.cursors.left.isDown) {
-        this.player.left()
-      } else if (this.cursors.right.isDown) {
-        this.player.right()
-      } else {
-        this.player.idle()
-      }
-      // Salto
-      if (Phaser.Input.Keyboard.JustDown(this.cursors.up)) {
-        this.player.jump()
-      }
-      this.player.update()
+    if (playerBottom != null && playerBottom > platformBottom) {
+      return false
     }
+
+    return true
+  }
+
+  endGame(nextScene?: string) {
+    this.scene.stop(scenes.dialog)
+    this.scene.stop(scenes.hud)
+    this.scene.start(nextScene ?? scenes.mainMenu)
+  }
+
+  // moveR() {
+  //   this.moveRight = true
+  // }
+
+  // stopR() {
+  //   this.moveRight = false
+  // }
+
+  // moveL() {
+  //   this.moveLeft = true
+  // }
+
+  // stopL() {
+  //   this.moveLeft = false
+  // }
+
+  // jumpNow() {
+  //   this.jump = true
+  // }
+
+  // stopJ() {
+  //   this.jump = false
+  // }
+
+  registerEvents() {
+    this.events.on(customEvents.scenes.shutdown, this.clearEvents, this)
+
+    this.game.events.on(customEvents.pauseGame, this.togglePause, this)
+    this.game.events.on(customEvents.endGame, this.endGame, this)
+
+    // this.game.events.on(customEvents.moveLeft, this.moveL, this)
+    // this.game.events.on(customEvents.stopLeft, this.stopL, this)
+    // this.game.events.on(customEvents.moveRight, this.moveR, this)
+    // this.game.events.on(customEvents.stopRight, this.stopR, this)
+    // this.game.events.on(customEvents.jump, this.jumpNow, this)
+    // this.game.events.on(customEvents.stopJump, this.stopJ, this)
+  }
+
+  clearEvents() {
+    this.events.off(customEvents.scenes.shutdown, this.clearEvents, this)
+
+    this.game.events.off(customEvents.pauseGame, this.togglePause, this)
+    this.game.events.off(customEvents.endGame, this.endGame, this)
+
+    // this.game.events.off(customEvents.moveLeft, this.moveL, this)
+    // this.game.events.off(customEvents.stopLeft, this.stopL, this)
+    // this.game.events.off(customEvents.moveRight, this.moveR, this)
+    // this.game.events.off(customEvents.stopRight, this.stopR, this)
+    // this.game.events.off(customEvents.jump, this.jumpNow, this)
+    // this.game.events.off(customEvents.stopJump, this.stopJ, this)
   }
 }

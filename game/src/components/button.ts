@@ -1,3 +1,5 @@
+import { fonts } from '@/core/consts'
+
 interface ButtonConfig {
   width?: number
   height?: number
@@ -93,7 +95,7 @@ export class Button extends Phaser.GameObjects.Container {
     // Add text if provided
     if (finalConfig.text) {
       this.buttonText = scene.add
-        .bitmapText(0, 0, 'raster-forge', finalConfig.text)
+        .bitmapText(0, 0, fonts.pixel, finalConfig.text)
         .setOrigin(0.5)
         .setCenterAlign()
         .setScale(2)

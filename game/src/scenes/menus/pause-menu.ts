@@ -1,18 +1,20 @@
+import { customEvents, fonts, scenes } from '@/core/consts'
+
 export class PauseMenuScene extends Phaser.Scene {
   constructor() {
-    super('PauseMenuScene')
+    super(scenes.pauseMenu)
   }
 
   create() {
     this.add.rectangle(400, 300, 800, 600, 0x000000, 0.7).setInteractive()
 
     this.add
-      .bitmapText(400, 50, 'raster-forge', 'Juego Pausado')
+      .bitmapText(400, 50, fonts.pixel, 'Juego Pausado')
       .setOrigin(0.5)
       .setScale(4)
 
     this.add
-      .bitmapText(400, 150, 'raster-forge', 'Reanudar')
+      .bitmapText(400, 150, fonts.pixel, 'Reanudar')
       .setOrigin(0.5)
       .setInteractive()
       .on('pointerdown', () => {
@@ -21,7 +23,7 @@ export class PauseMenuScene extends Phaser.Scene {
       .setScale(2)
 
     this.add
-      .bitmapText(400, 200, 'raster-forge', 'Opciones')
+      .bitmapText(400, 200, fonts.pixel, 'Opciones')
       .setOrigin(0.5)
       .setInteractive()
       .on('pointerdown', () => {
@@ -30,27 +32,24 @@ export class PauseMenuScene extends Phaser.Scene {
       .setScale(2)
 
     this.add
-      .bitmapText(400, 250, 'raster-forge', 'Menú Principal')
+      .bitmapText(400, 250, fonts.pixel, 'Menú Principal')
       .setOrigin(0.5)
       .setInteractive()
       .on('pointerdown', () => {
-        this.scene.stop('PlatformerScene')
-        this.scene.stop('PauseMenuScene')
-        this.scene.start('MainMenuScene')
+        this.goToMainMenu()
       })
       .setScale(2)
 
-    this.input.keyboard?.on('keydown-ESC', () => {
-      this.resumeGame()
-    })
+    this.scene.bringToTop()
   }
 
   resumeGame() {
-    const gameScene = this.scene.get('PlatformerScene')
+    this.scene.stop(scenes.pauseMenu)
+    this.game.events.emit(customEvents.pauseGame)
+  }
 
-    if (gameScene != null) {
-      gameScene?.resumeGame()
-    }
-    this.scene.stop('PauseMenuScene')
+  goToMainMenu() {
+    this.scene.stop(scenes.pauseMenu)
+    this.game.events.emit(customEvents.endGame, scenes.mainMenu)
   }
 }
