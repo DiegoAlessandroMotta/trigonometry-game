@@ -1,7 +1,8 @@
 import { customEvents, scenes } from '@/core/consts'
 import { PlayerInputController } from '@/game-objects/controllers/PlayerInputController'
 import { Player } from '@/game-objects/player'
-import dialogPages from '@/dialogs-pages/platformer.json'
+import dialogInitial from '@/dialogs-pages/platformer.json'
+import dialogFinal from '@/dialogs-pages/platformer-complete.json'
 
 export class PlatformerScene extends Phaser.Scene {
   platforms?: Phaser.Physics.Arcade.StaticGroup
@@ -12,6 +13,9 @@ export class PlatformerScene extends Phaser.Scene {
   itemsGroup?: Phaser.Physics.Arcade.Group
   isPaused = false
   playerInputController?: PlayerInputController
+  endFlagGroup?: Phaser.Physics.Arcade.Group
+  totalItems: number = 0
+  itemsCollected: number = 0
 
   // moveRight = false
   // moveLeft = false
@@ -24,6 +28,7 @@ export class PlatformerScene extends Phaser.Scene {
   create() {
     this.isPaused = false
     this.itemsGroup = this.physics.add.group()
+    this.endFlagGroup = this.physics.add.group()
 
     this.drawMap()
 
@@ -48,14 +53,22 @@ export class PlatformerScene extends Phaser.Scene {
       this
     )
 
-    this.scene.launch(scenes.hud)
+    this.physics.add.overlap(
+      this.player,
+      this.endFlagGroup,
+      this.endLevel,
+      undefined,
+      this
+    )
 
-    this.registerEvents()
+    this.scene.launch(scenes.hud)
 
     this.scene.launch(scenes.dialog, {
       height: 16 * 10,
-      pages: dialogPages
+      pages: dialogInitial
     })
+
+    this.registerEvents()
   }
 
   collectItem: Phaser.Types.Physics.Arcade.ArcadePhysicsCallback = (
@@ -64,8 +77,44 @@ export class PlatformerScene extends Phaser.Scene {
   ) => {
     const itemSprite = item as Phaser.Physics.Arcade.Sprite
 
-    if (itemSprite?.body instanceof Phaser.Physics.Arcade.Body) {
+    //   if (itemSprite?.body instanceof Phaser.Physics.Arcade.Body) {
+    const alreadyCollected = Boolean(itemSprite.data.get('collected'))
+
+    if (!alreadyCollected) {
+      itemSprite.data.set('collected', true)
       itemSprite.setVisible(false)
+      this.itemsCollected++
+    }
+    // }
+  }
+
+  endLevel: Phaser.Types.Physics.Arcade.ArcadePhysicsCallback = (
+    _player,
+    item
+  ) => {
+    if (this.itemsCollected < this.totalItems) {
+      return
+    }
+
+    const itemSprite = item as Phaser.Physics.Arcade.Sprite
+
+    if (itemSprite?.body instanceof Phaser.Physics.Arcade.Body) {
+      itemSprite.play('flag-idle', true)
+
+      this.time.delayedCall(50, () => {
+        if (this.player != null) {
+          this.player.controlsEnabled = false
+          this.player.idle()
+        }
+      })
+
+      this.time.delayedCall(250, () => {
+        this.scene.launch(scenes.dialog, {
+          height: 16 * 12,
+          pages: dialogFinal,
+          nextScene: scenes.mainMenu
+        })
+      })
     }
   }
 
@@ -151,7 +200,7 @@ export class PlatformerScene extends Phaser.Scene {
               totalFrames = 7
               break
             case 'flag':
-              animationKey = 'flag-idle'
+              animationKey = 'white-flag-idle'
               totalFrames = 7
               break
             default:
@@ -174,6 +223,9 @@ export class PlatformerScene extends Phaser.Scene {
 
         if (triangleType != null) {
           this.itemsGroup?.add(obj)
+          this.totalItems++
+        } else if (objType === 'flag') {
+          this.endFlagGroup?.add(obj)
         }
       })
   }
@@ -263,10 +315,10 @@ export class PlatformerScene extends Phaser.Scene {
     return true
   }
 
-  goToMainMenu() {
+  endGame(nextScene?: string) {
     this.scene.stop(scenes.dialog)
     this.scene.stop(scenes.hud)
-    this.scene.start(scenes.mainMenu)
+    this.scene.start(nextScene ?? scenes.mainMenu)
   }
 
   // moveR() {
@@ -297,7 +349,7 @@ export class PlatformerScene extends Phaser.Scene {
     this.events.on(customEvents.scenes.shutdown, this.clearEvents, this)
 
     this.game.events.on(customEvents.pauseGame, this.togglePause, this)
-    this.game.events.on(customEvents.showMainMenu, this.goToMainMenu, this)
+    this.game.events.on(customEvents.endGame, this.endGame, this)
 
     // this.game.events.on(customEvents.moveLeft, this.moveL, this)
     // this.game.events.on(customEvents.stopLeft, this.stopL, this)
@@ -311,7 +363,7 @@ export class PlatformerScene extends Phaser.Scene {
     this.events.off(customEvents.scenes.shutdown, this.clearEvents, this)
 
     this.game.events.off(customEvents.pauseGame, this.togglePause, this)
-    this.game.events.off(customEvents.showMainMenu, this.goToMainMenu, this)
+    this.game.events.off(customEvents.endGame, this.endGame, this)
 
     // this.game.events.off(customEvents.moveLeft, this.moveL, this)
     // this.game.events.off(customEvents.stopLeft, this.stopL, this)

@@ -44,12 +44,12 @@ export class PauseMenuScene extends Phaser.Scene {
   }
 
   resumeGame() {
-    this.game.events.emit(customEvents.pauseGame)
     this.scene.stop(scenes.pauseMenu)
+    this.game.events.emit(customEvents.pauseGame)
   }
 
   goToMainMenu() {
-    this.game.events.emit(customEvents.showMainMenu)
     this.scene.stop(scenes.pauseMenu)
+    this.game.events.emit(customEvents.endGame, scenes.mainMenu)
   }
 }

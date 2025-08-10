@@ -27,7 +27,8 @@ export const scenes = {
 
 export const customEvents = {
   pauseGame: 'pause-game',
-  showMainMenu: 'start-main-menu',
+  endGame: 'end-game',
+  // showMainMenu: 'start-main-menu',
   moveRight: 'right',
   stopRight: 'stop-right',
   moveLeft: 'left',

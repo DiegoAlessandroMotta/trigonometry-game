@@ -1,0 +1,37 @@
+[
+	{
+		"title": "¡Felicidades, Héroe!",
+		"textContent": "¡Lo lograste! Has demostrado ser un verdadero explorador de formas y un experto en triángulos. ¡Cada triángulo equilátero que encontraste fue clave para esta victoria!",
+		"illustrationMarginTop": 16,
+		"illustrations": [
+			{
+				"texture": "objects",
+				"frame": "equilatero-1.png",
+				"scale": 4
+			}
+		]
+	},
+	{
+		"title": "Recordando los Equiláteros",
+		"textContent": "Recuerda que un triángulo equilátero es muy especial: ¡todos sus lados son exactamente iguales y cada uno de sus tres ángulos mide siempre 60 grados! ¡Lo descubriste en acción!",
+		"illustrationMarginTop": 16,
+		"illustrations": [
+			{
+				"texture": "objects",
+				"frame": "equilatero-1.png",
+				"scale": 4
+			}
+		]
+	},
+	{
+		"title": "¡Nivel Completado!",
+		"textContent": "¡Has superado este desafío y dominado los triángulos equiláteros! Prepárate, porque nuevas formas y aventuras te esperan en el siguiente nivel.",
+		"illustrations": [
+			{
+				"texture": "objects",
+				"frame": "trophy-idle-1.png",
+				"scale": 2
+			}
+		]
+	}
+]

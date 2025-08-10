@@ -18,6 +18,7 @@ interface DialogProps {
   height: number
   pages: DialogPage[]
   initialPage?: number
+  nextScene?: string
 }
 
 interface Position {
@@ -26,11 +27,12 @@ interface Position {
 }
 
 export class DialogScene extends Phaser.Scene {
-  private position: Position = { x: 0, y: 0 }
+  private position: Position
   private width: number
   private height: number
   private pages: DialogPage[]
   private currentPage: number
+  private nextScene?: string
 
   private pageContentContainer!: Phaser.GameObjects.Container
   private nextButton!: Phaser.GameObjects.Sprite
@@ -58,17 +60,19 @@ export class DialogScene extends Phaser.Scene {
   constructor() {
     super(scenes.dialog)
 
+    this.position = { x: 0, y: 0 }
     this.width = 0
     this.height = 0
     this.pages = []
     this.currentPage = 0
   }
 
-  public init({ width, height, pages, initialPage }: DialogProps) {
+  public init({ width, height, pages, initialPage, nextScene }: DialogProps) {
     this.width = width ?? 16 * 32
     this.height = height ?? 16 * 8
     this.pages = pages ?? []
     this.currentPage = initialPage ?? 0
+    this.nextScene = nextScene
 
     this.position.x = (this.cameras.main.width - this.width) / 2
     this.position.y =
@@ -469,7 +473,12 @@ export class DialogScene extends Phaser.Scene {
   }
 
   private handleClickCloseButton() {
-    this.game.events.emit(customEvents.pauseGame)
+    if (this.nextScene != null) {
+      this.game.events.emit(customEvents.endGame, this.nextScene)
+    } else {
+      this.game.events.emit(customEvents.pauseGame)
+    }
+
     this.scene.stop()
   }
 }

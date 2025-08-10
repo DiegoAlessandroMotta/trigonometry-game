@@ -108,6 +108,19 @@ export class Boot extends Phaser.Scene {
     })
 
     this.anims.create({
+      key: 'white-flag-idle',
+      frames: this.anims.generateFrameNames('objects', {
+        prefix: 'white-flag-idle-',
+        suffix: '.png',
+        start: 1,
+        end: 7,
+        zeroPad: 0
+      }),
+      frameRate: 8,
+      repeat: -1
+    })
+
+    this.anims.create({
       key: 'flag-idle',
       frames: this.anims.generateFrameNames('objects', {
         prefix: 'flag-idle-',
