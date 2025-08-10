@@ -18,7 +18,7 @@ export const animationsNames = {
 
 export const scenes = {
   boot: 'boot',
-  mainMenu: 'main-menu',
+  mainMenu: 'MainMenuScene',
   pauseMenu: 'pause-menu',
   platformer: 'platformer',
   hud: 'hud',
