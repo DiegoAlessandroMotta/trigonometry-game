@@ -46,9 +46,9 @@ export class PlayerInputController {
       if (this.cursors.up.isDown) {
         this.player.checkContinuousJump(time)
       }
-
-      this.player.update(time, delta)
     }
+
+    this.player.update(time, delta)
   }
 
   public destroy() {
