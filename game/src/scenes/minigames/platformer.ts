@@ -25,6 +25,12 @@ export class PlatformerScene extends Phaser.Scene {
     super(scenes.platformer)
   }
 
+  init() {
+    this.isPaused = false
+    this.totalItems = 0
+    this.itemsCollected = 0
+  }
+
   create() {
     this.isPaused = false
     this.itemsGroup = this.physics.add.group()
