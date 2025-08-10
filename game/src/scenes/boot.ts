@@ -46,12 +46,12 @@ export class Boot extends Phaser.Scene {
       'buttons-tileset.png',
       'buttons-tileset.json'
     )
-    this.load.atlas('tiles', 'tileset.png', 'tileset.json')
+    this.load.atlas('tiles', 'platforms-tileset.png', 'platforms-tileset.json')
     this.load.atlas('gems', 'gems-tileset.png', 'gems-tileset.json')
     this.load.atlas('objects', 'objects-tileset.png', 'objects-tileset.json')
 
     this.load.setPath('assets/backgrounds')
-    this.load.atlas('backgrounds', 'bg-tileset.png', 'bg-tileset.json')
+    this.load.atlas('bg-tileset', 'bg-tileset.png', 'bg-tileset.json')
   }
 
   registerAnimations() {
@@ -88,6 +88,32 @@ export class Boot extends Phaser.Scene {
         suffix: '.png',
         start: 1,
         end: 16,
+        zeroPad: 0
+      }),
+      frameRate: 8,
+      repeat: -1
+    })
+
+    this.anims.create({
+      key: 'pointer-idle',
+      frames: this.anims.generateFrameNames('objects', {
+        prefix: 'pointer-idle-',
+        suffix: '.png',
+        start: 1,
+        end: 7,
+        zeroPad: 0
+      }),
+      frameRate: 8,
+      repeat: -1
+    })
+
+    this.anims.create({
+      key: 'flag-idle',
+      frames: this.anims.generateFrameNames('objects', {
+        prefix: 'flag-idle-',
+        suffix: '.png',
+        start: 1,
+        end: 7,
         zeroPad: 0
       }),
       frameRate: 8,
