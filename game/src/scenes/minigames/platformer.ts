@@ -90,24 +90,29 @@ export class PlatformerScene extends Phaser.Scene {
   }
 
   drawMap() {
-    this.map = this.make.tilemap({ key: 'level1' })
+    this.add
+      .tileSprite(
+        0,
+        0,
+        this.cameras.main.width,
+        this.cameras.main.height,
+        'bg-tileset',
+        '6.png'
+      )
+      .setOrigin(0)
 
-    const bgTileset = this.map.addTilesetImage('backgrounds', 'backgrounds')
-    if (bgTileset == null) {
-      throw new Error('bgTileset image not found')
-    }
+    this.map = this.make.tilemap({ key: 'level1' })
 
     const tileset = this.map.addTilesetImage('platforms', 'tiles')
     if (tileset == null) {
       throw new Error('tileset image not found')
     }
 
-    const objectsTileset = this.map.addTilesetImage('objects', 'objects')
-    if (objectsTileset == null) {
-      throw new Error('objectsTileset image not found')
-    }
+    // const objectsTileset = this.map.addTilesetImage('objects', 'objects')
+    // if (objectsTileset == null) {
+    //   throw new Error('objectsTileset image not found')
+    // }
 
-    this.map.createLayer('bg', bgTileset, 0, -48)
     this.map.createLayer('platforms', tileset, 0, 0)
 
     this.map
@@ -116,33 +121,58 @@ export class PlatformerScene extends Phaser.Scene {
         // frame: 'triangle-1.png'
       })
       .forEach((obj) => {
-        if (obj instanceof Phaser.GameObjects.Sprite) {
-          const totalFrames = 7
-          const randomStartFrame = Phaser.Math.Between(0, totalFrames - 1)
+        if (!(obj instanceof Phaser.GameObjects.Sprite)) {
+          return
+        }
 
-          let animationKey = ''
-          const triangleType = obj.data?.get('triangleType')
+        let totalFrames = 1
+        let animationKey = ''
 
+        const triangleType = obj.data?.get('triangleType')
+        const objType = obj.data?.get('objType')
+
+        if (triangleType != null) {
           if (triangleType === 'equilatero') {
             animationKey = 'equilatero-floating'
+            totalFrames = 7
           } else if (triangleType === 'isoceles') {
             animationKey = 'isoceles-floating'
+            totalFrames = 7
           } else if (triangleType === 'escaleno') {
             animationKey = 'escaleno-floating'
+            totalFrames = 7
           } else {
             throw new Error('Unkown object type (triangle object)')
           }
+        } else if (objType != null) {
+          switch (objType) {
+            case 'pointer':
+              animationKey = 'pointer-idle'
+              totalFrames = 7
+              break
+            case 'flag':
+              animationKey = 'flag-idle'
+              totalFrames = 7
+              break
+            default:
+              throw new Error('Unkown object type (general object)')
+          }
+        }
 
-          // obj.setScale(2)
+        const randomStartFrame = Phaser.Math.Between(0, totalFrames - 1)
+        obj.setScale(1)
 
+        if (animationKey != null) {
           obj.play({
             key: animationKey,
             startFrame: randomStartFrame,
             repeat: -1
           })
+        }
 
-          // this.physics.world.enable(obj)
+        // this.physics.world.enable(obj)
 
+        if (triangleType != null) {
           this.itemsGroup?.add(obj)
         }
       })
