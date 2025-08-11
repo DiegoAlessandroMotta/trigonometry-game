@@ -16,7 +16,7 @@ export class MainMenuScene extends Phaser.Scene {
     this.titleBitmap = this.add
       .bitmapText(
         this.cameras.main.width / 2,
-        60,
+        50,
         fonts.pixel,
         'Juegos de\ntrigonometría'
       )
@@ -50,7 +50,7 @@ export class MainMenuScene extends Phaser.Scene {
       {
         text: 'TRIANGULOS RECTANGULOS',
         scene: 'RightTriangleScene',
-        color: 0x44ff44
+        color: 0x22aa44
       },
       {
         text: 'CONVERSION DE ANGULOS',
@@ -62,38 +62,41 @@ export class MainMenuScene extends Phaser.Scene {
         scene: 'TrigIdentitiesScene',
         color: 0xffaa44
       },
-      { text: 'TIPOS DE TRIANGULOS', scene: scenes.platformer, color: 0xff44ff }
+      { text: 'Tipos de triángulos', scene: scenes.platformer, color: 0xaa55ff }
     ]
 
     buttonConfigs.forEach((config, index) => {
-      const button = new Button(
+      // const button =
+      new Button(
         this,
         this.cameras.main.width / 2,
-        140 + index * 50,
+        120 + index * 50,
         {
           text: config.text,
           width: 440,
           height: 44,
-          animationsEnabled: false
+          // animationsEnabled: false,
+          backgroundColor: config.color,
+          hoverColor: config.color
         },
         () => this.scene.start(config.scene),
         this
       )
 
       // Efecto de brillo en los botones
-      this.tweens.add({
-        targets: button,
-        scaleX: 1.05,
-        scaleY: 1.05,
-        duration: 1500,
-        yoyo: true,
-        repeat: -1,
-        delay: index * 200
-      })
+      // this.tweens.add({
+      //   targets: button,
+      //   scaleX: 1.05,
+      //   scaleY: 1.05,
+      //   duration: 1500,
+      //   yoyo: true,
+      //   repeat: -1,
+      //   delay: index * 200
+      // })
     })
 
     // Botón de pantalla completa
-    const fullscreenButton = new Button(
+    new Button(
       this,
       this.cameras.main.width / 2,
       140 + buttonConfigs.length * 50,
@@ -105,15 +108,6 @@ export class MainMenuScene extends Phaser.Scene {
       this.onFullScreenButtonClick,
       this
     )
-
-    // Efecto especial para el botón de pantalla completa
-    this.tweens.add({
-      targets: fullscreenButton,
-      alpha: 0.8,
-      duration: 1000,
-      yoyo: true,
-      repeat: -1
-    })
 
     // Botón para volver a la pantalla de inicio
     const backButton = new Button(

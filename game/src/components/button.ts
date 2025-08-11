@@ -126,13 +126,13 @@ export class Button extends Phaser.GameObjects.Container {
       this.hoverTween.stop()
     }
 
-    this.background.setFillStyle(this.defaultConfig.hoverColor)
+    this.background.setFillStyle(this.finalConfig.hoverColor)
 
     if (this.finalConfig.animationsEnabled) {
       this.hoverTween = this.scene.tweens.add({
         targets: this,
-        scaleX: this.defaultConfig.hoverScale,
-        scaleY: this.defaultConfig.hoverScale,
+        scaleX: this.finalConfig.hoverScale,
+        scaleY: this.finalConfig.hoverScale,
         duration: 150,
         ease: 'Power2'
       })
@@ -147,7 +147,7 @@ export class Button extends Phaser.GameObjects.Container {
       this.clickTween.stop()
     }
 
-    this.background.setFillStyle(this.defaultConfig.backgroundColor)
+    this.background.setFillStyle(this.finalConfig.backgroundColor)
 
     if (this.finalConfig.animationsEnabled) {
       this.hoverTween = this.scene.tweens.add({

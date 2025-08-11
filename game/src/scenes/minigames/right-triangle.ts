@@ -1,4 +1,5 @@
 import { Button } from '@/components/button'
+import { scenes } from '@/core/consts'
 
 export class RightTriangleScene extends Phaser.Scene {
   private triangle?: Phaser.GameObjects.Graphics
@@ -7,40 +8,44 @@ export class RightTriangleScene extends Phaser.Scene {
   private scoreText?: Phaser.GameObjects.Text
   private inputText?: Phaser.GameObjects.Text
   private questionCounterText?: Phaser.GameObjects.Text
-  private currentTriangle: {a: number, b: number, c: number, A: number, B: number} = {a: 0, b: 0, c: 0, A: 0, B: 0}
+  private currentTriangle: {
+    a: number
+    b: number
+    c: number
+    A: number
+    B: number
+  } = { a: 0, b: 0, c: 0, A: 0, B: 0 }
   private currentQuestion: string = ''
   private currentAnswer: number = 0
   private score: number = 0
-  private questions: Array<{triangle: any, question: string, answer: number, type: string}> = []
+  private questions: Array<{
+    triangle: any
+    question: string
+    answer: number
+    type: string
+  }> = []
   private currentQuestionIndex: number = 0
   private inputValue: string = ''
-  // Referencias para limpiar textos de etiquetas
   private labelTexts: Phaser.GameObjects.Text[] = []
   private gameOverElements: Phaser.GameObjects.GameObject[] = []
-  // Efectos de feedback y transiciones
   private feedbackOverlay?: Phaser.GameObjects.Rectangle
   private feedbackText?: Phaser.GameObjects.Text
   private particles: Phaser.GameObjects.GameObject[] = []
   private isTransitioning: boolean = false
-  // --- Parte 2 ---
-  private combo: number = 0
-  private maxCombo: number = 0
-  private comboText?: Phaser.GameObjects.Text
-  private timerEvent?: Phaser.Time.TimerEvent
-  private timerText?: Phaser.GameObjects.Text
-  private timeLeft: number = 0
-  private maxTimePerQuestion: number = 15
-  private lives: number = 3
-  private livesText?: Phaser.GameObjects.Text
-  private progressBarBg?: Phaser.GameObjects.Rectangle
-  private progressBarFill?: Phaser.GameObjects.Rectangle
-  private answerTimes: number[] = []
-  private questionStartTime: number = 0
-  private correctAnswers: number = 0
-  private totalAnswered: number = 0
 
   constructor() {
     super('RightTriangleScene')
+  }
+
+  init() {
+    this.currentTriangle = { a: 0, b: 0, c: 0, A: 0, B: 0 }
+    this.currentQuestion = ''
+    this.currentAnswer = 0
+    this.score = 0
+    this.questions = []
+    this.currentQuestionIndex = 0
+    this.inputValue = ''
+    this.isTransitioning = false
   }
 
   create() {
@@ -56,7 +61,10 @@ export class RightTriangleScene extends Phaser.Scene {
     bg.fillGradientStyle(0x181c2b, 0x2c274d, 0x1a2a3a, 0x23243a, 1) // Gradiente oscuro
     bg.fillRect(0, 0, 768, 432)
     // Partículas de colores vibrantes
-    const particleColors = [0x43cea2, 0x185a9d, 0xd76d77, 0xffaf7b, 0x00c3ff, 0xff61a6, 0x7f53ac, 0x00ffb0]
+    const particleColors = [
+      0x43cea2, 0x185a9d, 0xd76d77, 0xffaf7b, 0x00c3ff, 0xff61a6, 0x7f53ac,
+      0x00ffb0
+    ]
     for (let i = 0; i < 40; i++) {
       const color = Phaser.Utils.Array.GetRandom(particleColors)
       const size = 2 + Math.random() * 4
@@ -83,88 +91,78 @@ export class RightTriangleScene extends Phaser.Scene {
   }
 
   private createUI() {
-    // Título del juego
-    const titleText = this.add.text(384, 20, 'TRIANGULOS RECTANGULOS', {
-      fontSize: '24px',
-      color: '#00ffff',
-      fontStyle: 'bold',
-      stroke: '#000000',
-      strokeThickness: 3
-    }).setOrigin(0.5)
+    this.add
+      .text(384, 20, 'TRIANGULOS RECTANGULOS', {
+        fontSize: '24px',
+        color: '#00ffff',
+        fontStyle: 'bold',
+        stroke: '#000000',
+        strokeThickness: 3
+      })
+      .setOrigin(0.5)
 
     // --- MOVER EL TEXTO DEL EJERCICIO ARRIBA ---
-    this.questionText = this.add.text(384, 55, '', {
-      fontSize: '18px', 
-      color: '#ffffff', 
-      align: 'center',
-      stroke: '#000000',
-      strokeThickness: 2
-    }).setOrigin(0.5)
+    this.questionText = this.add
+      .text(384, 55, '', {
+        fontSize: '20px',
+        color: '#ffffff',
+        align: 'center',
+        fontStyle: 'bold',
+        stroke: '#000000',
+        strokeThickness: 2
+      })
+      .setOrigin(0.5)
 
     // Puntuación y pregunta más abajo del texto de ejercicio
     this.scoreText = this.add.text(60, 90, 'PUNTUACION: 0', {
-      fontSize: '16px', 
+      fontSize: '16px',
       color: '#ffffff',
+      fontStyle: 'bold',
       stroke: '#000000',
       strokeThickness: 2
     })
-    this.questionCounterText = this.add.text(650, 90, '', {
-      fontSize: '14px',
+    this.questionCounterText = this.add.text(600, 90, '', {
+      fontSize: '18px',
       color: '#ffff00',
+      fontStyle: 'bold',
       stroke: '#000000',
       strokeThickness: 2
     })
 
-    // Combo actual y mejor combo
-    // this.comboText = this.add.text(60, 120, 'COMBO: 0  |  MAX: 0', {
-    //   fontSize: '15px',
-    //   color: '#00ff99',
-    //   stroke: '#000000',
-    //   strokeThickness: 2
-    // })
-    // Timer
-    // this.timerText = this.add.text(384, 90, 'TIEMPO: 15', {
-    //   fontSize: '16px',
-    //   color: '#ffaa00',
-    //   stroke: '#000000',
-    //   strokeThickness: 2
-    // }).setOrigin(0.5)
-    // Vidas
-    // this.livesText = this.add.text(650, 120, 'VIDAS: ♥♥♥', {
-    //   fontSize: '15px',
-    //   color: '#ff4444',
-    //   stroke: '#000000',
-    //   strokeThickness: 2
-    // })
-    // Barra de progreso
-    this.progressBarBg = this.add.rectangle(384, 150, 300, 12, 0x222244, 0.7).setOrigin(0.5)
-    this.progressBarFill = this.add.rectangle(234, 150, 0, 12, 0x00ffff, 1).setOrigin(0, 0.5)
-    
-    this.answerText = this.add.text(384, 330, '', { // Subir de 350 a 330
-      fontSize: '16px', 
-      color: '#ffff00', 
-      align: 'center',
-      stroke: '#000000',
-      strokeThickness: 2
-    }).setOrigin(0.5)
-    
-    this.inputText = this.add.text(384, 300, 'RESPUESTA: ', { // Subir de 320 a 300
-      fontSize: '16px', 
-      color: '#ffffff', 
-      align: 'center',
-      stroke: '#000000',
-      strokeThickness: 2
-    }).setOrigin(0.5)
-    
-    // Botones numéricos en formato 2x6
+    this.add.rectangle(384, 150, 300, 12, 0x222244, 0.7).setOrigin(0.5)
+    this.add.rectangle(234, 150, 0, 12, 0x00ffff, 1).setOrigin(0, 0.5)
+
+    this.answerText = this.add
+      .text(384, 330, '', {
+        fontSize: '16px',
+        color: '#ffff00',
+        align: 'center',
+        fontStyle: 'bold',
+        stroke: '#000000',
+        strokeThickness: 2
+      })
+      .setOrigin(0.5)
+
+    this.inputText = this.add
+      .text(384, 300, 'RESPUESTA: ', {
+        fontSize: '16px',
+        color: '#ffffff',
+        align: 'center',
+        fontStyle: 'bold',
+        stroke: '#000000',
+        strokeThickness: 2
+      })
+      .setOrigin(0.5)
+
     const numbers = ['1', '2', '3', '4', '5', '6', '7', '8', '9', '0', '.', 'C']
     let x = 150
-    let y = 350 // Subir de 380 a 350
+    let y = 350
     let col = 0
-    numbers.forEach(num => {
+    numbers.forEach((num) => {
       new Button(
         this,
-        x + col * 70, y,
+        x + col * 70,
+        y,
         { text: num, width: 60, height: 40 },
         () => this.handleInput(num),
         this
@@ -175,19 +173,21 @@ export class RightTriangleScene extends Phaser.Scene {
         y += 50
       }
     })
-    
+
     new Button(
       this,
-      580, 350, // Ajustar posición para alinear con el teclado 2x6
-      { text: 'ENVIAR', width: 90, height: 40 },
+      600,
+      350,
+      { text: 'ENVIAR', width: 120, height: 40 },
       () => this.checkAnswer(),
       this
     )
-    
+
     new Button(
       this,
-      580, 400, // Ajustar posición para alinear con el teclado 2x6
-      { text: 'VOLVER', width: 90, height: 40 },
+      600,
+      400,
+      { text: 'VOLVER', width: 120, height: 40 },
       () => this.scene.start('MainMenuScene'),
       this
     )
@@ -200,8 +200,7 @@ export class RightTriangleScene extends Phaser.Scene {
       this.inputValue += value
     }
     this.inputText?.setText(`RESPUESTA: ${this.inputValue}`)
-    
-    // Efecto visual al presionar botón
+
     this.inputText?.setScale(1.1)
     this.tweens.add({
       targets: this.inputText,
@@ -211,23 +210,28 @@ export class RightTriangleScene extends Phaser.Scene {
   }
 
   private generateQuestions() {
+    const questionsCount = 5
     this.questions = []
-    for (let i = 0; i < 10; i++) {
+    for (let i = 0; i < questionsCount; i++) {
       const a = Math.floor(Math.random() * 10) + 3
       const b = Math.floor(Math.random() * 10) + 3
       const c = Math.sqrt(a * a + b * b)
-      const A = Math.atan2(a, b) * 180 / Math.PI
+      const A = (Math.atan2(a, b) * 180) / Math.PI
       const B = 90 - A
       const triangle = { a, b, c, A, B }
       const questionTypes = [
         {
           type: 'sin',
-          question: `Si sen(A) = ${a}/${c.toFixed(2)}, ¿cuál es el valor de A en grados?`,
+          question: `Si sen(A) = ${a}/${c.toFixed(
+            2
+          )}, ¿cuál es el valor de A en grados?`,
           answer: A
         },
         {
           type: 'cos',
-          question: `Si cos(A) = ${b}/${c.toFixed(2)}, ¿cuál es el valor de A en grados?`,
+          question: `Si cos(A) = ${b}/${c.toFixed(
+            2
+          )}, ¿cuál es el valor de A en grados?`,
           answer: A
         },
         {
@@ -242,11 +246,14 @@ export class RightTriangleScene extends Phaser.Scene {
         },
         {
           type: 'pythagoras',
-          question: `Si a = ${a} y c = ${c.toFixed(2)}, ¿cuál es la longitud del cateto b?`,
+          question: `Si a = ${a} y c = ${c.toFixed(
+            2
+          )}, ¿cuál es la longitud del cateto b?`,
           answer: Math.round(b * 100) / 100
         }
       ]
-      const selectedType = questionTypes[Math.floor(Math.random() * questionTypes.length)]
+      const selectedType =
+        questionTypes[Math.floor(Math.random() * questionTypes.length)]
       this.questions.push({
         triangle,
         question: selectedType.question,
@@ -261,13 +268,13 @@ export class RightTriangleScene extends Phaser.Scene {
       this.showGameOver()
       return
     }
-    
+
     const question = this.questions[this.currentQuestionIndex]
     this.currentTriangle = question.triangle
     this.currentQuestion = question.question
     this.currentAnswer = question.answer
     this.inputValue = ''
-    
+
     // Animación de salida del texto de pregunta y respuesta
     this.tweens.add({
       targets: [this.questionText, this.answerText],
@@ -290,10 +297,10 @@ export class RightTriangleScene extends Phaser.Scene {
     })
     this.questionText?.setScale(0.9)
     this.answerText?.setScale(0.9)
-    
+
     // Dibujar triángulo con entrada animada
     this.drawTriangle()
-    
+
     // Mostrar contador de preguntas
     this.showQuestionCounter()
   }
@@ -301,77 +308,162 @@ export class RightTriangleScene extends Phaser.Scene {
   private drawTriangle() {
     const centerX = 384
     const centerY = 220
-    const scale = 4.2 // antes 3.2, ahora más grande
-    const labelOffset = 90 // Aún mayor separación para etiquetas
-    const angleYOffset = 90 // Más separación vertical para ángulos
-    const labelFontSize = '15px' // antes 18px, ahora más pequeño
-    const angleFontSize = '12px' // antes 15px, ahora más pequeño
-    
+    const scale = 5
+    const labelOffset = 70 // Aún mayor separación para etiquetas
+    const angleYOffset = 100 // Más separación vertical para ángulos
+    const labelFontSize = '18px'
+    const angleFontSize = '18px'
+
     // Limpiar etiquetas anteriores
-    this.labelTexts.forEach(text => text.destroy())
+    this.labelTexts.forEach((text) => text.destroy())
     this.labelTexts = []
-    
+
     this.triangle?.destroy()
     this.triangle = this.add.graphics()
     // Animación de entrada
     this.triangle.alpha = 0
-    this.triangle.scale = 0.7
-    this.tweens.add({ targets: this.triangle, alpha: 1, scale: 1, duration: 700, ease: 'Back.Out' })
+    this.triangle.scale = 1
+    this.tweens.add({
+      targets: this.triangle,
+      alpha: 1,
+      scale: 1,
+      duration: 700,
+      ease: 'Back.Out'
+    })
     // Triángulo principal
-    this.triangle.lineStyle(6, 0x00ffff, 0.9)
+    this.triangle.lineStyle(6, 0x00ffff)
     this.triangle.moveTo(centerX, centerY)
     this.triangle.lineTo(centerX + this.currentTriangle.b * scale, centerY)
-    this.triangle.lineTo(centerX + this.currentTriangle.b * scale, centerY - this.currentTriangle.a * scale)
+    this.triangle.lineTo(
+      centerX + this.currentTriangle.b * scale,
+      centerY - this.currentTriangle.a * scale
+    )
     this.triangle.lineTo(centerX, centerY)
-    this.triangle.fillStyle(0x00ffff, 0.13)
+    this.triangle.fillStyle(0x00ffff)
     this.triangle.fillTriangle(
-      centerX, centerY,
-      centerX + this.currentTriangle.b * scale, centerY,
-      centerX + this.currentTriangle.b * scale, centerY - this.currentTriangle.a * scale
+      centerX,
+      centerY,
+      centerX + this.currentTriangle.b * scale,
+      centerY,
+      centerX + this.currentTriangle.b * scale,
+      centerY - this.currentTriangle.a * scale
     )
     // Ángulo recto
-    this.triangle.lineStyle(3, 0xffff00, 0.8)
+    this.triangle.lineStyle(3, 0xffff00)
     const rectSize = 18
-    this.triangle.moveTo(centerX + this.currentTriangle.b * scale - rectSize, centerY)
-    this.triangle.lineTo(centerX + this.currentTriangle.b * scale - rectSize, centerY - rectSize)
-    this.triangle.lineTo(centerX + this.currentTriangle.b * scale, centerY - rectSize)
-    
-    // Etiquetas de lados (más separadas y fuente más pequeña)
-    const labelA = this.add.text(centerX + this.currentTriangle.b * scale + labelOffset, centerY - this.currentTriangle.a * scale / 2, `a = ${this.currentTriangle.a}`, { fontSize: labelFontSize, color: '#ff4444', fontStyle: 'bold', stroke: '#000', strokeThickness: 3 }).setOrigin(0.5)
-    // Subir la etiqueta b para que no tape la respuesta
-    const labelB = this.add.text(centerX + this.currentTriangle.b * scale / 2, centerY + labelOffset - 40, `b = ${this.currentTriangle.b}`, { fontSize: labelFontSize, color: '#00ffb0', fontStyle: 'bold', stroke: '#000', strokeThickness: 3 }).setOrigin(0.5)
-    const labelC = this.add.text(centerX - labelOffset, centerY - this.currentTriangle.a * scale / 2, `c = ${this.currentTriangle.c.toFixed(2)}`, { fontSize: labelFontSize, color: '#4488ff', fontStyle: 'bold', stroke: '#000', strokeThickness: 3 }).setOrigin(0.5)
-    
-    // Etiquetas de ángulos (más separadas y fuente más pequeña)
-    const angleA = this.add.text(centerX + angleYOffset, centerY - angleYOffset, `A = ${this.currentTriangle.A.toFixed(1)}°`, { fontSize: angleFontSize, color: '#ffe066', fontStyle: 'bold', stroke: '#000', strokeThickness: 2 }).setOrigin(0.5)
-    const angleB = this.add.text(centerX + this.currentTriangle.b * scale - angleYOffset, centerY - angleYOffset, `B = ${this.currentTriangle.B.toFixed(1)}°`, { fontSize: angleFontSize, color: '#ff61a6', fontStyle: 'bold', stroke: '#000', strokeThickness: 2 }).setOrigin(0.5)
-    
-    // Guardar referencias para limpiar después
-    this.labelTexts = [labelA, labelB, labelC, angleA, angleB]
-    // Animaciones de aparición y latido
-    this.labelTexts.forEach((text, index) => {
-      text.alpha = 0
-      text.setScale(0.7)
-      this.tweens.add({
-        targets: text,
-        alpha: 1,
-        scale: 1.1,
-        duration: 400,
-        delay: 100 + index * 80,
-        ease: 'Back.Out',
-        onComplete: () => {
-          this.tweens.add({
-            targets: text,
-            scaleX: 1.08,
-            scaleY: 1.08,
-            duration: 900,
-            yoyo: true,
-            repeat: -1,
-            delay: Math.random() * 800
-          })
+    this.triangle.moveTo(
+      centerX + this.currentTriangle.b * scale - rectSize,
+      centerY
+    )
+    this.triangle.lineTo(
+      centerX + this.currentTriangle.b * scale - rectSize,
+      centerY - rectSize
+    )
+    this.triangle.lineTo(
+      centerX + this.currentTriangle.b * scale,
+      centerY - rectSize
+    )
+
+    const labelA = this.add
+      .text(
+        centerX + this.currentTriangle.b * scale + labelOffset,
+        centerY - (this.currentTriangle.a * scale) / 2,
+        `a = ${this.currentTriangle.a}`,
+        {
+          fontSize: labelFontSize,
+          color: '#ff4444',
+          fontStyle: 'bold',
+          stroke: '#000',
+          strokeThickness: 3
         }
-      })
-    })
+      )
+      .setOrigin(0.5)
+    // Subir la etiqueta b para que no tape la respuesta
+    const labelB = this.add
+      .text(
+        centerX + (this.currentTriangle.b * scale) / 2,
+        centerY + labelOffset - 40,
+        `b = ${this.currentTriangle.b}`,
+        {
+          fontSize: labelFontSize,
+          color: '#00ffb0',
+          fontStyle: 'bold',
+          stroke: '#000',
+          strokeThickness: 3
+        }
+      )
+      .setOrigin(0.5)
+    const labelC = this.add
+      .text(
+        centerX - labelOffset,
+        centerY - (this.currentTriangle.a * scale) / 2,
+        `c = ${this.currentTriangle.c.toFixed(2)}`,
+        {
+          fontSize: labelFontSize,
+          color: '#4488ff',
+          fontStyle: 'bold',
+          stroke: '#000',
+          strokeThickness: 3
+        }
+      )
+      .setOrigin(0.5)
+
+    // Etiquetas de ángulos (más separadas y fuente más pequeña)
+    const angleA = this.add
+      .text(
+        centerX + angleYOffset,
+        centerY - angleYOffset,
+        `A = ${this.currentTriangle.A.toFixed(1)}°`,
+        {
+          fontSize: angleFontSize,
+          color: '#ffe066',
+          fontStyle: 'bold',
+          stroke: '#000',
+          strokeThickness: 2
+        }
+      )
+      .setOrigin(0.5)
+    const angleB = this.add
+      .text(
+        centerX + this.currentTriangle.b * scale - angleYOffset,
+        centerY - angleYOffset,
+        `B = ${this.currentTriangle.B.toFixed(1)}°`,
+        {
+          fontSize: angleFontSize,
+          color: '#ff61a6',
+          fontStyle: 'bold',
+          stroke: '#000',
+          strokeThickness: 2
+        }
+      )
+      .setOrigin(0.5)
+
+    // // Guardar referencias para limpiar después
+    this.labelTexts = [labelA, labelB, labelC, angleA, angleB]
+    // // Animaciones de aparición y latido
+    // this.labelTexts.forEach((text, index) => {
+    //   text.alpha = 0
+    //   text.setScale(0.7)
+    //   this.tweens.add({
+    //     targets: text,
+    //     alpha: 1,
+    //     scale: 1.1,
+    //     duration: 400,
+    //     delay: 100 + index * 80,
+    //     ease: 'Back.Out',
+    //     onComplete: () => {
+    //       this.tweens.add({
+    //         targets: text,
+    //         scaleX: 1.08,
+    //         scaleY: 1.08,
+    //         duration: 900,
+    //         yoyo: true,
+    //         repeat: -1,
+    //         delay: Math.random() * 800
+    //       })
+    //     }
+    //   })
+    // })
   }
 
   private checkAnswer() {
@@ -380,24 +472,34 @@ export class RightTriangleScene extends Phaser.Scene {
       this.showFeedback('Por favor ingresa un número válido', '#ff0000', false)
       return
     }
-    
+
     // En checkAnswer, mejorar la comparación para aceptar respuestas como 12 y 12.00 como equivalentes
     const tolerance = 0.1
-    const isCorrect = Math.abs(userAnswer - this.currentAnswer) <= tolerance || Math.abs(userAnswer - Math.round(this.currentAnswer)) <= tolerance
-    
+    const isCorrect =
+      Math.abs(userAnswer - this.currentAnswer) <= tolerance ||
+      Math.abs(userAnswer - Math.round(this.currentAnswer)) <= tolerance
+
     if (isCorrect) {
       this.score += 10
       this.showFeedback('¡Correcto! +10 puntos', '#00ff00', true)
       this.createParticleEffect(true)
       this.animateTriangleSuccess()
     } else {
-      this.showFeedback(`Incorrecto. Respuesta: ${typeof this.currentAnswer === 'number' ? this.currentAnswer.toFixed(2) : this.currentAnswer}`, '#ff0000', false)
+      this.showFeedback(
+        `Incorrecto. Respuesta: ${
+          typeof this.currentAnswer === 'number'
+            ? this.currentAnswer.toFixed(2)
+            : this.currentAnswer
+        }`,
+        '#ff0000',
+        false
+      )
       this.createParticleEffect(false)
       this.animateTriangleError()
     }
-    
+
     this.scoreText?.setText(`Puntuación: ${this.score}`)
-    
+
     // Transición suave a la siguiente pregunta
     this.time.delayedCall(2000, () => {
       this.transitionToNextQuestion()
@@ -406,21 +508,27 @@ export class RightTriangleScene extends Phaser.Scene {
 
   private showGameOver() {
     // Limpiar elementos anteriores del game over
-    this.gameOverElements.forEach(element => element.destroy())
+    this.gameOverElements.forEach((element) => element.destroy())
     this.gameOverElements = []
-    
+
     const totalPossible = this.questions.length * 10
     const percentage = (this.score / totalPossible) * 100
     const isVictory = percentage >= 70
-    
+
     const overlay = this.add.rectangle(384, 216, 768, 432, 0x000000, 0.8)
     this.gameOverElements.push(overlay)
-    
-    const titleText = this.add.text(384, 150, isVictory ? '¡VICTORIA!' : '¡DERROTA!', {
-      fontSize: '48px', color: isVictory ? '#00ff00' : '#ff0000', fontStyle: 'bold', stroke: '#000000', strokeThickness: 4
-    }).setOrigin(0.5)
+
+    const titleText = this.add
+      .text(384, 150, isVictory ? '¡VICTORIA!' : '¡DERROTA!', {
+        fontSize: '48px',
+        color: isVictory ? '#00ff00' : '#ff0000',
+        fontStyle: 'bold',
+        stroke: '#000000',
+        strokeThickness: 4
+      })
+      .setOrigin(0.5)
     this.gameOverElements.push(titleText)
-    
+
     this.tweens.add({
       targets: titleText,
       scaleX: 1.2,
@@ -429,54 +537,76 @@ export class RightTriangleScene extends Phaser.Scene {
       yoyo: true,
       repeat: -1
     })
-    
-    const messages = isVictory ? [
-      '¡Excelente trabajo!',
-      '¡Dominas los triángulos rectángulos!',
-      '¡Pitágoras estaría orgulloso!',
-      '¡Perfecto! ¡Sigue así!'
-    ] : [
-      '¡No te rindas!',
-      '¡La práctica hace al maestro!',
-      '¡Inténtalo de nuevo!',
-      '¡Cada error es una oportunidad de aprender!'
-    ]
+
+    const messages = isVictory
+      ? [
+          '¡Excelente trabajo!',
+          '¡Dominas los triángulos rectángulos!',
+          '¡Pitágoras estaría orgulloso!',
+          '¡Perfecto! ¡Sigue así!'
+        ]
+      : [
+          '¡No te rindas!',
+          '¡La práctica hace al maestro!',
+          '¡Inténtalo de nuevo!',
+          '¡Cada error es una oportunidad de aprender!'
+        ]
     const randomMessage = messages[Math.floor(Math.random() * messages.length)]
-    const messageText = this.add.text(384, 200, randomMessage, {
-      fontSize: '24px', color: '#ffffff', fontStyle: 'bold', stroke: '#000000', strokeThickness: 2
-    }).setOrigin(0.5)
+    const messageText = this.add
+      .text(384, 200, randomMessage, {
+        fontSize: '24px',
+        color: '#ffffff',
+        fontStyle: 'bold',
+        stroke: '#000000',
+        strokeThickness: 2
+      })
+      .setOrigin(0.5)
     this.gameOverElements.push(messageText)
-    
-    const scoreText = this.add.text(384, 250, `Puntuación: ${this.score}/${totalPossible}`, {
-      fontSize: '28px', color: isVictory ? '#00ff00' : '#ffff00', fontStyle: 'bold', stroke: '#000000', strokeThickness: 3
-    }).setOrigin(0.5)
+
+    const scoreText = this.add
+      .text(384, 250, `Puntuación: ${this.score}/${totalPossible}`, {
+        fontSize: '28px',
+        color: isVictory ? '#00ff00' : '#ffff00',
+        fontStyle: 'bold',
+        stroke: '#000000',
+        strokeThickness: 3
+      })
+      .setOrigin(0.5)
     this.gameOverElements.push(scoreText)
-    
-    const percentageText = this.add.text(384, 280, `(${percentage.toFixed(1)}%)`, {
-      fontSize: '20px', color: isVictory ? '#00ff00' : '#ffaa00', fontStyle: 'bold', stroke: '#000000', strokeThickness: 2
-    }).setOrigin(0.5)
+
+    const percentageText = this.add
+      .text(384, 280, `(${percentage.toFixed(1)}%)`, {
+        fontSize: '20px',
+        color: isVictory ? '#00ff00' : '#ffaa00',
+        fontStyle: 'bold',
+        stroke: '#000000',
+        strokeThickness: 2
+      })
+      .setOrigin(0.5)
     this.gameOverElements.push(percentageText)
-    
+
     const replayButton = new Button(
       this,
-      384 - 120, 350,
-      { text: 'Jugar de nuevo', width: 100, height: 35 },
+      384 - 120,
+      350,
+      { text: 'Jugar\nde nuevo', width: 160, height: 64 },
       () => {
         this.cleanupAndRestart()
       },
       this
     )
     this.gameOverElements.push(replayButton)
-    
+
     const menuButton = new Button(
       this,
-      384 + 120, 350,
-      { text: 'Menú principal', width: 100, height: 35 },
-      () => this.scene.start('MainMenuScene'),
+      384 + 120,
+      350,
+      { text: 'Menú\nprincipal', width: 160, height: 64 },
+      () => this.scene.start(scenes.mainMenu),
       this
     )
     this.gameOverElements.push(menuButton)
-    
+
     this.tweens.add({
       targets: [titleText, messageText, scoreText, percentageText],
       alpha: 0,
@@ -496,21 +626,21 @@ export class RightTriangleScene extends Phaser.Scene {
 
   private cleanupAndRestart() {
     // Limpiar todos los elementos del game over
-    this.gameOverElements.forEach(element => element.destroy())
+    this.gameOverElements.forEach((element) => element.destroy())
     this.gameOverElements = []
-    
+
     // Limpiar etiquetas del triángulo
-    this.labelTexts.forEach(text => text.destroy())
+    this.labelTexts.forEach((text) => text.destroy())
     this.labelTexts = []
-    
+
     // Limpiar triángulo
     this.triangle?.destroy()
-    
+
     // Reiniciar variables
     this.score = 0
     this.currentQuestionIndex = 0
     this.inputValue = ''
-    
+
     // Regenerar preguntas y mostrar la primera
     this.generateQuestions()
     this.showNextQuestion()
@@ -521,7 +651,14 @@ export class RightTriangleScene extends Phaser.Scene {
     this.feedbackOverlay?.destroy()
     this.feedbackText?.destroy()
     // --- DESTELLO EN PANTALLA ---
-    const flash = this.add.rectangle(384, 216, 768, 432, isSuccess ? 0x00ff88 : 0xff0033, 0.25)
+    const flash = this.add.rectangle(
+      384,
+      216,
+      768,
+      432,
+      isSuccess ? 0x00ff88 : 0xff0033,
+      0.25
+    )
     this.tweens.add({
       targets: flash,
       alpha: 0,
@@ -530,13 +667,15 @@ export class RightTriangleScene extends Phaser.Scene {
     })
     // Crear overlay de feedback
     this.feedbackOverlay = this.add.rectangle(384, 216, 768, 432, 0x000000, 0.3)
-    this.feedbackText = this.add.text(384, 216, message, {
-      fontSize: '32px',
-      color: color,
-      fontStyle: 'bold',
-      stroke: '#000000',
-      strokeThickness: 4
-    }).setOrigin(0.5)
+    this.feedbackText = this.add
+      .text(384, 216, message, {
+        fontSize: '32px',
+        color: color,
+        fontStyle: 'bold',
+        stroke: '#000000',
+        strokeThickness: 4
+      })
+      .setOrigin(0.5)
     // Animación de entrada
     this.feedbackText.setScale(0.5)
     this.tweens.add({
@@ -561,7 +700,7 @@ export class RightTriangleScene extends Phaser.Scene {
 
   private createParticleEffect(isSuccess: boolean) {
     // Limpiar partículas anteriores
-    this.particles.forEach(particle => particle.destroy())
+    this.particles.forEach((particle) => particle.destroy())
     this.particles = []
     const centerX = 384
     const centerY = 220
@@ -635,10 +774,10 @@ export class RightTriangleScene extends Phaser.Scene {
   private transitionToNextQuestion() {
     if (this.isTransitioning) return
     this.isTransitioning = true
-    
+
     // Fade out de elementos actuales
     const fadeOutTargets = [this.triangle, ...this.labelTexts].filter(Boolean)
-    
+
     this.tweens.add({
       targets: fadeOutTargets,
       alpha: 0,
@@ -657,7 +796,7 @@ export class RightTriangleScene extends Phaser.Scene {
     const current = this.currentQuestionIndex + 1
     const total = this.questions.length
     this.questionCounterText?.setText(`PREGUNTA ${current}/${total}`)
-    
+
     // Animación de entrada
     this.questionCounterText?.setScale(0.8)
     this.tweens.add({
@@ -667,4 +806,4 @@ export class RightTriangleScene extends Phaser.Scene {
       ease: 'Back.Out'
     })
   }
-} 
+}
