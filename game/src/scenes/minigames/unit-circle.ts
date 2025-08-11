@@ -11,7 +11,11 @@ export class UnitCircleScene extends Phaser.Scene {
   private currentAngle: number = 0
   private currentQuestion: string = ''
   private score: number = 0
-  private questions: Array<{angle: number, question: string, answer: number}> = []
+  private questions: Array<{
+    angle: number
+    question: string
+    answer: number
+  }> = []
   private currentQuestionIndex: number = 0
 
   constructor() {
@@ -26,12 +30,20 @@ export class UnitCircleScene extends Phaser.Scene {
     this.showNextQuestion()
   }
 
+  init() {
+    this.currentAngle = 0
+    this.currentQuestion = ''
+    this.score = 0
+    this.questions = []
+    this.currentQuestionIndex = 0
+  }
+
   private createBackground() {
     // Fondo degradado
     const bg = this.add.graphics()
     bg.fillGradientStyle(0x0a0a2e, 0x1a1a4e, 0x2a2a6e, 0x3a3a8e, 1)
     bg.fillRect(0, 0, 768, 432)
-    
+
     // Estrellas animadas
     for (let i = 0; i < 50; i++) {
       const star = this.add.circle(
@@ -43,10 +55,10 @@ export class UnitCircleScene extends Phaser.Scene {
       this.tweens.add({
         targets: star,
         alpha: 0,
-        duration: 2000 + Math.random() * 2000,
+        duration: 1000 + Math.random() * 2000,
         yoyo: true,
         repeat: -1,
-        delay: Math.random() * 2000
+        delay: Math.random() * 1000
       })
     }
   }
@@ -60,7 +72,7 @@ export class UnitCircleScene extends Phaser.Scene {
     this.circle = this.add.graphics()
     this.circle.lineStyle(4, 0x00ffff, 0.8)
     this.circle.strokeCircle(centerX, centerY, radius)
-    
+
     // Efecto de brillo adicional
     this.circle.lineStyle(2, 0xffffff, 0.3)
     this.circle.strokeCircle(centerX, centerY, radius + 2)
@@ -76,17 +88,28 @@ export class UnitCircleScene extends Phaser.Scene {
     this.angleLine = this.add.graphics()
     this.angleLine.lineStyle(3, 0x00ff00, 0.9)
     this.angleLine.moveTo(centerX, centerY)
-    this.angleLine.lineTo(centerX + radius * Math.cos(this.currentAngle), centerY - radius * Math.sin(this.currentAngle))
+    this.angleLine.lineTo(
+      centerX + radius * Math.cos(this.currentAngle),
+      centerY - radius * Math.sin(this.currentAngle)
+    )
 
     // Dibujar punto en el círculo con efecto de partículas
     this.point = this.add.graphics()
     this.point.fillStyle(0xff0000, 0.9)
-    this.point.fillCircle(centerX + radius * Math.cos(this.currentAngle), centerY - radius * Math.sin(this.currentAngle), 6)
-    
+    this.point.fillCircle(
+      centerX + radius * Math.cos(this.currentAngle),
+      centerY - radius * Math.sin(this.currentAngle),
+      6
+    )
+
     // Efecto de brillo alrededor del punto
     this.point.fillStyle(0xffff00, 0.3)
-    this.point.fillCircle(centerX + radius * Math.cos(this.currentAngle), centerY - radius * Math.sin(this.currentAngle), 12)
-    
+    this.point.fillCircle(
+      centerX + radius * Math.cos(this.currentAngle),
+      centerY - radius * Math.sin(this.currentAngle),
+      12
+    )
+
     // Animación del punto
     this.tweens.add({
       targets: this.point,
@@ -100,14 +123,16 @@ export class UnitCircleScene extends Phaser.Scene {
 
   private createUI() {
     // Título con efecto de brillo
-    this.angleText = this.add.text(384, 50, '', {
-      fontSize: '28px',
-      color: '#00ffff',
-      fontStyle: 'bold',
-      stroke: '#000000',
-      strokeThickness: 3
-    }).setOrigin(0.5)
-    
+    this.angleText = this.add
+      .text(384, 50, '', {
+        fontSize: '28px',
+        color: '#00ffff',
+        fontStyle: 'bold',
+        stroke: '#000000',
+        strokeThickness: 3
+      })
+      .setOrigin(0.5)
+
     // Animación del título
     this.tweens.add({
       targets: this.angleText,
@@ -118,23 +143,27 @@ export class UnitCircleScene extends Phaser.Scene {
       repeat: -1
     })
 
-    this.questionText = this.add.text(384, 320, '', {
-      fontSize: '20px',
-      color: '#ffffff',
-      align: 'center',
-      fontStyle: 'bold',
-      stroke: '#000000',
-      strokeThickness: 2
-    }).setOrigin(0.5)
+    this.questionText = this.add
+      .text(384, 320, '', {
+        fontSize: '20px',
+        color: '#ffffff',
+        align: 'center',
+        fontStyle: 'bold',
+        stroke: '#000000',
+        strokeThickness: 2
+      })
+      .setOrigin(0.5)
 
-    this.answerText = this.add.text(384, 350, '', {
-      fontSize: '18px',
-      color: '#ffff00',
-      align: 'center',
-      fontStyle: 'bold',
-      stroke: '#000000',
-      strokeThickness: 2
-    }).setOrigin(0.5)
+    this.answerText = this.add
+      .text(384, 350, '', {
+        fontSize: '18px',
+        color: '#ffff00',
+        align: 'center',
+        fontStyle: 'bold',
+        stroke: '#000000',
+        strokeThickness: 2
+      })
+      .setOrigin(0.5)
 
     // Puntuación con efecto de brillo
     this.scoreText = this.add.text(50, 50, 'Puntuación: 0', {
@@ -144,7 +173,7 @@ export class UnitCircleScene extends Phaser.Scene {
       stroke: '#000000',
       strokeThickness: 2
     })
-    
+
     // Efecto de brillo en la puntuación
     this.tweens.add({
       targets: this.scoreText,
@@ -155,7 +184,7 @@ export class UnitCircleScene extends Phaser.Scene {
     })
 
     // Botones de respuesta con efectos
-    const buttonColors = [0xff4444, 0x44ff44, 0x4444ff, 0xffaa44]
+    // const buttonColors = [0xff4444, 0x44ff44, 0x4444ff, 0xffaa44]
     const buttonTexts = ['Seno', 'Coseno', 'Tangente', 'Volver']
     const buttonActions = [
       () => this.checkAnswer('sin'),
@@ -163,51 +192,47 @@ export class UnitCircleScene extends Phaser.Scene {
       () => this.checkAnswer('tan'),
       () => this.scene.start('MainMenuScene')
     ]
-    
+
     buttonTexts.forEach((text, index) => {
-      const button = new Button(
+      new Button(
         this,
-        200 + index * 100, 380,
-        { text: text, width: 80, height: 35 },
+        140 + index * 160,
+        380,
+        {
+          text: text,
+          width: 140,
+          height: 35
+        },
         buttonActions[index],
         this
       )
-      
-      // Efecto de brillo en los botones
-      this.tweens.add({
-        targets: button,
-        scaleX: 1.05,
-        scaleY: 1.05,
-        duration: 1000,
-        yoyo: true,
-        repeat: -1,
-        delay: index * 200
-      })
     })
   }
 
   private generateQuestions() {
-    const angles = [0, 30, 45, 60, 90, 120, 135, 150, 180, 210, 225, 240, 270, 300, 315, 330]
+    const angles = [
+      0, 30, 45, 60, 90, 120, 135, 150, 180, 210, 225, 240, 270, 300, 315, 330
+    ]
     const functions = ['sin', 'cos', 'tan']
-    
+
     this.questions = []
     for (let i = 0; i < 10; i++) {
       const angle = angles[Math.floor(Math.random() * angles.length)]
       const func = functions[Math.floor(Math.random() * functions.length)]
       let answer = 0
-      
+
       switch (func) {
         case 'sin':
-          answer = Math.round(Math.sin(angle * Math.PI / 180) * 100) / 100
+          answer = Math.round(Math.sin((angle * Math.PI) / 180) * 100) / 100
           break
         case 'cos':
-          answer = Math.round(Math.cos(angle * Math.PI / 180) * 100) / 100
+          answer = Math.round(Math.cos((angle * Math.PI) / 180) * 100) / 100
           break
         case 'tan':
-          answer = Math.round(Math.tan(angle * Math.PI / 180) * 100) / 100
+          answer = Math.round(Math.tan((angle * Math.PI) / 180) * 100) / 100
           break
       }
-      
+
       this.questions.push({
         angle: angle,
         question: `¿Cuál es el valor de ${func}(${angle}°)?`,
@@ -223,7 +248,7 @@ export class UnitCircleScene extends Phaser.Scene {
     }
 
     const question = this.questions[this.currentQuestionIndex]
-    this.currentAngle = question.angle * Math.PI / 180
+    this.currentAngle = (question.angle * Math.PI) / 180
     this.currentQuestion = question.question
 
     this.updateCircle()
@@ -239,19 +264,28 @@ export class UnitCircleScene extends Phaser.Scene {
     this.angleLine?.clear()
     this.angleLine?.lineStyle(2, 0x00ff00)
     this.angleLine?.moveTo(centerX, centerY)
-    this.angleLine?.lineTo(centerX + radius * Math.cos(this.currentAngle), centerY - radius * Math.sin(this.currentAngle))
+    this.angleLine?.lineTo(
+      centerX + radius * Math.cos(this.currentAngle),
+      centerY - radius * Math.sin(this.currentAngle)
+    )
 
     this.point?.clear()
     this.point?.fillStyle(0xff0000)
-    this.point?.fillCircle(centerX + radius * Math.cos(this.currentAngle), centerY - radius * Math.sin(this.currentAngle), 4)
+    this.point?.fillCircle(
+      centerX + radius * Math.cos(this.currentAngle),
+      centerY - radius * Math.sin(this.currentAngle),
+      4
+    )
 
-    this.angleText?.setText(`${Math.round(this.currentAngle * 180 / Math.PI)}°`)
+    this.angleText?.setText(
+      `${Math.round((this.currentAngle * 180) / Math.PI)}°`
+    )
   }
 
   private checkAnswer(selectedFunction: string) {
     const question = this.questions[this.currentQuestionIndex]
     let correctAnswer = 0
-    
+
     switch (selectedFunction) {
       case 'sin':
         correctAnswer = Math.round(Math.sin(this.currentAngle) * 100) / 100
@@ -264,14 +298,18 @@ export class UnitCircleScene extends Phaser.Scene {
         break
     }
 
+    if (question == null) {
+      return
+    }
+
     if (Math.abs(correctAnswer - question.answer) < 0.01) {
       this.score += 10
       this.answerText?.setText('¡Correcto! +10 puntos')
       this.answerText?.setColor('#00ff00')
-      
+
       // Efecto de partículas para respuesta correcta
       this.createParticleEffect(384, 216, 0x00ff00)
-      
+
       // Animación de la puntuación
       this.tweens.add({
         targets: this.scoreText,
@@ -283,7 +321,7 @@ export class UnitCircleScene extends Phaser.Scene {
     } else {
       this.answerText?.setText(`Incorrecto. Respuesta: ${question.answer}`)
       this.answerText?.setColor('#ff0000')
-      
+
       // Efecto de partículas para respuesta incorrecta
       this.createParticleEffect(384, 216, 0xff0000)
     }
@@ -304,7 +342,7 @@ export class UnitCircleScene extends Phaser.Scene {
         2,
         color
       )
-      
+
       this.tweens.add({
         targets: particle,
         scaleX: 0,
@@ -319,22 +357,24 @@ export class UnitCircleScene extends Phaser.Scene {
   private showGameOver() {
     const totalPossible = this.questions.length * 10
     const percentage = (this.score / totalPossible) * 100
-    
+
     // Determinar si es victoria o derrota
     const isVictory = percentage >= 70
-    
+
     // Crear overlay de victoria/derrota
-    const overlay = this.add.rectangle(384, 216, 768, 432, 0x000000, 0.8)
-    
+    this.add.rectangle(384, 216, 768, 432, 0x000000, 0.8)
+
     // Título principal
-    const titleText = this.add.text(384, 150, isVictory ? '¡VICTORIA!' : '¡DERROTA!', {
-      fontSize: '48px',
-      color: isVictory ? '#00ff00' : '#ff0000',
-      fontStyle: 'bold',
-      stroke: '#000000',
-      strokeThickness: 4
-    }).setOrigin(0.5)
-    
+    const titleText = this.add
+      .text(384, 150, isVictory ? '¡VICTORIA!' : '¡DERROTA!', {
+        fontSize: '48px',
+        color: isVictory ? '#00ff00' : '#ff0000',
+        fontStyle: 'bold',
+        stroke: '#000000',
+        strokeThickness: 4
+      })
+      .setOrigin(0.5)
+
     // Animación del título
     this.tweens.add({
       targets: titleText,
@@ -344,61 +384,70 @@ export class UnitCircleScene extends Phaser.Scene {
       yoyo: true,
       repeat: -1
     })
-    
+
     // Mensaje motivacional
-    const messages = isVictory ? [
-      '¡Excelente trabajo!',
-      '¡Dominas el círculo unitario!',
-      '¡Eres un maestro de la trigonometría!',
-      '¡Perfecto! ¡Sigue así!'
-    ] : [
-      '¡No te rindas!',
-      '¡La práctica hace al maestro!',
-      '¡Inténtalo de nuevo!',
-      '¡Cada error es una oportunidad de aprender!'
-    ]
-    
+    const messages = isVictory
+      ? [
+          '¡Excelente trabajo!',
+          '¡Dominas el círculo unitario!',
+          '¡Eres un maestro de la trigonometría!',
+          '¡Perfecto! ¡Sigue así!'
+        ]
+      : [
+          '¡No te rindas!',
+          '¡La práctica hace al maestro!',
+          '¡Inténtalo de nuevo!',
+          '¡Cada error es una oportunidad de aprender!'
+        ]
+
     const randomMessage = messages[Math.floor(Math.random() * messages.length)]
-    const messageText = this.add.text(384, 200, randomMessage, {
-      fontSize: '24px',
-      color: '#ffffff',
-      fontStyle: 'bold',
-      stroke: '#000000',
-      strokeThickness: 2
-    }).setOrigin(0.5)
-    
+    const messageText = this.add
+      .text(384, 200, randomMessage, {
+        fontSize: '24px',
+        color: '#ffffff',
+        fontStyle: 'bold',
+        stroke: '#000000',
+        strokeThickness: 2
+      })
+      .setOrigin(0.5)
+
     // Puntuación con efectos
-    const scoreText = this.add.text(384, 250, `Puntuación: ${this.score}/${totalPossible}`, {
-      fontSize: '28px',
-      color: isVictory ? '#00ff00' : '#ffff00',
-      fontStyle: 'bold',
-      stroke: '#000000',
-      strokeThickness: 3
-    }).setOrigin(0.5)
-    
+    const scoreText = this.add
+      .text(384, 250, `Puntuación: ${this.score}/${totalPossible}`, {
+        fontSize: '28px',
+        color: isVictory ? '#00ff00' : '#ffff00',
+        fontStyle: 'bold',
+        stroke: '#000000',
+        strokeThickness: 3
+      })
+      .setOrigin(0.5)
+
     // Porcentaje
-    const percentageText = this.add.text(384, 280, `(${percentage.toFixed(1)}%)`, {
-      fontSize: '20px',
-      color: isVictory ? '#00ff00' : '#ffaa00',
-      fontStyle: 'bold',
-      stroke: '#000000',
-      strokeThickness: 2
-    }).setOrigin(0.5)
-    
+    const percentageText = this.add
+      .text(384, 280, `(${percentage.toFixed(1)}%)`, {
+        fontSize: '20px',
+        color: isVictory ? '#00ff00' : '#ffaa00',
+        fontStyle: 'bold',
+        stroke: '#000000',
+        strokeThickness: 2
+      })
+      .setOrigin(0.5)
+
     // Efectos de partículas según el resultado
     if (isVictory) {
       this.createVictoryParticles()
     } else {
       this.createDefeatParticles()
     }
-    
+
     // Botones
     const buttonY = 350
     const buttonSpacing = 120
-    
+
     new Button(
       this,
-      384 - buttonSpacing, buttonY,
+      384 - buttonSpacing,
+      buttonY,
       { text: 'Jugar de nuevo', width: 100, height: 35 },
       () => {
         this.score = 0
@@ -408,15 +457,16 @@ export class UnitCircleScene extends Phaser.Scene {
       },
       this
     )
-    
+
     new Button(
       this,
-      384 + buttonSpacing, buttonY,
+      384 + buttonSpacing,
+      buttonY,
       { text: 'Menú principal', width: 100, height: 35 },
       () => this.scene.start('MainMenuScene'),
       this
     )
-    
+
     // Animación de entrada
     this.tweens.add({
       targets: [titleText, messageText, scoreText, percentageText],
@@ -434,7 +484,7 @@ export class UnitCircleScene extends Phaser.Scene {
       }
     })
   }
-  
+
   private createVictoryParticles() {
     // Confeti de victoria
     for (let i = 0; i < 50; i++) {
@@ -444,7 +494,7 @@ export class UnitCircleScene extends Phaser.Scene {
         3,
         0x00ff00
       )
-      
+
       this.tweens.add({
         targets: particle,
         y: particle.y + 200,
@@ -453,7 +503,7 @@ export class UnitCircleScene extends Phaser.Scene {
         delay: Math.random() * 1000
       })
     }
-    
+
     // Estrellas doradas
     for (let i = 0; i < 20; i++) {
       const star = this.add.circle(
@@ -462,7 +512,7 @@ export class UnitCircleScene extends Phaser.Scene {
         4,
         0xffff00
       )
-      
+
       this.tweens.add({
         targets: star,
         scaleX: 0,
@@ -473,7 +523,7 @@ export class UnitCircleScene extends Phaser.Scene {
       })
     }
   }
-  
+
   private createDefeatParticles() {
     // Partículas de derrota
     for (let i = 0; i < 30; i++) {
@@ -483,7 +533,7 @@ export class UnitCircleScene extends Phaser.Scene {
         2,
         0xff0000
       )
-      
+
       this.tweens.add({
         targets: particle,
         y: particle.y - 100,
@@ -493,4 +543,4 @@ export class UnitCircleScene extends Phaser.Scene {
       })
     }
   }
-} 
+}

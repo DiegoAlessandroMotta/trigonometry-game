@@ -1,9 +1,9 @@
 import { fonts } from '@/core/consts'
+import type { Scene } from 'phaser'
 
 interface ButtonConfig {
   width?: number
   height?: number
-  texture?: string
   backgroundColor?: number
   hoverColor?: number
   borderColor?: number
@@ -11,34 +11,38 @@ interface ButtonConfig {
   text?: string
   textColor?: number
   textSize?: number
-  fontFamily?: string
-  borderRadius?: number // nuevo para esquinas redondeadas
+  borderRadius?: number
+  hoverScale?: number
+  animationsEnabled?: boolean
 }
 
 export class Button extends Phaser.GameObjects.Container {
   private background!: Phaser.GameObjects.Rectangle
   private border!: Phaser.GameObjects.Rectangle
-  private buttonImage?: Phaser.GameObjects.Image
   private buttonText?: Phaser.GameObjects.BitmapText
   private callback?: Function
   private scope?: any
+  private hoverTween?: Phaser.Tweens.Tween
+  private clickTween?: Phaser.Tweens.Tween
+
   private readonly defaultConfig: Required<ButtonConfig> = {
-    width: 110, // más grande
-    height: 48, // más alto
-    texture: '',
-    backgroundColor: 0xffae0a, // naranja vibrante
-    hoverColor: 0xffd700, // amarillo vibrante
-    borderColor: 0xda5700, // borde naranja oscuro
+    width: 110,
+    height: 48,
+    backgroundColor: 0xffae0a,
+    hoverColor: 0xffc70a,
+    borderColor: 0xda5700,
     borderWidth: 3,
     text: '',
     textColor: 0xffffff,
     textSize: 18,
-    fontFamily: 'Arial',
-    borderRadius: 18 // bordes redondeados por defecto
+    borderRadius: 18,
+    hoverScale: 1.12,
+    animationsEnabled: true
   }
+  private readonly finalConfig: Required<ButtonConfig>
 
   constructor(
-    scene: Phaser.Scene,
+    scene: Scene,
     x: number,
     y: number,
     config: ButtonConfig = {},
@@ -47,55 +51,45 @@ export class Button extends Phaser.GameObjects.Container {
   ) {
     super(scene, x, y)
 
-    const finalConfig: Required<ButtonConfig> = {
+    this.finalConfig = {
       ...this.defaultConfig,
       ...config
     }
+
     this.callback = callback
     this.scope = scope
 
-    // --- Sombra visual detrás del botón ---
-    const shadow = scene.add.graphics()
-    shadow.fillStyle(0x000000, 0.28)
-    shadow.fillRoundedRect(-finalConfig.width/2 + 4, -finalConfig.height/2 + 6, finalConfig.width - 8, finalConfig.height - 8, finalConfig.borderRadius)
-    this.addAt(shadow, 0)
+    this.renderButton(scene)
+    this.addInteractions()
+  }
 
-    // Create border (if specified)
-    if (finalConfig.borderWidth > 0 && finalConfig.borderRadius === 0) {
+  renderButton(scene: Scene) {
+    if (
+      this.finalConfig.borderWidth > 0 &&
+      this.finalConfig.borderRadius === 0
+    ) {
       this.border = scene.add.rectangle(
         0,
         0,
-        finalConfig.width,
-        finalConfig.height,
-        finalConfig.borderColor
+        this.finalConfig.width,
+        this.finalConfig.height,
+        this.finalConfig.borderColor
       )
       this.add(this.border)
     }
 
-    // Create background
     this.background = scene.add.rectangle(
       0,
       0,
-      finalConfig.width - finalConfig.borderWidth * 2,
-      finalConfig.height - finalConfig.borderWidth * 2,
-      finalConfig.backgroundColor
+      this.finalConfig.width - this.finalConfig.borderWidth * 2,
+      this.finalConfig.height - this.finalConfig.borderWidth * 2,
+      this.finalConfig.backgroundColor
     )
     this.add(this.background)
 
-    // Add texture if provided
-    if (finalConfig.texture) {
-      this.buttonImage = scene.add.image(0, 0, finalConfig.texture)
-      this.buttonImage.setDisplaySize(
-        finalConfig.width - finalConfig.borderWidth * 4,
-        finalConfig.height - finalConfig.borderWidth * 4
-      )
-      this.add(this.buttonImage)
-    }
-
-    // Add text if provided
-    if (finalConfig.text) {
+    if (this.finalConfig.text) {
       this.buttonText = scene.add
-        .bitmapText(0, 0, fonts.pixel, finalConfig.text)
+        .bitmapText(0, 0, fonts.pixel, this.finalConfig.text)
         .setOrigin(0.5)
         .setCenterAlign()
         .setScale(2)
@@ -104,47 +98,101 @@ export class Button extends Phaser.GameObjects.Container {
     }
 
     this.scene.add.existing(this)
-    this.setSize(finalConfig.width, finalConfig.height)
-    this.setInteractive(
-      new Phaser.Geom.Rectangle(0, 0, finalConfig.width, finalConfig.height),
-      Phaser.Geom.Rectangle.Contains
+    this.setSize(this.finalConfig.width, this.finalConfig.height)
+  }
+
+  addInteractions() {
+    const interactiveArea = new Phaser.Geom.Rectangle(
+      0,
+      0,
+      this.finalConfig.width,
+      this.finalConfig.height
     )
+
+    this.setInteractive(interactiveArea, Phaser.Geom.Rectangle.Contains)
 
     this.on('pointerover', this.onHover, this)
     this.on('pointerout', this.onOut, this)
     this.on('pointerdown', this.onClick, this)
+    this.on('pointerup', this.onPointerUp, this)
   }
 
   onHover() {
+    if (this.clickTween && this.clickTween.isPlaying()) {
+      this.clickTween.stop()
+    }
+
+    if (this.hoverTween && this.hoverTween.isPlaying()) {
+      this.hoverTween.stop()
+    }
+
     this.background.setFillStyle(this.defaultConfig.hoverColor)
-    this.setScale(1.13)
-    this.scene.tweens.add({
-      targets: this,
-      alpha: 0.92,
-      duration: 120,
-      yoyo: true
-    })
+
+    if (this.finalConfig.animationsEnabled) {
+      this.hoverTween = this.scene.tweens.add({
+        targets: this,
+        scaleX: this.defaultConfig.hoverScale,
+        scaleY: this.defaultConfig.hoverScale,
+        duration: 150,
+        ease: 'Power2'
+      })
+    }
   }
 
   onOut() {
+    if (this.hoverTween && this.hoverTween.isPlaying()) {
+      this.hoverTween.stop()
+    }
+    if (this.clickTween && this.clickTween.isPlaying()) {
+      this.clickTween.stop()
+    }
+
     this.background.setFillStyle(this.defaultConfig.backgroundColor)
-    this.setScale(1)
-    this.setAlpha(1)
+
+    if (this.finalConfig.animationsEnabled) {
+      this.hoverTween = this.scene.tweens.add({
+        targets: this,
+        scaleX: 1,
+        scaleY: 1,
+        duration: 150,
+        ease: 'Power2'
+      })
+    }
   }
 
   onClick() {
-    // Efecto de pulsación
-    this.scene.tweens.add({
-      targets: this,
-      scaleX: 0.95,
-      scaleY: 0.95,
-      duration: 100,
-      yoyo: true,
-      onComplete: () => {
+    if (this.hoverTween && this.hoverTween.isPlaying()) {
+      this.hoverTween.stop()
+    }
+
+    if (this.finalConfig.animationsEnabled) {
+      this.clickTween = this.scene.tweens.add({
+        targets: this,
+        scaleX: 0.95,
+        scaleY: 0.95,
+        duration: 80,
+        ease: 'Power1'
+      })
+    }
+  }
+
+  onPointerUp() {
+    if (this.clickTween && this.clickTween.isPlaying()) {
+      this.clickTween.stop()
+    }
+
     if (this.callback) {
       this.callback.call(this.scope || this)
     }
-      }
-    })
+  }
+
+  public disable() {
+    this.setInteractive(false)
+    this.setAlpha(0.6)
+  }
+
+  public enable() {
+    this.setInteractive(true)
+    this.setAlpha(1)
   }
 }

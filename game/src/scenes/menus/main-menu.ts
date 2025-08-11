@@ -1,5 +1,6 @@
 import { Button } from '@/components/button'
 import { fonts, scenes } from '@/core/consts'
+import { createAnimatedBackground } from '@/core/utils'
 
 export class MainMenuScene extends Phaser.Scene {
   titleBitmap?: Phaser.GameObjects.BitmapText
@@ -8,89 +9,40 @@ export class MainMenuScene extends Phaser.Scene {
     super(scenes.mainMenu)
   }
 
-  private createAnimatedBackground() {
-    // Fondo degradado
-    const bg = this.add.graphics()
-    bg.fillGradientStyle(0x0a0a2e, 0x1a1a4e, 0x2a2a6e, 0x3a3a8e, 1)
-    bg.fillRect(0, 0, 768, 432)
-
-    // Partículas matemáticas flotantes
-    const symbols = ['sin', 'cos', 'tan', 'π', 'θ', 'α', 'β', '°', 'rad']
-    for (let i = 0; i < 20; i++) {
-      const symbol = this.add.text(
-        Math.random() * 768,
-        Math.random() * 432,
-        symbols[Math.floor(Math.random() * symbols.length)],
-        {
-          fontSize: '24px',
-          color: '#4444ff',
-          fontStyle: 'bold'
-        }
-      )
-
-      this.tweens.add({
-        targets: symbol,
-        y: symbol.y - 150,
-        alpha: 0,
-        duration: 5000 + Math.random() * 3000,
-        repeat: -1,
-        delay: Math.random() * 5000
-      })
-    }
-
-    // Líneas de conexión animadas
-    for (let i = 0; i < 8; i++) {
-      const line = this.add.graphics()
-      line.lineStyle(2, 0x4444ff, 0.3)
-      line.moveTo(Math.random() * 768, Math.random() * 432)
-      line.lineTo(Math.random() * 768, Math.random() * 432)
-
-      this.tweens.add({
-        targets: line,
-        alpha: 0,
-        duration: 3000,
-        yoyo: true,
-        repeat: -1,
-        delay: Math.random() * 3000
-      })
-    }
-  }
-
   create() {
-    // Fondo animado
-    this.createAnimatedBackground()
+    createAnimatedBackground(this)
 
     // Título principal con efectos
     this.titleBitmap = this.add
       .bitmapText(
         this.cameras.main.width / 2,
-        120,
+        60,
         fonts.pixel,
-        'Juego de\ntrigonometría'
+        'Juegos de\ntrigonometría'
       )
       .setOrigin(0.5)
       .setScale(3)
       .setCenterAlign()
-      .setTint(0x00ffff)
+    // .setTint(0x00ffff)
 
-    // Animación del título
-    this.tweens.add({
-      targets: this.titleBitmap,
-      scaleX: 1.1,
-      scaleY: 1.1,
-      duration: 2000,
-      yoyo: true,
-      repeat: -1
-    })
+    // // Animación del título
+    // this.tweens.add({
+    //   targets: this.titleBitmap,
+    //   scaleX: 1.1,
+    //   scaleY: 1.1,
+    //   duration: 2000,
+    //   yoyo: true,
+    //   repeat: -1
+    // })
 
-    // Efecto de brillo en el título
-    this.tweens.add({
-      targets: this.titleBitmap,
-      alpha: 0.8,
-      duration: 1500,
-      yoyo: true,
-      repeat: -1
-    })
+    // // Efecto de brillo en el título
+    // this.tweens.add({
+    //   targets: this.titleBitmap,
+    //   alpha: 0.8,
+    //   duration: 1500,
+    //   yoyo: true,
+    //   repeat: -1
+    // })
 
     // Botones para los diferentes mini juegos con efectos
     const buttonConfigs = [
@@ -117,11 +69,12 @@ export class MainMenuScene extends Phaser.Scene {
       const button = new Button(
         this,
         this.cameras.main.width / 2,
-        180 + index * 50,
+        140 + index * 50,
         {
           text: config.text,
-          width: 320,
-          height: 44
+          width: 440,
+          height: 44,
+          animationsEnabled: false
         },
         () => this.scene.start(config.scene),
         this
@@ -143,13 +96,13 @@ export class MainMenuScene extends Phaser.Scene {
     const fullscreenButton = new Button(
       this,
       this.cameras.main.width / 2,
-      430,
+      140 + buttonConfigs.length * 50,
       {
-        text: 'PANTALLA\nCOMPLETA',
-        width: 120,
-        height: 42
+        text: 'Pantalla\nCompleta',
+        width: 160,
+        height: 52
       },
-      this.onOptionsButtonClick,
+      this.onFullScreenButtonClick,
       this
     )
 
@@ -165,12 +118,13 @@ export class MainMenuScene extends Phaser.Scene {
     // Botón para volver a la pantalla de inicio
     const backButton = new Button(
       this,
-      50,
-      50,
+      70,
+      25,
       {
-        text: 'INICIO',
-        width: 80,
-        height: 30
+        text: 'Inicio',
+        width: 120,
+        height: 36,
+        animationsEnabled: false
       },
       () => this.scene.start('StartScreenScene'),
       this
@@ -187,7 +141,7 @@ export class MainMenuScene extends Phaser.Scene {
     })
   }
 
-  onOptionsButtonClick() {
+  onFullScreenButtonClick() {
     if (this.scale.isFullscreen) {
       this.scale.stopFullscreen()
     } else {
