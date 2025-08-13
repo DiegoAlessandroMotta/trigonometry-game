@@ -21,6 +21,7 @@ export const scenes = {
   mainMenu: 'MainMenuScene',
   pauseMenu: 'pause-menu',
   platformer: 'platformer',
+  level2: 'level2',
   hud: 'hud',
   dialog: 'dialog'
 }

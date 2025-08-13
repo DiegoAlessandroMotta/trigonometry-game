@@ -9,6 +9,7 @@ import { AngleConverterScene } from '@/scenes/minigames/angle-converter'
 import { TrigIdentitiesScene } from '@/scenes/minigames/trig-identities'
 import { HudScene } from '@/scenes/hud'
 import { DialogScene } from '@/scenes/dialog'
+import { Level2Scene } from '@/scenes/minigames/level2'
 
 export const gameConfig: Phaser.Types.Core.GameConfig = {
   type: Phaser.WEBGL,
@@ -38,6 +39,7 @@ export const gameConfig: Phaser.Types.Core.GameConfig = {
     Boot,
     MainMenuScene,
     PlatformerScene,
+    Level2Scene,
     PauseMenuScene,
     HudScene,
     DialogScene,

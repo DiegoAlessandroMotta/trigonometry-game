@@ -1,10 +1,10 @@
 import { customEvents, scenes } from '@/core/consts'
 import { PlayerInputController } from '@/game-objects/controllers/PlayerInputController'
 import { Player } from '@/game-objects/player'
-import dialogInitial from '@/dialogs-pages/platformer.json'
-import dialogFinal from '@/dialogs-pages/platformer-complete.json'
+import dialogInitial from '@/dialogs-pages/level2.json'
+import dialogFinal from '@/dialogs-pages/level2-complete.json'
 
-export class PlatformerScene extends Phaser.Scene {
+export class Level2Scene extends Phaser.Scene {
   platforms?: Phaser.Physics.Arcade.StaticGroup
   oneWayPlatforms?: Phaser.Physics.Arcade.StaticGroup
   player?: Player
@@ -22,7 +22,7 @@ export class PlatformerScene extends Phaser.Scene {
   // jump = false
 
   constructor() {
-    super(scenes.platformer)
+    super(scenes.level2)
   }
 
   init() {
@@ -38,7 +38,7 @@ export class PlatformerScene extends Phaser.Scene {
 
     this.drawMap()
 
-    this.player = new Player(this, 16 * 8, 16 * 18)
+    this.player = new Player(this, 16 * 2, 16 * 3)
     this.playerInputController = new PlayerInputController(this, this.player)
 
     this.player.setGravityY(1000)
@@ -118,7 +118,7 @@ export class PlatformerScene extends Phaser.Scene {
         this.scene.launch(scenes.dialog, {
           height: 16 * 12,
           pages: dialogFinal,
-          nextScene: scenes.level2
+          nextScene: scenes.mainMenu
         })
       })
     }
@@ -137,10 +137,10 @@ export class PlatformerScene extends Phaser.Scene {
 
     if (this.isPaused) {
       this.physics.pause()
-      this.scene.pause(scenes.platformer)
+      this.scene.pause(scenes.level2)
     } else {
       this.physics.resume()
-      this.scene.resume(scenes.platformer)
+      this.scene.resume(scenes.level2)
     }
   }
 
@@ -152,11 +152,11 @@ export class PlatformerScene extends Phaser.Scene {
         this.cameras.main.width,
         this.cameras.main.height,
         'bg-tileset',
-        '6.png'
+        '1.png'
       )
       .setOrigin(0)
 
-    this.map = this.make.tilemap({ key: 'level1' })
+    this.map = this.make.tilemap({ key: 'level2' })
 
     const tileset = this.map.addTilesetImage('platforms', 'tiles')
     if (tileset == null) {

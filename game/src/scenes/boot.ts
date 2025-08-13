@@ -39,6 +39,7 @@ export class Boot extends Phaser.Scene {
   loadTileAssets() {
     this.load.setPath('assets/tiles')
     this.load.tilemapTiledJSON('level1', 'level1.json')
+    this.load.tilemapTiledJSON('level2', 'level2.json')
 
     this.load.atlas('gui-tileset', 'gui-tileset.png', 'gui-tileset.json')
     this.load.atlas(
