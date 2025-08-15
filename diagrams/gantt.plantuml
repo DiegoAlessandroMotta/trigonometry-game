@@ -1,0 +1,27 @@
+@startgantt
+Project starts 2025-04-01
+saturday are closed
+sunday are closed
+
+[Concepción y análisis] as [A1] lasts 22 days
+[A1] is colored in LightBlue/Blue
+
+[Diseño y arquitectura] as [A2] lasts 22 days
+[A2] is colored in LightSalmon/DarkRed
+
+[Desarrollo de contenido educativo] as [A3] lasts 20 days
+[A3] is colored in LightYellow/GoldenRod
+
+[Integración de Gamificación y Mejora] as [A4] lasts 22 days
+[A4] is colored in LightSkyBlue/SteelBlue
+
+[Desarrollo del Manual de Usuario y Producto Final] as [A5] lasts 22 days
+[A5] is colored in Thistle/Purple
+
+' ===== Dependencias =====
+[A2] starts at [A1]'s end
+[A3] starts at [A2]'s end
+[A4] starts at [A3]'s end
+[A5] starts at [A4]'s end
+
+@endgantt
