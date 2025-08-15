@@ -28,7 +28,7 @@ export const gameConfig: Phaser.Types.Core.GameConfig = {
         y: 0,
         x: 0
       },
-      debug: true
+      debug: !import.meta.env.PROD
     }
   },
   scale: {
