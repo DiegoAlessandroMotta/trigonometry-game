@@ -62,7 +62,7 @@ export class MainMenuScene extends Phaser.Scene {
         scene: 'TrigIdentitiesScene',
         color: 0xffaa44
       },
-      { text: 'Tipos de triángulos', scene: scenes.platformer, color: 0xaa55ff }
+      { text: 'Tipos de triángulos', scene: scenes.level3, color: 0xaa55ff }
     ]
 
     buttonConfigs.forEach((config, index) => {

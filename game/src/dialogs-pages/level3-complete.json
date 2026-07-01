@@ -1,0 +1,49 @@
+[
+	{
+		"title": "¡Victoria Isósceles!",
+		"textContent": "¡Lo has logrado de nuevo! ¡Eres un maestro en la identificación de triángulos! Has encontrado cada triángulo isósceles y completado el desafío.",
+		"illustrationMarginTop": 16,
+		"illustrations": [
+			{
+				"texture": "objects",
+				"frame": "isoceles-1.png",
+				"scale": 4
+			}
+		]
+	},
+	{
+		"title": "Tu Conocimiento Isósceles",
+		"textContent": "Recuerda bien: un triángulo **isósceles** es aquel que tiene al menos dos lados de la misma medida, y por si fuera poco, los ángulos opuestos a esos lados también son idénticos. ¡Increíble, ¿verdad?!",
+		"illustrationMarginTop": 16,
+		"illustrations": [
+			{
+				"texture": "objects",
+				"frame": "isoceles-1.png",
+				"scale": 4
+			}
+		]
+	},
+	{
+		"title": "¡Un Paso Más Allá!",
+		"textContent": "Cada triángulo que reconoces te hace más hábil en geometría. ¡Sigue observando las formas a tu alrededor y verás la matemática en todas partes!",
+		"illustrationMarginTop": 16,
+		"illustrations": [
+			{
+				"texture": "objects",
+				"frame": "isoceles-1.png",
+				"scale": 4
+			}
+		]
+	},
+	{
+		"title": "¡Nivel Completado!",
+		"textContent": "¡Has dominado el mundo de los triángulos isósceles! El siguiente nivel te espera con más misterios y formas por descubrir. ¡Tu aventura geométrica continúa!",
+		"illustrations": [
+			{
+				"texture": "objects",
+				"frame": "trophy-idle-1.png",
+				"scale": 2
+			}
+		]
+	}
+]

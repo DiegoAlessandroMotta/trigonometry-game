@@ -118,7 +118,7 @@ export class Level2Scene extends Phaser.Scene {
         this.scene.launch(scenes.dialog, {
           height: 16 * 12,
           pages: dialogFinal,
-          nextScene: scenes.mainMenu
+          nextScene: scenes.level3
         })
       })
     }
