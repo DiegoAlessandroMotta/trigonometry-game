@@ -152,7 +152,7 @@ export class Level3Scene extends Phaser.Scene {
         this.cameras.main.width,
         this.cameras.main.height,
         'bg-tileset',
-        '1.png'
+        '4.png'
       )
       .setOrigin(0)
 
@@ -163,77 +163,116 @@ export class Level3Scene extends Phaser.Scene {
       throw new Error('tileset image not found')
     }
 
-    // const objectsTileset = this.map.addTilesetImage('objects', 'objects')
-    // if (objectsTileset == null) {
-    //   throw new Error('objectsTileset image not found')
-    // }
+    const objectsLayer = this.map?.getObjectLayer('objects')
+
+    objectsLayer?.objects.forEach((obj) => {
+      if (obj.gid == null) {
+        this.drawBackgroundShape(obj)
+      }
+    })
 
     this.map.createLayer('platforms', tileset, 0, 0)
 
-    this.map
-      .createFromObjects('objects', {
-        key: 'objects'
-        // frame: 'triangle-1.png'
-      })
-      .forEach((obj) => {
-        if (!(obj instanceof Phaser.GameObjects.Sprite)) {
-          return
-        }
+    const usedGids = new Set<number>()
+    objectsLayer?.objects.forEach((obj) => {
+      if (obj.gid != null) {
+        usedGids.add(obj.gid)
+      }
+    })
 
-        let totalFrames = 1
-        let animationKey = ''
-
-        const triangleType = obj.data?.get('triangleType')
-        const objType = obj.data?.get('objType')
-
-        if (triangleType != null) {
-          if (triangleType === 'equilatero') {
-            animationKey = 'equilatero-floating'
-            totalFrames = 7
-          } else if (triangleType === 'isoceles') {
-            animationKey = 'isoceles-floating'
-            totalFrames = 7
-          } else if (triangleType === 'escaleno') {
-            animationKey = 'escaleno-floating'
-            totalFrames = 7
-          } else {
-            throw new Error('Unkown object type (triangle object)')
+    usedGids.forEach((gid) => {
+      this.map
+        ?.createFromObjects('objects', { key: 'objects', gid })
+        .forEach((sprite) => {
+          if (sprite instanceof Phaser.GameObjects.Sprite) {
+            this.setupObjectSprite(sprite)
           }
-        } else if (objType != null) {
-          switch (objType) {
-            case 'pointer':
-              animationKey = 'pointer-idle'
-              totalFrames = 7
-              break
-            case 'flag':
-              animationKey = 'white-flag-idle'
-              totalFrames = 7
-              break
-            default:
-              throw new Error('Unkown object type (general object)')
-          }
-        }
+        })
+    })
+  }
 
-        const randomStartFrame = Phaser.Math.Between(0, totalFrames - 1)
-        obj.setScale(1)
+  drawBackgroundShape(obj: Phaser.Types.Tilemaps.TiledObject) {
+    const bgColorProp = (obj.properties ?? []).find(
+      (p: { name: string; value: string }) => p.name === 'bg-color'
+    )
+    if (bgColorProp == null) {
+      return
+    }
 
-        if (animationKey != null) {
-          obj.play({
-            key: animationKey,
-            startFrame: randomStartFrame,
-            repeat: -1
-          })
-        }
+    const tiledHex = bgColorProp.value.replace('#', '')
+    const alpha = parseInt(tiledHex.slice(0, 2), 16) / 255
+    const colorInt = parseInt(tiledHex.slice(2, 8), 16)
 
-        // this.physics.world.enable(obj)
+    const x = obj.x ?? 0
+    const y = obj.y ?? 0
+    const width = obj.width ?? 0
+    const height = obj.height ?? 0
 
-        if (triangleType != null) {
-          this.itemsGroup?.add(obj)
-          this.totalItems++
-        } else if (objType === 'flag') {
-          this.endFlagGroup?.add(obj)
-        }
+    const graphics = this.add.graphics().fillStyle(colorInt, alpha)
+
+    if (obj.polygon != null) {
+      const points = obj.polygon.map((p: { x: number; y: number }) => ({
+        x: x + p.x,
+        y: y + p.y
+      }))
+      graphics.fillPoints(points, true)
+    } else {
+      graphics.fillRect(x, y, width, height)
+    }
+  }
+
+  setupObjectSprite(sprite: Phaser.GameObjects.Sprite) {
+    let totalFrames = 1
+    let animationKey = ''
+
+    const triangleType = sprite.data?.get('triangleType')
+    const objType = sprite.data?.get('objType')
+
+    if (triangleType != null) {
+      if (triangleType === 'equilatero') {
+        animationKey = 'equilatero-floating'
+        totalFrames = 7
+      } else if (triangleType === 'isoceles') {
+        animationKey = 'isoceles-floating'
+        totalFrames = 7
+      } else if (triangleType === 'escaleno') {
+        animationKey = 'escaleno-floating'
+        totalFrames = 7
+      } else {
+        throw new Error('Unkown object type (triangle object)')
+      }
+    } else if (objType != null) {
+      switch (objType) {
+        case 'pointer':
+          animationKey = 'pointer-idle'
+          totalFrames = 7
+          break
+        case 'flag':
+          animationKey = 'white-flag-idle'
+          totalFrames = 7
+          break
+        default:
+          throw new Error('Unkown object type (general object)')
+      }
+    }
+
+    const randomStartFrame = Phaser.Math.Between(0, totalFrames - 1)
+    sprite.setScale(1)
+
+    if (animationKey !== '') {
+      sprite.play({
+        key: animationKey,
+        startFrame: randomStartFrame,
+        repeat: -1
       })
+    }
+
+    if (triangleType != null) {
+      this.itemsGroup?.add(sprite)
+      this.totalItems++
+    } else if (objType === 'flag') {
+      this.endFlagGroup?.add(sprite)
+    }
   }
 
   addMapCollides() {
