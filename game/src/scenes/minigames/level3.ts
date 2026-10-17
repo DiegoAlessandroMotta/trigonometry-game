@@ -1,14 +1,17 @@
-import { customEvents, scenes } from '@/core/consts'
+import { customEvents, echoDelayMs, scenes } from '@/core/consts'
 import { PlayerInputController } from '@/game-objects/controllers/PlayerInputController'
+import { EchoPlayer } from '@/game-objects/echo-player'
 import { Player } from '@/game-objects/player'
 import dialogInitial from '@/dialogs-pages/level3.json'
 import dialogFinal from '@/dialogs-pages/level3-complete.json'
+import dialogGameOver from '@/dialogs-pages/platformer-game-over.json'
 
 export class Level3Scene extends Phaser.Scene {
   platforms?: Phaser.Physics.Arcade.StaticGroup
   oneWayPlatforms?: Phaser.Physics.Arcade.StaticGroup
   player?: Player
-  player2?: Player
+  echoPlayer?: EchoPlayer
+  echoPlayerSpawned = false
   map?: Phaser.Tilemaps.Tilemap
   itemsGroup?: Phaser.Physics.Arcade.Group
   isPaused = false
@@ -29,6 +32,7 @@ export class Level3Scene extends Phaser.Scene {
     this.isPaused = false
     this.totalItems = 0
     this.itemsCollected = 0
+    this.echoPlayerSpawned = false
   }
 
   create() {
@@ -42,6 +46,13 @@ export class Level3Scene extends Phaser.Scene {
     this.playerInputController = new PlayerInputController(this, this.player)
 
     this.player.setGravityY(1000)
+
+    this.echoPlayer = new EchoPlayer(this, 16 * 3, 16 * 22, echoDelayMs)
+
+    this.time.delayedCall(echoDelayMs, () => {
+      this.echoPlayer?.spawn()
+      this.echoPlayerSpawned = true
+    })
 
     if (this.itemsGroup == null) {
       throw new Error(
@@ -63,6 +74,14 @@ export class Level3Scene extends Phaser.Scene {
       this.player,
       this.endFlagGroup,
       this.endLevel,
+      undefined,
+      this
+    )
+
+    this.physics.add.overlap(
+      this.player,
+      this.echoPlayer,
+      this.onEchoOverlap,
       undefined,
       this
     )
@@ -124,12 +143,39 @@ export class Level3Scene extends Phaser.Scene {
     }
   }
 
+  onEchoOverlap: Phaser.Types.Physics.Arcade.ArcadePhysicsCallback = (
+    _player,
+    _echo
+  ) => {
+    if (!this.echoPlayerSpawned || this.isPaused) {
+      return
+    }
+
+    if (this.player == null) {
+      return
+    }
+
+    this.player.controlsEnabled = false
+    this.player.idle()
+
+    this.scene.launch(scenes.dialog, {
+      height: 16 * 10,
+      pages: dialogGameOver,
+      nextScene: scenes.level3
+    })
+  }
+
   update(time: number, delta: number) {
     if (this.isPaused) {
       return
     }
 
     this.playerInputController?.update(time, delta)
+
+    if (this.player != null) {
+      this.echoPlayer?.record(time, this.player)
+      this.echoPlayer?.update(time, delta)
+    }
   }
 
   togglePause() {

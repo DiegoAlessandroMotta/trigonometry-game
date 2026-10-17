@@ -27,6 +27,8 @@ export const scenes = {
   dialog: 'dialog'
 }
 
+export const echoDelayMs = 3000
+
 export const customEvents = {
   pauseGame: 'pause-game',
   endGame: 'end-game',
