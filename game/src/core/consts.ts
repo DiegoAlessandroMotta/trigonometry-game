@@ -29,6 +29,10 @@ export const scenes = {
 
 export const echoDelayMs = 3000
 
+export const maxLives = 3
+export const invincibilityDurationMs = 1500
+export const heartTexture = { key: 'gems', frame: 'ruby-1.png' }
+
 export const customEvents = {
   pauseGame: 'pause-game',
   endGame: 'end-game',

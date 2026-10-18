@@ -1,6 +1,13 @@
-import { customEvents, echoDelayMs, scenes } from '@/core/consts'
+import {
+  customEvents,
+  echoDelayMs,
+  invincibilityDurationMs,
+  maxLives,
+  scenes
+} from '@/core/consts'
 import { PlayerInputController } from '@/game-objects/controllers/PlayerInputController'
 import { EchoPlayer } from '@/game-objects/echo-player'
+import { LivesIndicator } from '@/game-objects/lives-indicator'
 import { Player } from '@/game-objects/player'
 import dialogGameOver from '@/dialogs-pages/platformer-game-over.json'
 import type { DialogPage } from '@/scenes/dialog'
@@ -27,6 +34,9 @@ export class BasePlatformerScene extends Phaser.Scene {
   protected player?: Player
   protected echoPlayer?: EchoPlayer
   protected echoPlayerSpawned = false
+  protected livesIndicator?: LivesIndicator
+  protected lives = maxLives
+  protected isInvincible = false
   protected map?: Phaser.Tilemaps.Tilemap
   protected itemsGroup?: Phaser.Physics.Arcade.Group
   protected isPaused = false
@@ -50,6 +60,8 @@ export class BasePlatformerScene extends Phaser.Scene {
     this.totalItems = 0
     this.itemsCollected = 0
     this.echoPlayerSpawned = false
+    this.lives = maxLives
+    this.isInvincible = false
   }
 
   create() {
@@ -70,6 +82,8 @@ export class BasePlatformerScene extends Phaser.Scene {
       this.playerSpawn.y,
       echoDelayMs
     )
+
+    this.livesIndicator = new LivesIndicator(this, maxLives)
 
     this.time.delayedCall(echoDelayMs, () => {
       this.echoPlayer?.spawn()
@@ -175,13 +189,49 @@ export class BasePlatformerScene extends Phaser.Scene {
       return
     }
 
-    this.player.controlsEnabled = false
-    this.player.idle()
+    if (this.isInvincible || this.lives <= 0) {
+      return
+    }
 
-    this.scene.launch(scenes.dialog, {
-      height: 16 * 10,
-      pages: dialogGameOver,
-      nextScene: this.scene.key
+    this.lives--
+    this.livesIndicator?.loseLife()
+
+    if (this.lives <= 0) {
+      this.player.controlsEnabled = false
+      this.player.idle()
+
+      this.scene.launch(scenes.dialog, {
+        height: 16 * 10,
+        pages: dialogGameOver,
+        nextScene: this.scene.key
+      })
+      return
+    }
+
+    this.startInvincibility()
+  }
+
+  private startInvincibility() {
+    if (this.player == null) {
+      return
+    }
+
+    this.isInvincible = true
+
+    this.tweens.add({
+      targets: this.player,
+      alpha: 0.3,
+      duration: 100,
+      yoyo: true,
+      repeat: -1
+    })
+
+    this.time.delayedCall(invincibilityDurationMs, () => {
+      this.tweens.killTweensOf(this.player!)
+      if (this.player != null) {
+        this.player.alpha = 1
+      }
+      this.isInvincible = false
     })
   }
 
@@ -193,6 +243,7 @@ export class BasePlatformerScene extends Phaser.Scene {
     this.playerInputController?.update(time, delta)
 
     if (this.player != null) {
+      this.livesIndicator?.followPlayer(this.player)
       this.echoPlayer?.record(this.player)
       this.echoPlayer?.update(time, delta)
     }
