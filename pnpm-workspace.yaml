@@ -1,6 +1,0 @@
-packages:
-  - game
-allowBuilds:
-  esbuild: true
-onlyBuiltDependencies:
-  - esbuild
