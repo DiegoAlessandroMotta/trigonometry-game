@@ -193,7 +193,7 @@ export class BasePlatformerScene extends Phaser.Scene {
     this.playerInputController?.update(time, delta)
 
     if (this.player != null) {
-      this.echoPlayer?.record(time, this.player)
+      this.echoPlayer?.record(this.player)
       this.echoPlayer?.update(time, delta)
     }
   }

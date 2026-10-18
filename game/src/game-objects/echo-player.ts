@@ -20,6 +20,7 @@ export class EchoPlayer extends Phaser.Physics.Arcade.Sprite {
   private readonly delayMs: number
   private readonly maxBufferSize: number
   private readonly buffer: EchoFrame[] = []
+  private elapsedMs = 0
   private spawned = false
   private isMaterializing = false
 
@@ -55,8 +56,7 @@ export class EchoPlayer extends Phaser.Physics.Arcade.Sprite {
     }
     this.spawned = true
 
-    const now = this.scene.time.now
-    const frame = this.findFrameAt(now - this.delayMs)
+    const frame = this.findFrameAt(this.elapsedMs - this.delayMs)
     if (frame != null) {
       this.setPosition(frame.x, frame.y)
       this.setFlipX(frame.flipX)
@@ -75,14 +75,14 @@ export class EchoPlayer extends Phaser.Physics.Arcade.Sprite {
     )
   }
 
-  public record(time: number, player: PlayerLike) {
+  public record(player: PlayerLike) {
     const currentAnim = player.anims.currentAnim
     if (currentAnim == null) {
       return
     }
 
     this.buffer.push({
-      t: time,
+      t: this.elapsedMs,
       x: player.x,
       y: player.y,
       flipX: player.flipX,
@@ -94,12 +94,14 @@ export class EchoPlayer extends Phaser.Physics.Arcade.Sprite {
     }
   }
 
-  public update(time: number, _delta: number) {
+  public update(_time: number, delta: number) {
+    this.elapsedMs += delta
+
     if (!this.spawned || this.isMaterializing) {
       return
     }
 
-    const frame = this.findFrameAt(time - this.delayMs)
+    const frame = this.findFrameAt(this.elapsedMs - this.delayMs)
     if (frame == null) {
       return
     }
