@@ -77,12 +77,12 @@ export class StartScreenScene extends Phaser.Scene {
         color: 0xff4444,
         icon: '🎮'
       },
-      {
-        text: 'MANUAL',
-        action: () => this.showManual(),
-        color: 0x44ff44,
-        icon: '📖'
-      },
+      // {
+      //   text: 'MANUAL',
+      //   action: () => this.showManual(),
+      //   color: 0x44ff44,
+      //   icon: '📖'
+      // },
       {
         text: 'CRÉDITOS',
         action: () => this.showCredits(),
@@ -263,8 +263,8 @@ export class StartScreenScene extends Phaser.Scene {
       .text(
         384,
         200,
-        '🎓 DESARROLLADO POR\n' +
-          'Leandro Pinto\n\n' +
+        // '🎓 DESARROLLADO POR\n' +
+        //   'Leandro Pinto\n\n' +
           '🎨 DISEÑO Y PROGRAMACIÓN\n' +
           'Phaser.js + TypeScript\n\n' +
           '📚 CONCEPTOS MATEMÁTICOS\n' +

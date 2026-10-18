@@ -16,7 +16,7 @@ export class MainMenuScene extends Phaser.Scene {
     this.titleBitmap = this.add
       .bitmapText(
         this.cameras.main.width / 2,
-        50,
+        100,
         fonts.pixel,
         'Juegos de\ntrigonometría'
       )
@@ -46,23 +46,23 @@ export class MainMenuScene extends Phaser.Scene {
 
     // Botones para los diferentes mini juegos con efectos
     const buttonConfigs = [
-      { text: 'CIRCULO UNITARIO', scene: 'UnitCircleScene', color: 0xff4444 },
-      {
-        text: 'TRIANGULOS RECTANGULOS',
-        scene: 'RightTriangleScene',
-        color: 0x22aa44
-      },
-      {
-        text: 'CONVERSION DE ANGULOS',
-        scene: 'AngleConverterScene',
-        color: 0x4444ff
-      },
-      {
-        text: 'IDENTIDADES TRIGONOMETRICAS',
-        scene: 'TrigIdentitiesScene',
-        color: 0xffaa44
-      },
-      { text: 'Tipos de triángulos', scene: scenes.platformer, color: 0xaa55ff }
+      // { text: 'CIRCULO UNITARIO', scene: 'UnitCircleScene', color: 0xff4444 },
+      // {
+      //   text: 'TRIANGULOS RECTANGULOS',
+      //   scene: 'RightTriangleScene',
+      //   color: 0x22aa44
+      // },
+      // {
+      //   text: 'CONVERSION DE ANGULOS',
+      //   scene: 'AngleConverterScene',
+      //   color: 0x4444ff
+      // },
+      // {
+      //   text: 'IDENTIDADES TRIGONOMETRICAS',
+      //   scene: 'TrigIdentitiesScene',
+      //   color: 0xffaa44
+      // },
+      { text: 'Captura los triángulos', scene: scenes.platformer, color: 0xaa55ff }
     ]
 
     buttonConfigs.forEach((config, index) => {
@@ -70,7 +70,7 @@ export class MainMenuScene extends Phaser.Scene {
       new Button(
         this,
         this.cameras.main.width / 2,
-        120 + index * 50,
+        200 + index * 50,
         {
           text: config.text,
           width: 440,
@@ -99,7 +99,7 @@ export class MainMenuScene extends Phaser.Scene {
     new Button(
       this,
       this.cameras.main.width / 2,
-      140 + buttonConfigs.length * 50,
+      this.cameras.main.height - 40,
       {
         text: 'Pantalla\nCompleta',
         width: 160,
