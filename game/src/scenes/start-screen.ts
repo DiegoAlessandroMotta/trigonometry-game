@@ -77,12 +77,12 @@ export class StartScreenScene extends Phaser.Scene {
         color: 0xff4444,
         icon: '🎮'
       },
-      {
-        text: 'MANUAL',
-        action: () => this.showManual(),
-        color: 0x44ff44,
-        icon: '📖'
-      },
+      // {
+      //   text: 'MANUAL',
+      //   action: () => this.showManual(),
+      //   color: 0x44ff44,
+      //   icon: '📖'
+      // },
       {
         text: 'CRÉDITOS',
         action: () => this.showCredits(),
@@ -195,56 +195,6 @@ export class StartScreenScene extends Phaser.Scene {
     })
   }
 
-  private showManual() {
-    // Crear overlay para el manual
-    const overlay = this.add.rectangle(384, 216, 768, 432, 0x000000, 0.9)
-
-    const title = this.add
-      .text(384, 30, 'MANUAL DE JUEGO', {
-        fontSize: '32px',
-        color: '#00ffff',
-        fontStyle: 'bold',
-        stroke: '#000000',
-        strokeThickness: 3
-      })
-      .setOrigin(0.5)
-
-    const content = this.add
-      .text(
-        384,
-        200,
-        '🎮 CÍRCULO UNITARIO\n' +
-          'Aprende seno, coseno y tangente\n\n' +
-          '📐 TRIÁNGULOS RECTÁNGULOS\n' +
-          'Practica el teorema de Pitágoras\n\n' +
-          '🔄 CONVERSIÓN DE ÁNGULOS\n' +
-          'Convierte entre grados y radianes\n\n' +
-          '📚 IDENTIDADES TRIGONOMÉTRICAS\n' +
-          'Domina las fórmulas fundamentales',
-        {
-          fontSize: '16px',
-          color: '#ffffff',
-          align: 'center',
-          lineSpacing: 10
-        }
-      )
-      .setOrigin(0.5)
-
-    const backButton = new Button(
-      this,
-      384,
-      380,
-      { text: 'Volver', width: 120, height: 35 },
-      () => {
-        overlay.destroy()
-        title.destroy()
-        content.destroy()
-        backButton.destroy()
-      },
-      this
-    )
-  }
-
   private showCredits() {
     // Crear overlay para los créditos
     const overlay = this.add.rectangle(384, 216, 768, 432, 0x000000, 0.9)
@@ -263,8 +213,8 @@ export class StartScreenScene extends Phaser.Scene {
       .text(
         384,
         200,
-        '🎓 DESARROLLADO POR\n' +
-          'Leandro Pinto\n\n' +
+        // '🎓 DESARROLLADO POR\n' +
+        //   'Leandro Pinto\n\n' +
           '🎨 DISEÑO Y PROGRAMACIÓN\n' +
           'Phaser.js + TypeScript\n\n' +
           '📚 CONCEPTOS MATEMÁTICOS\n' +

@@ -1,0 +1,35 @@
+[
+	{
+		"title": "¡Lo Lograste!",
+		"textContent": "¡Has completado el desafío final! Juntaste todos los triángulos y alcanzaste la bandera. Tu recorrido por equiláteros, isósceles y escalenos demuestra que ya puedes distinguirlos en cualquier parte.",
+		"illustrationMarginTop": 16,
+		"illustrations": [
+			{
+				"texture": "objects",
+				"frame": "equilatero-1.png",
+				"scale": 4
+			},
+			{
+				"texture": "objects",
+				"frame": "isoceles-1.png",
+				"scale": 4
+			},
+			{
+				"texture": "objects",
+				"frame": "escaleno-1.png",
+				"scale": 4
+			}
+		]
+	},
+	{
+		"title": "Maestro de Triángulos",
+		"textContent": "Equilátero con sus tres lados iguales, isósceles con al menos dos, y escaleno con todos distintos: ya los tienes claros. Sigue observando las formas que te rodean: la geometría está en todas partes.",
+		"illustrations": [
+			{
+				"texture": "objects",
+				"frame": "trophy-idle-1.png",
+				"scale": 2
+			}
+		]
+	}
+]

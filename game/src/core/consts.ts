@@ -22,9 +22,16 @@ export const scenes = {
   pauseMenu: 'pause-menu',
   platformer: 'platformer',
   level2: 'level2',
+  level3: 'level3',
   hud: 'hud',
   dialog: 'dialog'
 }
+
+export const echoDelayMs = 3000
+
+export const maxLives = 3
+export const invincibilityDurationMs = 1500
+export const heartTexture = { key: 'gems', frame: 'ruby-1.png' }
 
 export const customEvents = {
   pauseGame: 'pause-game',

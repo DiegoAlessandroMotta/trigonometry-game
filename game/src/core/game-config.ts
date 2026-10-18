@@ -10,6 +10,7 @@ import { TrigIdentitiesScene } from '@/scenes/minigames/trig-identities'
 import { HudScene } from '@/scenes/hud'
 import { DialogScene } from '@/scenes/dialog'
 import { Level2Scene } from '@/scenes/minigames/level2'
+import { Level3Scene } from '@/scenes/minigames/level3'
 
 export const gameConfig: Phaser.Types.Core.GameConfig = {
   type: Phaser.WEBGL,
@@ -40,6 +41,7 @@ export const gameConfig: Phaser.Types.Core.GameConfig = {
     MainMenuScene,
     PlatformerScene,
     Level2Scene,
+    Level3Scene,
     PauseMenuScene,
     HudScene,
     DialogScene,

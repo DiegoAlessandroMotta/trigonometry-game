@@ -21,6 +21,21 @@ export class Player extends Phaser.Physics.Arcade.Sprite {
   private wallJumpLockoutTime = 150
   private lastWallJumpTime = 0
 
+  // private maxAirJumps = 3
+  // private currentAirJumps = 0
+
+  // private jumpCooldown = 70
+  // private lastJumpTime = 0
+  // private jumpStrength = 320
+  // private airJumpStrength = 320
+  // private walkSpeed = 200
+  // private wallSlideFallSpeed = 10
+
+  // private wallJumpStrengthX = 300
+  // private wallJumpStrengthY = 320
+  // private wallJumpLockoutTime = 150
+  // private lastWallJumpTime = 0
+
   private isTouchingWall = false
   private isOnTheFloor = false
   private isFalling = false

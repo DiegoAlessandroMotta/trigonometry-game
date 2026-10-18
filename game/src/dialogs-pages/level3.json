@@ -1,0 +1,34 @@
+[
+	{
+		"title": "¡Última Misión, Geómetra!",
+		"textContent": "Has llegado al desafío final. Aquí pondrás a prueba todo lo aprendido sobre triángulos en una sola aventura.",
+		"illustrations": []
+	},
+	{
+		"title": "Tu Objetivo",
+		"textContent": "Recolecta todos los triángulos escondidos en el mapa: equiláteros, isósceles y escalenos. Cada tipo que encuentres refuerza lo que ya sabes.",
+		"illustrationMarginTop": 16,
+		"illustrations": [
+			{
+				"texture": "objects",
+				"frame": "equilatero-1.png",
+				"scale": 4
+			},
+			{
+				"texture": "objects",
+				"frame": "isoceles-1.png",
+				"scale": 4
+			},
+			{
+				"texture": "objects",
+				"frame": "escaleno-1.png",
+				"scale": 4
+			}
+		]
+	},
+	{
+		"title": "¡A por la Meta!",
+		"textContent": "Cuando hayas juntado todos los triángulos, llega hasta la bandera para completar el nivel. ¡Mucho éxito, y demuestra de qué estás hecho!",
+		"illustrations": []
+	}
+]

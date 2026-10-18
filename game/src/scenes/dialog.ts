@@ -1,6 +1,6 @@
 import { customEvents, fonts, scenes } from '@/core/consts'
 
-interface DialogPage {
+export interface DialogPage {
   title: string
   textContent: string
   illustrationMarginTop?: number
